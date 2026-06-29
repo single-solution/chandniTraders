@@ -10,6 +10,13 @@ import { logger } from "@store/shared";
 function getMongoUri(): string {
 	const uri = process.env.MONGODB_URI;
 	if (!uri) {
+		// During Next.js static generation (SSG) of pages like /_not-found,
+		// the database might not be needed but the module is imported.
+		// Return a dummy string so the build doesn't crash, but it will
+		// fail if a real connection is attempted without the env var.
+		if (process.env.NEXT_PHASE === "phase-production-build") {
+			return "mongodb://dummy-for-build";
+		}
 		throw new Error("MONGODB_URI environment variable is not set");
 	}
 	return uri;
