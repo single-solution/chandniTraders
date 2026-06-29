@@ -1,0 +1,2066 @@
+@import "tailwindcss";
+@source "../../../../packages/ui/src";
+
+@theme {
+	--font-sans: var(--font-bricolage), "Bricolage Grotesque", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+	--font-headline: var(--font-oswald), "Oswald", "Bebas Neue", "Bricolage Grotesque", sans-serif;
+
+	/* Mobile UI < 640px, desktop UI >= 640px. Collapsed onto the `sm:` width so
+     that all tablets (iPad mini 6, iPad 6th gen, iPad Pro 11", Galaxy Z Fold
+     unfolded, etc.) and phones in landscape get the desktop UI. */
+	--breakpoint-md: 40rem;
+
+	/* ---- Fluid type scale ----
+     Each clamp(min, fluid, max):
+       - fluid hits the original Tailwind size at viewport 1440px ("perfect")
+       - mobile (<~880px) clamps to MIN ≈ 90% of original (slightly smaller per request)
+       - 4K (~2560px+) clamps to MAX ≈ 125% of original (so content doesn't look tiny)
+     Slope = V / 4480 in vw units. Intercept = 0.6786 * V in px. */
+	--text-xs: clamp(11px, calc(8.1px + 0.27vw), 15px);
+	--text-xs--line-height: 1.4;
+	--text-sm: clamp(13px, calc(9.5px + 0.31vw), 17.5px);
+	--text-sm--line-height: 1.45;
+	--text-base: clamp(14.4px, calc(10.9px + 0.36vw), 20px);
+	--text-base--line-height: 1.55;
+	--text-lg: clamp(16px, calc(12.2px + 0.4vw), 22.5px);
+	--text-lg--line-height: 1.55;
+	--text-xl: clamp(18px, calc(13.6px + 0.45vw), 25px);
+	--text-xl--line-height: 1.5;
+	--text-2xl: clamp(22px, calc(16.3px + 0.54vw), 30px);
+	--text-2xl--line-height: 1.35;
+	--text-3xl: clamp(27px, calc(20.4px + 0.67vw), 37.5px);
+	--text-3xl--line-height: 1.25;
+	--text-4xl: clamp(32px, calc(24.4px + 0.8vw), 45px);
+	--text-4xl--line-height: 1.15;
+	--text-5xl: clamp(43px, calc(32.6px + 1.07vw), 60px);
+	--text-5xl--line-height: 1.1;
+	--text-6xl: clamp(54px, calc(40.7px + 1.34vw), 75px);
+	--text-6xl--line-height: 1.05;
+	--text-7xl: clamp(65px, calc(48.9px + 1.61vw), 90px);
+	--text-7xl--line-height: 1.05;
+
+	--color-ink-50: #f8fafc;
+	--color-ink-100: #eef2f4;
+	--color-ink-200: #dde4e7;
+	--color-ink-300: #c1cbcf;
+	--color-ink-400: #8b969b;
+	--color-ink-500: #5b6669;
+	--color-ink-600: #3f4a4c;
+	--color-ink-700: #1a3f44;
+	--color-ink-800: #0a3035;
+	--color-ink-900: #00272c;
+
+	/* Marquee animation */
+	@keyframes marquee {
+		0% { transform: translateX(0%); }
+		100% { transform: translateX(-50%); }
+	}
+	--animate-marquee: marquee 25s linear infinite;
+
+	--color-canvas: #f8fbf8;
+	--color-canvas-deep: #eef5f5;
+	--color-surface: #f8fbf8;
+	--color-surface-muted: #f3f7f7;
+
+	/* Chartreuse accent — primary CTA and active states.
+     Low end (50/100/200) stays warm cream so existing gradient cards
+     keep their premium warmth. Mid-high (300+) ramps into chartreuse. */
+	--color-accent-50: #fffbeb;
+	--color-accent-100: #fef3c7;
+	--color-accent-200: #f8e9a8;
+	--color-accent-300: #ecf78a;
+	--color-accent-400: #e6ff70;
+	--color-accent-500: #e1ff51;
+	--color-accent-600: #c8e636;
+	--color-accent-700: #3a4d00;
+	--color-accent-800: #2a3800;
+	--color-accent-900: #18250a;
+
+	/* Deep accent — saturated mid-dark companion to the lime accent ramp.
+     Used by hero headline fill, where the lime would over-power. */
+	--color-accent-deep: #064e3b;
+
+	/* Status scales — full ramps so every shade used in the UI (50, 100,
+     200, 500, 700, 800) is a palette token. No more Tailwind raw
+     `bg-amber-50` / `text-rose-800` etc. in component code. */
+	--color-warn-50: #fffbeb;
+	--color-warn-100: #fef3c7;
+	--color-warn-200: #fde68a;
+	--color-warn-500: #d97706;
+	--color-warn-700: #b45309;
+	--color-warn-800: #92400e;
+
+	--color-danger-50: #fff1f2;
+	--color-danger-100: #ffe4e6;
+	--color-danger-200: #fecdd3;
+	--color-danger-400: #fb7185;
+	--color-danger-500: #e11d48;
+	--color-danger-700: #be123c;
+	--color-danger-800: #9f1239;
+
+	--color-info-50: #f0f9ff;
+	--color-info-100: #e0f2fe;
+	--color-info-200: #bae6fd;
+	--color-info-500: #0284c7;
+	--color-info-700: #0369a1;
+	--color-info-800: #075985;
+
+	--color-success-50: #ecfdf5;
+	--color-success-100: #d1fae5;
+	--color-success-200: #a7f3d0;
+	--color-success-500: #10b981;
+	--color-success-700: #047857;
+	--color-success-800: #065f46;
+
+	/* On-dark surface tokens — sanctioned light tints + canvas alias so we
+     can stay strictly within the palette even when overlaying a dark
+     band (chat header, footer, etc.). They resolve to
+     `--color-canvas` (which is white) with baked-in opacities so the
+     rest of the code never has to reach for raw `white/15` shortcuts. */
+	--color-on-dark: var(--color-canvas);
+	--color-on-dark-strong: color-mix(in srgb, var(--color-canvas) 90%, transparent);
+	--color-on-dark-soft: color-mix(in srgb, var(--color-canvas) 70%, transparent);
+	--color-on-dark-muted: color-mix(in srgb, var(--color-canvas) 50%, transparent);
+	--color-on-dark-25: color-mix(in srgb, var(--color-canvas) 25%, transparent);
+	--color-on-dark-20: color-mix(in srgb, var(--color-canvas) 20%, transparent);
+	--color-on-dark-15: color-mix(in srgb, var(--color-canvas) 15%, transparent);
+	--color-on-dark-10: color-mix(in srgb, var(--color-canvas) 10%, transparent);
+	--color-on-dark-06: color-mix(in srgb, var(--color-canvas) 6%, transparent);
+	--color-on-dark-05: color-mix(in srgb, var(--color-canvas) 5%, transparent);
+	--color-on-dark-03: color-mix(in srgb, var(--color-canvas) 3%, transparent);
+
+	/* On-light surface — sanctioned shadow / overlay token (the inverse:
+     a dark wash over light content). Used by raised cards, borders. */
+	--color-on-light-10: color-mix(in srgb, var(--color-ink-900) 10%, transparent);
+	--color-on-light-15: color-mix(in srgb, var(--color-ink-900) 15%, transparent);
+	--color-on-light-05: color-mix(in srgb, var(--color-ink-900) 5%, transparent);
+
+	/* Accent scrim — route preloader + air intro overlays. */
+	--color-on-accent-15: color-mix(in srgb, var(--color-accent-500) 15%, transparent);
+
+	--color-whatsapp: #25d366;
+	--color-whatsapp-dark: #128c7e;
+
+	/* Border-radius scale — paired with padding via the concentric corner
+     rule:  outer_radius = inner_radius + padding.  Use the table below
+     to keep nested surfaces visually concentric (the gap between the
+     outer and inner curve stays uniform around the corner):
+
+       outer token       wraps inner token       at padding
+       ──────────────────────────────────────────────────────
+       --radius-md  (8)   --radius-sm  (6)        p-0.5  (2)
+       --radius-lg (14)   --radius-md  (8)        p-1.5  (6)
+       --radius-xl (20)   --radius-md  (8)        p-3    (12)
+       --radius-2xl (24)  --radius-md  (8)        p-4    (16)
+       --radius-2xl (24)  --radius-lg (14)        p-2.5  (10)
+       --radius-3xl (32)  --radius-md  (8)        p-6    (24)
+       --radius-3xl (32)  --radius-lg (14)        p-4.5  (18)
+
+     If the natural pairing is off by a couple of px, that's fine — the
+     eye accepts ±2px without seeing a kink in the corner. */
+	--radius-sm: 0.375rem;
+	--radius-md: 0.5rem;
+	--radius-lg: 0.875rem;
+	--radius-xl: 1.25rem;
+	--radius-2xl: 1.5rem;
+	--radius-3xl: 2rem;
+	--radius-full: 9999px;
+
+	/* Shadows are tinted with the brand ink (gunmetal) so highlights and
+     elevation reads warm-cool consistent with the palette. */
+	--shadow-sm: 0 1px 2px 0 color-mix(in srgb, var(--color-ink-900) 4%, transparent);
+	--shadow-md: 0 4px 14px -4px color-mix(in srgb, var(--color-ink-900) 7%, transparent);
+	--shadow-lg: 0 14px 36px -10px color-mix(in srgb, var(--color-ink-900) 12%, transparent);
+
+	--mobile-tabbar-h: 64px;
+	--mobile-tabbar-fab-lift: 1.25rem;
+	--mobile-header-h: 56px;
+	--mobile-tabbar-bottom-offset: calc(env(safe-area-inset-bottom, 0px) + 4px);
+	--mobile-tabbar-inline-inset: 0.75rem;
+	/* Category + filter dock — sits above the floating tab bar on mobile shop home. */
+	--mobile-shop-toolbar-h: 52px;
+	--mobile-shop-toolbar-inline-inset: 1.75rem;
+	--mobile-shop-toolbar-gap: 4px;
+	--mobile-shop-toolbar-bottom: calc(var(--mobile-tabbar-bottom-offset) + var(--mobile-tabbar-h) + var(--mobile-shop-toolbar-gap));
+	--mobile-chat-sheet-top: calc(env(safe-area-inset-top, 0px) + var(--mobile-header-h) + 8px);
+	--mobile-chat-sheet-bottom: calc(var(--mobile-tabbar-bottom-offset) + var(--mobile-tabbar-h) + var(--mobile-tabbar-fab-lift) + 8px);
+	--mobile-toolbar-sticky-top: calc(env(safe-area-inset-top, 0px) + var(--mobile-header-h));
+
+	/* Desktop header height = 64px nav row. */
+	--desktop-header-h: 64px;
+	--desktop-chat-sheet-w: 580px;
+
+	--z-sticky: 40;
+	--z-overlay: 50;
+	--z-modal: 60;
+	--z-dropdown: 70;
+	--z-toast: 80;
+	--z-max: 100;
+
+	/* ----- Motion design tokens -----
+     Durations are tuned for native-feel: 120ms for tap reactions,
+     200ms for layout transitions, 360ms for entrances.
+     Easings:
+       - ease-out-quart: confident decel for entrances/reveals
+       - ease-ios:       Apple-style critical-damping for sheets/dialogs
+       - ease-spring:    overshoot for delightful confirmations (cart, save, qty)
+   */
+	--motion-fast: 120ms;
+	--motion-base: 200ms;
+	--motion-slow: 260ms;
+	--motion-stagger: 72ms;
+
+	--ease-out-quart: cubic-bezier(0.165, 0.84, 0.44, 1);
+	--ease-ios: cubic-bezier(0.32, 0.72, 0, 1);
+	--ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+	/* Gentler overshoot than `--ease-spring` — for entrances that should
+     settle without the pronounced bounce (cards, floating dock). */
+	--ease-spring-soft: cubic-bezier(0.34, 1.32, 0.64, 1);
+	/* Decelerate-to-rest with a long tail (ease-out-expo) — graceful
+     fade-ins where the element keeps drifting as it arrives. */
+	--ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+	/* Symmetric accelerate/decelerate (Material "standard") — for paired
+     opacity+transform transitions that read as a single smooth move. */
+	--ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+
+	/* Gentle warm wash carried down the whole page (see html/body). Warmest
+     at the top, settling to a faint warm canvas rather than cutting to flat
+     white, so long pages keep the brand tone instead of going cold. */
+	--storefront-page-gradient: linear-gradient(
+		180deg,
+		color-mix(in srgb, var(--color-accent-50) 55%, var(--color-canvas)) 0%,
+		color-mix(in srgb, var(--color-canvas-deep) 18%, var(--color-canvas)) 26%,
+		color-mix(in srgb, var(--color-canvas-deep) 7%, var(--color-canvas)) 64%,
+		var(--color-canvas) 100%
+	);
+}
+
+/* Hero display type — hollow ink-700 outline for the supporting line
+   ("pre owned"). Thin stroke keeps it airy so the eye glides over it
+   onto the solid coloured line below. */
+.hero-display-outline {
+	color: transparent;
+	-webkit-text-stroke: 1px var(--color-ink-700);
+	text-stroke: 1px var(--color-ink-700);
+	paint-order: stroke fill;
+}
+
+@media (min-width: 768px) {
+	.hero-display-outline {
+		-webkit-text-stroke-width: 1.4px;
+		text-stroke-width: 1.4px;
+	}
+}
+
+/* Hero mask-sweep headline — INSPECTED outline erases L→R while
+   TRUSTED fill paints L→R. Single-shot intro: plays once on load,
+   holds final state via `forwards`. The paint animation lands at a
+   small negative `right` inset (over-extending the clip a few pixels
+   past the element's right edge) so sub-pixel rounding at mobile
+   font sizes can't leave a sliver of the last letter unrevealed. */
+@keyframes hero-mask-paint {
+	0% {
+		clip-path: inset(-4px 100% -4px -4px);
+		opacity: 0;
+	}
+	10% {
+		opacity: 1;
+	}
+	100% {
+		clip-path: inset(-4px -4px -4px -4px);
+		opacity: 1;
+	}
+}
+
+@keyframes hero-mask-erase {
+	0% {
+		clip-path: inset(-4px -4px -4px -4px);
+		opacity: 0;
+	}
+	10% {
+		opacity: 1;
+	}
+	100% {
+		clip-path: inset(-4px -4px -4px 100%);
+		opacity: 1;
+	}
+}
+
+@keyframes hero-mask-bar {
+	0% {
+		left: -2%;
+		opacity: 0;
+	}
+	10% {
+		opacity: 1;
+	}
+	90% {
+		left: 100%;
+		opacity: 1;
+	}
+	100% {
+		left: 100%;
+		opacity: 0;
+	}
+}
+
+@keyframes hero-product-pop-flank {
+	0%,
+	5% {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	15%,
+	35% {
+		opacity: 0.55;
+		transform: translateY(0);
+	}
+	45%,
+	100% {
+		opacity: 0;
+		transform: translateY(-10px);
+	}
+}
+
+.hero-product-pop-flank {
+	opacity: 0;
+	color: var(--color-ink-400);
+	animation: hero-product-pop-flank 8s ease-in-out infinite;
+	animation-fill-mode: both;
+	/* Glyphs and antialiasing paint past the layout box — inset avoids edge clipping. */
+	padding-inline: 0.2em;
+	box-decoration-break: clone;
+}
+
+@keyframes hero-product-pop {
+	0%,
+	5% {
+		opacity: 0;
+		transform: translate(-50%, calc(-50% + 12px));
+	}
+	15%,
+	35% {
+		opacity: 0.28;
+		transform: translate(-50%, -50%);
+	}
+	45%,
+	100% {
+		opacity: 0;
+		transform: translate(-50%, calc(-50% - 12px));
+	}
+}
+
+.hero-mask-sweep-line {
+	position: relative;
+	display: inline-block;
+}
+
+.hero-mask-sweep__full--paint {
+	animation: hero-mask-paint 2.4s ease-in-out 1 forwards;
+}
+
+.hero-mask-sweep__full--erase {
+	animation: hero-mask-erase 2.4s ease-in-out 1 forwards;
+}
+
+.hero-mask-sweep__bar {
+	position: absolute;
+	top: 8%;
+	bottom: 8%;
+	left: 0;
+	width: 4px;
+	background: var(--color-accent-500);
+	transform: translateX(-50%);
+	pointer-events: none;
+	animation: hero-mask-bar 2.4s ease-in-out 1 forwards;
+}
+
+.hero-trending-pop {
+	animation: hero-product-pop 8s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.hero-mask-sweep__full--paint,
+	.hero-mask-sweep__full--erase {
+		animation: none;
+		clip-path: inset(-4px -4px -4px -4px);
+		opacity: 1;
+	}
+
+	.hero-mask-sweep__full--erase {
+		opacity: 0;
+	}
+
+	.hero-mask-sweep__bar {
+		display: none;
+	}
+
+	.hero-trending-pop {
+		animation: none;
+		opacity: 0.28;
+		transform: translate(-50%, -50%) scale(1);
+	}
+
+	.hero-product-pop-flank {
+		animation: none;
+		opacity: 0.45;
+		transform: translateY(0);
+		color: var(--color-ink-400);
+	}
+}
+
+/* ============================================================
+   Premium motion system — used by the hero stage and any CTA /
+   card that opts in via the matching React wrapper.
+   ============================================================ */
+
+/* --- Magnetic hover ---------------------------------------------
+   The wrapper translates in/out via JS; `will-change` is set inline
+   only while the rAF loop is running so the compositor layer is
+   released once the element returns to rest. */
+.magnetic-hover {
+	display: inline-flex;
+	transition: transform 220ms var(--ease-spring);
+}
+@media (prefers-reduced-motion: reduce), (pointer: coarse) {
+	.magnetic-hover {
+		transform: none !important;
+	}
+}
+
+/* --- Kinetic-punch heading ---------------------------------------
+   Characters render at their natural visible state until an
+   IntersectionObserver adds `.kinetic-animate`. Only then does each
+   char run the CSS punch keyframe, staggered by its `--kinetic-i`
+   index. Because text is visible by default, a heading is never blank
+   if JS is slow/absent — the punch is purely additive. Reduced-motion
+   users keep the natural state and never animate. */
+.kinetic-heading {
+	display: block;
+}
+.kinetic-char {
+	display: inline-block;
+	white-space: pre;
+	transform-origin: 50% 100%;
+}
+@keyframes kinetic-char-in {
+	from {
+		opacity: 0;
+		transform: translateY(0.5em);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+.kinetic-animate .kinetic-char {
+	/* back.out(1.7)-style spring overshoot. The `both` fill holds the
+     hidden start state through the per-char delay so later characters
+     drop in after the earlier ones. */
+	animation: kinetic-char-in 0.7s var(--ease-spring) both;
+	animation-delay: calc(var(--kinetic-delay, 0s) + var(--kinetic-i, 0) * var(--kinetic-stagger, 0.04s));
+}
+@media (prefers-reduced-motion: reduce) {
+	.kinetic-animate .kinetic-char {
+		animation: none;
+	}
+}
+
+/* --- Section ambience -------------------------------------------
+   Slimmer cousin of the hero ambient layer. Two orbs only, opacity
+   scaled by the wrapper's --section-ambience-opacity. */
+.section-ambience {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	overflow: hidden;
+	z-index: 0;
+	--section-ambience-opacity: 0.3;
+}
+.section-ambience-orb {
+	position: absolute;
+	display: block;
+	border-radius: 9999px;
+	filter: blur(70px);
+	opacity: var(--section-ambience-opacity);
+	will-change: transform;
+}
+.section-ambience-orb--a {
+	width: 38vw;
+	height: 38vw;
+	max-width: 460px;
+	max-height: 460px;
+	background: radial-gradient(circle at 35% 35%, color-mix(in srgb, var(--color-accent-200) 70%, transparent), transparent 70%);
+	animation: section-orb-a 26s ease-in-out infinite;
+}
+.section-ambience-orb--b {
+	width: 30vw;
+	height: 30vw;
+	max-width: 360px;
+	max-height: 360px;
+	background: radial-gradient(circle at 60% 50%, color-mix(in srgb, var(--color-accent-100) 90%, transparent), transparent 72%);
+	animation: section-orb-b 32s ease-in-out infinite;
+}
+.section-ambience[data-side="right"] .section-ambience-orb--a {
+	inset: -10% -10% auto auto;
+}
+.section-ambience[data-side="right"] .section-ambience-orb--b {
+	inset: auto auto -15% -15%;
+}
+.section-ambience[data-side="left"] .section-ambience-orb--a {
+	inset: -10% auto auto -10%;
+}
+.section-ambience[data-side="left"] .section-ambience-orb--b {
+	inset: auto -15% -15% auto;
+}
+@keyframes section-orb-a {
+	0%,
+	100% {
+		transform: translate3d(0, 0, 0) scale(1);
+	}
+	50% {
+		transform: translate3d(3%, 5%, 0) scale(1.08);
+	}
+}
+@keyframes section-orb-b {
+	0%,
+	100% {
+		transform: translate3d(0, 0, 0) scale(1);
+	}
+	50% {
+		transform: translate3d(-4%, -3%, 0) scale(1.1);
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.section-ambience-orb {
+		animation: none;
+	}
+}
+
+/* --- content-visibility utility --------------------------------
+   `content-visibility: auto` tells the browser it may skip layout
+   AND paint for the element while it is far outside the viewport.
+   For sections containing ambient orbs, scroll-driven motion, or
+   image grids, this is the single largest paint optimisation
+   available: off-screen ambience keyframes don't composite,
+   off-screen hover-tilt surfaces don't repaint, off-screen
+   Lottie-style motion is paused — automatically.
+
+   `contain-intrinsic-size: auto <fallback>` reserves a placeholder
+   height before the section has ever rendered. The `auto` keyword
+   tells the browser to *remember* the actual size after first
+   paint and reuse it, so the scrollbar settles after the first
+   pass and never jumps again. The 800px fallback is used only for
+   sections that have never been painted yet.
+
+   `.cv-auto`     — generic below-the-fold sections (default 800px)
+   .cv-auto-sm    — short below-the-fold blocks (e.g. CTAs, single
+                    cards) — fallback 400px so the scrollbar
+                    reserves less.
+   .cv-auto-lg    — very tall grids / image walls (1200px fallback) */
+.cv-auto {
+	content-visibility: auto;
+	contain-intrinsic-size: auto 800px;
+}
+.cv-auto-sm {
+	content-visibility: auto;
+	contain-intrinsic-size: auto 400px;
+}
+.cv-auto-lg {
+	content-visibility: auto;
+	contain-intrinsic-size: auto 1200px;
+}
+
+/* Fluid spacing — desktop only.
+   Mobile keeps Tailwind's default --spacing (0.25rem) so tap targets, gaps,
+   and the mobile UI stay exactly as-is. From 640px upward, every numeric
+   p-*, m-*, gap-*, w-*, h-*, etc. scales fluidly:
+     - 640–767:  ~15% smaller than current (fixes "too large at 768")
+     - 1440:     current 4px (perfect)
+     - 2560+:    ~25% larger (fixes "too small at 2560") */
+@media (min-width: 40rem) {
+	:root {
+		--spacing: clamp(0.213rem, calc(0.17rem + 0.089vw), 0.313rem);
+	}
+}
+
+@layer base {
+	/* Native controls and ARIA widgets — browsers default buttons to arrow. */
+	a[href],
+	summary,
+	label[for],
+	select:not(:disabled),
+	input[type="checkbox"],
+	input[type="radio"],
+	input[type="button"]:not(:disabled),
+	input[type="submit"]:not(:disabled),
+	input[type="reset"]:not(:disabled),
+	button:not(:disabled):not([aria-disabled="true"]),
+	[role="button"]:not([aria-disabled="true"]),
+	[role="menuitem"],
+	[role="option"],
+	[role="tab"]:not([aria-disabled="true"]),
+	[role="link"],
+	::file-selector-button {
+		cursor: pointer;
+	}
+
+	button:disabled,
+	select:disabled,
+	[aria-disabled="true"] {
+		cursor: not-allowed;
+	}
+}
+
+html,
+body {
+	min-height: 100dvh;
+	background-color: var(--color-canvas);
+	color: var(--color-ink-800);
+	font-family: var(--font-sans);
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	/* Words never split mid-character; lines wrap at word boundaries. Long
+     unbroken strings (URLs, IBANs, hashes) are allowed to wrap at any
+     point so they don't overflow their container.
+
+       word-break: normal       -> never split a real word
+       overflow-wrap: break-word -> long unbreakable runs may wrap
+       hyphens: manual          -> only break where authors put `&shy;` */
+	word-break: normal;
+	overflow-wrap: break-word;
+	hyphens: manual;
+}
+
+/* Viewport-anchored page wash on its own compositor layer. Using a fixed
+   pseudo-element (instead of `background-attachment: fixed` on the body)
+   keeps the gradient visually pinned to the viewport while letting the
+   compositor hold it still during scroll — no full-viewport repaint per
+   frame, which is the buttery-scroll win. */
+body::before {
+	content: "";
+	position: fixed;
+	inset: 0;
+	z-index: -1;
+	background: var(--storefront-page-gradient);
+	pointer-events: none;
+}
+
+html {
+	-webkit-tap-highlight-color: transparent;
+	scroll-behavior: smooth;
+	scrollbar-gutter: stable;
+}
+
+/* Product/listing frames — Next fill images always cover (lightbox excluded).
+   Lives in the `components` cascade layer so any Tailwind utility (e.g.
+   `absolute`, `position`, `overflow-visible`) on the same element always wins.
+   Without the layer wrap, `.product-media-well` ties on specificity with the
+   utility classes but appears later in source order (Tailwind utilities are
+   emitted by the @import at the top), so it would silently force every well —
+   even ones meant to be `absolute inset-0` — back to `position: relative` and
+   collapse the PDP hero to zero size. */
+@layer components {
+	.product-media-well {
+		position: relative;
+		overflow: hidden;
+	}
+
+	.product-media-well img {
+		object-fit: contain;
+		object-position: center;
+	}
+}
+
+* {
+	box-sizing: border-box;
+}
+
+/* Prevent iOS Safari from zooming on focus when an input's font-size is
+   below 16px (caused by the fluid type scale at mobile widths). Only apply
+   on mobile; desktop keeps the Tailwind text-* size on inputs. */
+@media (max-width: 39.99rem) {
+	input,
+	textarea,
+	select {
+		font-size: 16px;
+	}
+}
+
+.app-shell-pad {
+	position: relative;
+	z-index: 1;
+	padding-bottom: calc(var(--mobile-tabbar-h) + env(safe-area-inset-bottom, 0px) + 24px);
+}
+
+@media (min-width: 40rem) {
+	.app-shell-pad {
+		padding-bottom: 0;
+	}
+}
+
+/* Short / form-only pages: center their content, but enforce a minimum height
+   that ensures the footer is pushed partially below the viewport edge. This
+   provides a visual hint that there is more content to scroll to, rather than
+   locking the footer rigidly to the bottom. */
+.storefront-page-center {
+	display: flex;
+	flex: 1 1 auto;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+	padding: 2rem 1rem;
+	min-height: 75dvh;
+}
+
+/* One consistent page-title size mapped to the fluid scale, so top-level
+   headings stay symmetric across pages instead of each route picking an
+   ad-hoc px size (28/34/36/44/48/52 drift). Pair with `font-headline`. */
+.text-page-title {
+	font-size: var(--text-4xl);
+	line-height: 1.04;
+	letter-spacing: -0.02em;
+}
+
+.safe-bottom {
+	padding-bottom: calc(env(safe-area-inset-bottom, 0px) + var(--safe-bottom-base, 0px));
+}
+
+.safe-top {
+	padding-top: calc(env(safe-area-inset-top, 0px) + var(--safe-top-base, 0px));
+}
+
+.no-scrollbar {
+	scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+	display: none;
+}
+
+@keyframes sheet-up {
+	from {
+		transform: translateY(100%);
+	}
+	to {
+		transform: translateY(0);
+	}
+}
+
+@keyframes sheet-fade {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes flyout-in-right {
+	from {
+		transform: translateX(100%);
+	}
+	to {
+		transform: translateX(0);
+	}
+}
+
+@keyframes flyout-in-left {
+	from {
+		transform: translateX(-100%);
+	}
+	to {
+		transform: translateX(0);
+	}
+}
+
+.animate-sheet-up {
+	animation: sheet-up 220ms var(--ease-ios);
+}
+
+.animate-sheet-fade {
+	animation: sheet-fade 180ms ease-out;
+}
+
+.animate-flyout-right {
+	animation: flyout-in-right 240ms var(--ease-ios);
+}
+
+.animate-flyout-left {
+	animation: flyout-in-left 240ms var(--ease-ios);
+}
+
+/* ----- Sheet / flyout EXIT -----
+   Symmetric reverses of the entry animations, played while a
+   `usePresence`-managed overlay is closing (kept mounted until the
+   exit finishes). `forwards` holds the off-screen end-state so the
+   panel never flashes back before unmount. Durations mirror entry. */
+@keyframes sheet-down {
+	from {
+		transform: translateY(0);
+	}
+	to {
+		transform: translateY(100%);
+	}
+}
+@keyframes sheet-fade-out {
+	from {
+		opacity: 1;
+	}
+	to {
+		opacity: 0;
+	}
+}
+@keyframes flyout-out-right {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(100%);
+	}
+}
+@keyframes flyout-out-left {
+	from {
+		transform: translateX(0);
+	}
+	to {
+		transform: translateX(-100%);
+	}
+}
+.animate-sheet-down {
+	animation: sheet-down 220ms var(--ease-ios) forwards;
+}
+.animate-sheet-fade-out {
+	animation: sheet-fade-out 200ms ease-in forwards;
+}
+.animate-flyout-out-right {
+	animation: flyout-out-right 240ms var(--ease-ios) forwards;
+}
+.animate-flyout-out-left {
+	animation: flyout-out-left 240ms var(--ease-ios) forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+	.animate-sheet-down,
+	.animate-sheet-fade-out,
+	.animate-flyout-out-right,
+	.animate-flyout-out-left {
+		animation: none;
+	}
+}
+
+/* ----- Anchored popover / dropdown enter -----
+   Cart dropdown, account menus, popovers anchored to a header button.
+   Fades in with a small downward slide + subtle scale so the panel
+   feels attached to its trigger rather than just popping into place. */
+@keyframes popover-in {
+	from {
+		opacity: 0;
+		transform: translate3d(0, -6px, 0) scale(0.97);
+	}
+	to {
+		opacity: 1;
+		transform: translate3d(0, 0, 0) scale(1);
+	}
+}
+.animate-popover-in {
+	animation: popover-in 180ms var(--ease-out-quart);
+	transform-origin: top center;
+}
+
+/* Filter / category dropdown panels — gentler slide + longer ease than cart. */
+@keyframes filter-panel-in {
+	from {
+		opacity: 0;
+		transform: translate3d(0, -5px, 0) scale(0.985);
+	}
+	to {
+		opacity: 1;
+		transform: translate3d(0, 0, 0) scale(1);
+	}
+}
+.animate-filter-panel-in {
+	animation: filter-panel-in 280ms var(--ease-out-expo);
+	transform-origin: top center;
+}
+
+/* PDP configuration summary — snappy pop below the option picker. */
+@keyframes config-card-pop {
+	from {
+		opacity: 0;
+		transform: translate3d(0, 10px, 0) scale(0.94);
+	}
+	70% {
+		opacity: 1;
+		transform: translate3d(0, -2px, 0) scale(1.02);
+	}
+	to {
+		opacity: 1;
+		transform: translate3d(0, 0, 0) scale(1);
+	}
+}
+.animate-config-card-pop {
+	animation: config-card-pop 260ms var(--ease-out-expo);
+	transform-origin: center top;
+}
+
+/* ----- Centered dialog / lightbox enter -----
+   Confirm dialogs, image lightboxes, icon pickers — anything centered.
+   Backdrop is `.animate-sheet-fade`; the card uses this for a calm
+   scale-in. Origin is the card centre. */
+@keyframes dialog-in {
+	from {
+		opacity: 0;
+		transform: scale(0.94);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+.animate-dialog-in {
+	animation: dialog-in 220ms var(--ease-out-quart);
+	transform-origin: center;
+}
+
+/* ----- Lightbox content enter -----
+   Slightly stronger scale than `.animate-dialog-in` since lightbox
+   images are large and benefit from a more cinematic zoom. */
+@keyframes lightbox-in {
+	from {
+		opacity: 0;
+		transform: scale(0.92);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+.animate-lightbox-in {
+	animation: lightbox-in 260ms var(--ease-out-quart);
+}
+
+/* ----- Popover / dialog / lightbox EXIT -----
+   Symmetric reverses of the scale-in entries, played while a
+   `usePresence`-managed overlay closes. `forwards` holds the faded
+   end-state until unmount so nothing flashes back. */
+@keyframes popover-out {
+	from {
+		opacity: 1;
+		transform: translate3d(0, 0, 0) scale(1);
+	}
+	to {
+		opacity: 0;
+		transform: translate3d(0, -6px, 0) scale(0.97);
+	}
+}
+@keyframes lightbox-out {
+	from {
+		opacity: 1;
+		transform: scale(1);
+	}
+	to {
+		opacity: 0;
+		transform: scale(0.92);
+	}
+}
+.animate-popover-out {
+	animation: popover-out 160ms var(--ease-standard) forwards;
+	transform-origin: top center;
+}
+@keyframes filter-panel-out {
+	from {
+		opacity: 1;
+		transform: translate3d(0, 0, 0) scale(1);
+	}
+	to {
+		opacity: 0;
+		transform: translate3d(0, -4px, 0) scale(0.985);
+	}
+}
+.animate-filter-panel-out {
+	animation: filter-panel-out 220ms var(--ease-standard) forwards;
+	transform-origin: top center;
+}
+.animate-lightbox-out {
+	animation: lightbox-out 220ms var(--ease-standard) forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+	.animate-popover-out,
+	.animate-lightbox-out,
+	.animate-filter-panel-in,
+	.animate-filter-panel-out,
+	.animate-config-card-pop {
+		animation: none;
+	}
+}
+
+/* ----- Toast enter / exit -----
+   Top-anchored toasts drop in and settle out. Exit uses `forwards`
+   so the toast holds its faded state until the host unmounts it. */
+@keyframes toast-in {
+	from {
+		opacity: 0;
+		transform: translate3d(0, -14px, 0) scale(0.98);
+	}
+	to {
+		opacity: 1;
+		transform: translate3d(0, 0, 0) scale(1);
+	}
+}
+@keyframes toast-out {
+	from {
+		opacity: 1;
+		transform: translate3d(0, 0, 0) scale(1);
+	}
+	to {
+		opacity: 0;
+		transform: translate3d(0, -8px, 0) scale(0.98);
+	}
+}
+.animate-toast-in {
+	animation: toast-in 240ms var(--ease-spring-soft);
+}
+.animate-toast-out {
+	animation: toast-out 180ms var(--ease-standard) forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+	.animate-toast-in,
+	.animate-toast-out {
+		animation: none;
+	}
+}
+
+/* ----- Slide-down banner enter -----
+   Inline error / success banners that appear above a form. Tiny vertical
+   slide + fade so the form doesn't jump. */
+@keyframes banner-in {
+	from {
+		opacity: 0;
+		transform: translate3d(0, -6px, 0);
+	}
+	to {
+		opacity: 1;
+		transform: translate3d(0, 0, 0);
+	}
+}
+.animate-banner-in {
+	animation: banner-in 200ms var(--ease-out-quart);
+}
+
+/* ----- Tab panel cross-fade -----
+   Apply to a tab panel's content wrapper with a `key` derived from the
+   active tab id. React remounts the wrapper, the animation re-runs. */
+@keyframes tab-panel-in {
+	from {
+		opacity: 0;
+		transform: translate3d(0, 4px, 0);
+	}
+	to {
+		opacity: 1;
+		transform: translate3d(0, 0, 0);
+	}
+}
+.animate-tab-panel-in {
+	animation: tab-panel-in 180ms var(--ease-out-quart);
+}
+
+/* ----- Reveal-on-scroll (driven by IntersectionObserver) -----
+   Add the `.reveal` (or `.reveal-fade`) class to any element you want to
+   animate in. The global `RevealRoot` finds it via the class selector,
+   observes it, and sets `data-reveal="visible"` once it enters the
+   viewport — at which point the rules below complete the transition.
+   Use `--reveal-delay` to stagger children.
+
+   We deliberately do **not** set `data-reveal="hidden"` from SSR — the
+   default styles below already hide the element, and rendering the
+   attribute server-side would race against React 19's progressive
+   hydration in Next 16 and produce hydration-mismatch warnings.
+*/
+.reveal {
+	opacity: 0;
+	transform: translate3d(0, var(--reveal-distance, 20px), 0);
+	/* Opacity fades cleanly (ease-out); the slide rides a soft spring so the
+     element settles with a touch of overshoot — the "springy" feel without
+     a JS animation lib. Transform gets a longer duration so the spring has
+     room to read. */
+	transition:
+		opacity 480ms var(--ease-out-quart),
+		transform var(--reveal-spring-duration, 0.72s) var(--ease-spring);
+	transition-delay: var(--reveal-delay, 0ms);
+	/* Safety net: independent CSS-only fallback so a missing JS bundle
+     or a hydration race never leaves content invisible. The JS path
+     in `RevealRoot` promotes elements within ~1 frame in the happy
+     case; this keyframe only matters if that path is delayed past
+     the watchdog window. `forwards` keeps the end state. */
+	animation: reveal-safety 0.45s var(--ease-out-quart) 2.5s forwards;
+}
+.reveal[data-reveal="visible"] {
+	opacity: 1;
+	/* Settle to `none` (not translate3d(0,0,0)) so a finished reveal stops being
+     a containing block — otherwise any `position: fixed` descendant (e.g. the
+     mobile PDP sticky CTA) anchors to this box instead of the viewport. */
+	transform: none;
+	animation: none;
+}
+
+/* Stronger entrance for hero/section-level blocks — more travel + scale
+   pop so big surfaces feel like they spring into place. */
+.reveal-rise {
+	--reveal-distance: 22px;
+	--reveal-spring-duration: 0.62s;
+}
+.reveal-rise:not([data-reveal="visible"]) {
+	transform: translate3d(0, var(--reveal-distance), 0) scale(0.985);
+}
+.reveal-fade {
+	opacity: 0;
+	transform: none;
+	transition: opacity var(--motion-base) var(--ease-out-quart);
+	transition-delay: var(--reveal-delay, 0ms);
+	animation: reveal-fade-safety 0.45s var(--ease-out-quart) 2.5s forwards;
+}
+.reveal-fade[data-reveal="visible"] {
+	opacity: 1;
+	animation: none;
+}
+@keyframes reveal-safety {
+	to {
+		opacity: 1;
+		transform: translate3d(0, 0, 0);
+	}
+}
+@keyframes reveal-fade-safety {
+	to {
+		opacity: 1;
+	}
+}
+
+/* Auto-stagger up to 8 children when parent has .reveal-stagger.
+   Children should also carry the `.reveal` class — RevealRoot finds
+   them by class selector and adds `data-reveal="visible"` on intersect. */
+.reveal-stagger > *:nth-child(1) {
+	--reveal-delay: 0ms;
+}
+.reveal-stagger > *:nth-child(2) {
+	--reveal-delay: calc(var(--motion-stagger) * 1);
+}
+.reveal-stagger > *:nth-child(3) {
+	--reveal-delay: calc(var(--motion-stagger) * 2);
+}
+.reveal-stagger > *:nth-child(4) {
+	--reveal-delay: calc(var(--motion-stagger) * 3);
+}
+.reveal-stagger > *:nth-child(5) {
+	--reveal-delay: calc(var(--motion-stagger) * 4);
+}
+.reveal-stagger > *:nth-child(6) {
+	--reveal-delay: calc(var(--motion-stagger) * 5);
+}
+.reveal-stagger > *:nth-child(7) {
+	--reveal-delay: calc(var(--motion-stagger) * 6);
+}
+.reveal-stagger > *:nth-child(8) {
+	--reveal-delay: calc(var(--motion-stagger) * 7);
+}
+.reveal-stagger > *:nth-child(9) {
+	--reveal-delay: calc(var(--motion-stagger) * 8);
+}
+.reveal-stagger > *:nth-child(10) {
+	--reveal-delay: calc(var(--motion-stagger) * 9);
+}
+.reveal-stagger > *:nth-child(11) {
+	--reveal-delay: calc(var(--motion-stagger) * 10);
+}
+.reveal-stagger > *:nth-child(12) {
+	--reveal-delay: calc(var(--motion-stagger) * 11);
+}
+
+/* Scroll-driven lists/grids: each item reveals when it enters the viewport.
+   No nth-child stagger and no CSS safety fallback — off-screen items stay
+   hidden until IntersectionObserver promotes them. */
+.reveal-scroll-list > .reveal,
+.reveal-scroll-list > li.reveal,
+.reveal-scroll {
+	--reveal-delay: 0ms;
+	animation: none;
+}
+.reveal-scroll.reveal-rise,
+.reveal-scroll-list > .reveal.reveal-rise,
+.reveal-scroll-list > li.reveal.reveal-rise {
+	--reveal-distance: 26px;
+	--reveal-spring-duration: 0.68s;
+}
+.reveal-scroll-list > .reveal:not([data-reveal="visible"]),
+.reveal-scroll-list > li.reveal:not([data-reveal="visible"]),
+.reveal-scroll:not([data-reveal="visible"]) {
+	transform: translate3d(0, var(--reveal-distance, 26px), 0) scale(0.988);
+}
+
+/* Tap feedback — apply on any interactive element to get a soft press. */
+/* The single fluid-interaction primitive. `.tap` is unlayered, so its
+   `transition` would otherwise clobber any Tailwind `transition-*` on the
+   same element — so it owns the full interaction set (transform + the
+   colour/shadow props that hover states animate). Press rides a soft
+   spring so the release "pops" back rather than easing flatly. */
+.tap {
+	cursor: pointer;
+	transition:
+		transform 320ms var(--ease-spring),
+		box-shadow var(--motion-base) var(--ease-out-quart),
+		background-color var(--motion-base) var(--ease-out-quart),
+		border-color var(--motion-base) var(--ease-out-quart),
+		color var(--motion-base) var(--ease-out-quart);
+}
+.tap:disabled,
+.tap[aria-disabled="true"] {
+	cursor: not-allowed;
+}
+.tap:active {
+	transform: scale(0.85);
+}
+
+/* Shop category + filter pills — slower than `--motion-fast` so hover
+   lift and colour shifts feel eased, not snappy. Placed after `.tap` so
+   it owns the transition list without fighting Tailwind utilities. */
+.shop-catalog-pill {
+	transition:
+		transform var(--motion-slow) var(--ease-spring-soft),
+		background-color var(--motion-slow) var(--ease-out-quart),
+		border-color var(--motion-slow) var(--ease-out-quart),
+		color var(--motion-base) var(--ease-out-quart),
+		box-shadow var(--motion-base) var(--ease-out-quart);
+}
+
+/* Keyboard focus ring for ad-hoc controls that aren't the design-system
+   Button (which carries its own ring). Two-stop shadow = canvas gap +
+   accent ring, so it reads on any surface without layout shift. */
+.focus-ring:focus-visible {
+	outline: none;
+	box-shadow:
+		0 0 0 2px var(--color-canvas),
+		0 0 0 4px var(--color-accent-500);
+}
+
+/* Inset variant for controls inside `overflow-hidden` parents (segmented
+   steppers, tab bars) where an outer ring would be clipped. */
+.focus-ring-inset:focus-visible {
+	outline: none;
+	box-shadow: inset 0 0 0 2px var(--color-accent-500);
+}
+
+/* Premium glass shine — a hairline light catching the top inner edge, so a
+   surface reads like glass without any blur/backdrop-filter. Pure box-shadow
+   paint on a pointer-events-none overlay: cheap enough for product-card grids
+   (the hard perf gate) and it never washes the content/image beneath it. */
+.glass-shine {
+	position: relative;
+}
+.glass-shine::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	pointer-events: none;
+	z-index: 1;
+	box-shadow: inset 0 1px 0 0 color-mix(in srgb, var(--color-canvas) 60%, transparent);
+}
+
+/* Hover lift — cards, tiles. Pairs with default hover styles. */
+.lift {
+	transition:
+		transform var(--motion-base) var(--ease-spring-soft),
+		box-shadow var(--motion-base) var(--ease-out-quart),
+		border-color var(--motion-base) var(--ease-out-quart);
+}
+@media (hover: hover) {
+	.lift:hover {
+		transform: translateY(-3px);
+		box-shadow: var(--shadow-md);
+	}
+}
+
+/* Sticky desktop header that gains a shadow + denser background once you scroll. */
+/* ----- Sticky header — frosted glass that picks up whatever is behind
+   it (hero gradient at the top of the home page, page surface deeper
+   in). Two states, both rely on real `backdrop-filter` rather than a
+   solid background tint:
+
+     [data-scrolled="false"]  → barely-there ~6% canvas tint with a
+                                14px blur. Lets the hero gradient bleed
+                                through so the header reads as part of
+                                the banner rather than a hard white bar
+                                bolted on top.
+     [data-scrolled="true"]   → ~78% canvas tint with a 20px blur +
+                                160% saturation, hairline ink-100
+                                border, and a soft shadow. Restores
+                                legibility once content scrolls under
+                                the header.
+
+   Safari needs the `-webkit-` prefix to apply the filter pre-iOS 17.
+   On browsers without `backdrop-filter` support we fall back to a more
+   opaque canvas via the `@supports not` block. */
+.scroll-header {
+	-webkit-backdrop-filter: blur(14px) saturate(140%);
+	backdrop-filter: blur(14px) saturate(140%);
+	background-color: transparent;
+	border-color: transparent;
+	transition:
+		box-shadow var(--motion-base) var(--ease-out-quart),
+		background-color var(--motion-base) var(--ease-out-quart),
+		border-color var(--motion-base) var(--ease-out-quart),
+		-webkit-backdrop-filter var(--motion-base) var(--ease-out-quart),
+		backdrop-filter var(--motion-base) var(--ease-out-quart);
+}
+.scroll-header[data-scrolled="true"] {
+	-webkit-backdrop-filter: blur(20px) saturate(160%);
+	backdrop-filter: blur(20px) saturate(160%);
+	background-color: transparent;
+	border-color: var(--color-ink-100);
+}
+
+@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+	/* Fallback: keep header untinted when blur is unavailable. */
+	.scroll-header {
+		background-color: transparent;
+	}
+	.scroll-header[data-scrolled="true"] {
+		background-color: transparent;
+	}
+}
+
+/* Image fade-in — works with next/image's onLoad handler that flips the
+   data-loaded attribute. */
+[data-img-fade="false"] {
+	opacity: 0;
+	transform: scale(0.98);
+}
+[data-img-fade="true"] {
+	opacity: 1;
+	transform: scale(1);
+	transition:
+		opacity 600ms var(--ease-out-quart),
+		transform 600ms var(--ease-out-quart);
+}
+
+/* Skeleton shimmer — hardware-accelerated for performance. */
+@keyframes shimmer {
+	100% {
+		transform: translateX(100%);
+	}
+}
+.skeleton {
+	position: relative;
+	overflow: hidden;
+	background-color: var(--color-canvas-deep);
+	border-radius: var(--radius-md);
+}
+.skeleton::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	transform: translateX(-100%);
+	background-image: linear-gradient(90deg, transparent 20%, color-mix(in srgb, var(--color-surface) 60%, transparent) 50%, transparent 80%);
+	animation: shimmer 2s infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+	.skeleton::after {
+		animation: none;
+		transform: none;
+		opacity: 0.35;
+	}
+}
+
+/* Badge pop — for cart count, qty changes. */
+@keyframes badge-pop {
+	0% {
+		transform: scale(0.6);
+	}
+	60% {
+		transform: scale(1.18);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+.animate-badge-pop {
+	animation: badge-pop 360ms var(--ease-spring);
+}
+
+/* List item exit — works with the React "pending remove" pattern.
+   Add data-state="removing" to collapse height + fade out. */
+@keyframes item-out {
+	0% {
+		opacity: 1;
+		transform: translateX(0) scale(1);
+		max-height: 280px;
+		margin-bottom: var(--mb, 12px);
+	}
+	60% {
+		opacity: 0;
+		transform: translateX(8px) scale(0.98);
+	}
+	100% {
+		opacity: 0;
+		transform: translateX(8px) scale(0.98);
+		max-height: 0;
+		margin-bottom: 0;
+		padding-top: 0;
+		padding-bottom: 0;
+		border-width: 0;
+	}
+}
+[data-item-state="removing"] {
+	animation: item-out 320ms var(--ease-out-quart) forwards;
+	pointer-events: none;
+	overflow: hidden;
+}
+
+/* List item enter — when an item appears, soft slide-up. */
+@keyframes item-in {
+	from {
+		opacity: 0;
+		transform: translateY(10px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+[data-item-state="entering"] {
+	animation: item-in 280ms var(--ease-out-quart);
+}
+
+/* Shop listing — filter/sort/pagination result swap. */
+@keyframes listing-swap-in {
+	from {
+		opacity: 0.6;
+		transform: translateY(4px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+.listing-swap {
+	animation: listing-swap-in var(--motion-fast) var(--ease-out-quart);
+}
+
+/* ----- Top navigation progress bar -----
+   Driven by `NavigationProgress`. Width is set inline (percent), this rule
+   only controls the in/out fade and the width-tween easing so the bar feels
+   weightless on tap. Sits above all surfaces (z-100) but `pointer-events:
+   none` so it never blocks taps on the elements below. */
+.nav-progress {
+	opacity: 0;
+	transition: opacity var(--motion-base) var(--ease-out-quart);
+}
+.nav-progress[data-visible="true"] {
+	opacity: 1;
+}
+.nav-progress-bar {
+	/* GPU-composited fill: the bar is full-width and scaled on the X axis
+     (origin left) rather than animating `width`, so the tween never
+     triggers layout. */
+	transform-origin: left center;
+	transition: transform var(--motion-base) var(--ease-out-quart);
+	box-shadow: 0 0 8px 0 var(--color-accent-500);
+	will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+	.nav-progress-bar {
+		transition: none;
+	}
+	/* Class hook on NavigationProgress origami grid — never escape Tailwind arbitrary values in CSS selectors. */
+	.nav-preloader-origami > * {
+		animation: none !important;
+	}
+}
+
+/* ----- CTA arrow nudge -----
+   Any link/button with `.cta-arrow` class will translate its trailing icon
+   right on hover. Works on group hover or self hover. */
+.cta-arrow svg:last-child,
+.cta-arrow .lucide:last-child {
+	transition: transform var(--motion-base) var(--ease-out-quart);
+}
+@media (hover: hover) {
+	.cta-arrow:hover svg:last-child,
+	.cta-arrow:hover .lucide:last-child,
+	.group:hover .cta-arrow svg:last-child {
+		transform: translate3d(3px, -1px, 0);
+	}
+}
+
+/* ----- Animated underline on hover -----
+   Use on inline links. The underline draws in from the left under hover. */
+.link-underline {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	gap: 2px;
+}
+.link-underline::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	right: auto;
+	bottom: -2px;
+	height: 1px;
+	width: 100%;
+	background: currentColor;
+	transform-origin: left;
+	transform: scaleX(0);
+	transition: transform var(--motion-base) var(--ease-out-quart);
+}
+@media (hover: hover) {
+	.link-underline:hover::after {
+		transform: scaleX(1);
+	}
+}
+
+/* ----- Hero scroll cue -----
+   Fades + slides down as the user scrolls past the first ~30vh. Falls back
+   to a static, pulsing cue on browsers without scroll-timeline. */
+.hero-scroll-cue {
+	transition: opacity var(--motion-base) var(--ease-out-quart);
+}
+@supports (animation-timeline: scroll()) {
+	.hero-scroll-cue {
+		animation: hero-cue-fade linear forwards;
+		animation-timeline: scroll(root);
+		animation-range: 0 40vh;
+	}
+}
+@keyframes hero-cue-fade {
+	from {
+		opacity: 1;
+		transform: translate3d(0, 0, 0);
+	}
+	to {
+		opacity: 0;
+		transform: translate3d(0, 16px, 0);
+	}
+}
+
+/* ----- Hero gallery tile lift -----
+   Each tile rises slightly on hover and the image inside zooms; the dark
+   gradient caption rises into view. */
+.gallery-tile {
+	transition:
+		transform var(--motion-base) var(--ease-out-quart),
+		box-shadow var(--motion-base) var(--ease-out-quart);
+}
+@media (hover: hover) {
+	.gallery-tile:hover {
+		transform: translateY(-3px);
+		box-shadow: var(--shadow-lg);
+	}
+}
+
+/* ----- Pagination + ViewToggle slider -----
+   Active backgrounds animate position via transform on the inner pill, but
+   for the simpler implementation we just transition all background props. */
+.toggle-track button {
+	transition:
+		color var(--motion-base) var(--ease-out-quart),
+		background-color var(--motion-base) var(--ease-out-quart);
+}
+
+/* ----- Filter chip remove pop -----
+   Apply data-chip-state="removing" to a chip and it scales to 0 + fades. */
+[data-chip-state="removing"] {
+	animation: chip-out 220ms var(--ease-out-quart) forwards;
+	pointer-events: none;
+}
+@keyframes chip-out {
+	to {
+		opacity: 0;
+		transform: scale(0.7);
+		margin-right: -4px;
+		max-width: 0;
+		padding-left: 0;
+		padding-right: 0;
+	}
+}
+
+/* Product card — quick "ticker" swap between cycling slides.
+   Stacked via CSS grid so every layer overlaps in the same cell while the
+   container sizes to the largest child. The incoming layer drops in from
+   above with a slight scale-up and fade; the outgoing layer fades and
+   lifts off in the same direction, so the change reads like the content
+   is being scrolled to the next entry rather than just fading. The slide
+   sits still for the rest of the slide cycle window (2000ms in TS).
+   `transform-origin: top center` keeps the scale anchored so chips and
+   badges never appear to grow from the wrong edge. */
+.card-fade-stack {
+	display: grid;
+	grid-template-areas: "stack";
+	isolation: isolate;
+}
+.card-fade-stack > .card-fade-stack__layer {
+	grid-area: stack;
+	opacity: 0;
+	transform: translate3d(0, -8px, 0) scale(0.96);
+	transform-origin: top center;
+	transition:
+		opacity 280ms var(--ease-standard),
+		transform 420ms var(--ease-spring-soft);
+	pointer-events: none;
+	will-change: opacity, transform;
+}
+.card-fade-stack > .card-fade-stack__layer--active {
+	opacity: 1;
+	transform: translate3d(0, 0, 0) scale(1);
+	pointer-events: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+	.card-fade-stack > .card-fade-stack__layer {
+		transform: none;
+		transition: none;
+	}
+}
+
+/* Homepage hero fan — subtle ambient float so the static gallery feels
+   alive without any per-card shuffling. Each tile sets a custom
+   `--hero-float-delay` so the fan breathes out of phase, like a row of
+   slightly bobbing tiles rather than a synchronized marching band. The
+   amplitude is intentionally tiny (≤ 6px) so it never reads as a transition
+   or a swap. */
+@keyframes hero-tile-float {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-10px);
+	}
+}
+.hero-tile-float {
+	animation: hero-tile-float 7s ease-in-out infinite;
+	animation-delay: var(--hero-float-delay, 0s);
+	will-change: transform;
+}
+@media (prefers-reduced-motion: reduce) {
+	.hero-tile-float {
+		animation: none;
+	}
+}
+
+/* Product card — single attribute chip cycling */
+@keyframes card-chip-cycle {
+	from {
+		opacity: 0;
+		transform: translateY(3px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+.card-chip-cycle {
+	animation: card-chip-cycle 420ms var(--ease-out-quart) both;
+}
+
+/* ----- BottomSheet content stagger -----
+   Children of `.sheet-stagger > *` fade-up on sheet open. */
+.sheet-stagger > * {
+	animation: sheet-child-in 360ms var(--ease-spring-soft) backwards;
+}
+.sheet-stagger > *:nth-child(1) {
+	animation-delay: 60ms;
+}
+.sheet-stagger > *:nth-child(2) {
+	animation-delay: 110ms;
+}
+.sheet-stagger > *:nth-child(3) {
+	animation-delay: 160ms;
+}
+.sheet-stagger > *:nth-child(4) {
+	animation-delay: 210ms;
+}
+.sheet-stagger > *:nth-child(5) {
+	animation-delay: 260ms;
+}
+.sheet-stagger > *:nth-child(6) {
+	animation-delay: 310ms;
+}
+.sheet-stagger > *:nth-child(7) {
+	animation-delay: 360ms;
+}
+@keyframes sheet-child-in {
+	from {
+		opacity: 0;
+		transform: translateY(8px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* Chat message bubbles spring in on mount (initial open + each new message). */
+.chat-widget {
+	--chat-font-body: 0.9375rem;
+	--chat-font-small: 0.8125rem;
+	--chat-font-caption: 0.75rem;
+	--chat-font-meta: 0.6875rem;
+	--chat-composer-control-h: 2.75rem;
+}
+
+.chat-msg-in {
+	animation: chat-msg-in 340ms var(--ease-spring-soft) backwards;
+}
+@keyframes chat-msg-in {
+	from {
+		opacity: 0;
+		transform: translateY(7px) scale(0.985);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0) scale(1);
+	}
+}
+
+.floating-dock {
+	bottom: calc(var(--mobile-tabbar-h) + env(safe-area-inset-bottom, 0px) + 24px);
+}
+
+@media (min-width: 40rem) {
+	.floating-dock {
+		bottom: 28px;
+	}
+}
+
+/* FAB mount animation. The dock is rendered lazily (after idle), so a
+ * static placement would look like an abrupt "snap into the corner".
+ * This fade + slide-up + scale-in plays once on mount, then settles. */
+@keyframes floating-dock-in {
+	from {
+		opacity: 0;
+		transform: translate3d(0, 12px, 0) scale(0.9);
+	}
+	to {
+		opacity: 1;
+		transform: translate3d(0, 0, 0) scale(1);
+	}
+}
+.floating-dock {
+	animation: floating-dock-in 360ms var(--ease-spring-soft) both;
+	transform-origin: bottom right;
+}
+@media (prefers-reduced-motion: reduce) {
+	.floating-dock {
+		animation: none;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		transition-duration: 0.01ms !important;
+	}
+	.reveal,
+	.reveal-fade,
+	.listing-swap {
+		opacity: 1 !important;
+		transform: none !important;
+		animation: none !important;
+	}
+	[data-img-fade="false"] {
+		opacity: 1 !important;
+		transform: none !important;
+	}
+	[data-item-state="removing"],
+	[data-item-state="entering"],
+	[data-chip-state="removing"],
+	.sheet-stagger > * {
+		animation: none !important;
+	}
+	.cta-arrow:hover svg:last-child {
+		transform: none !important;
+	}
+	.hero-scroll-cue {
+		animation: none !important;
+	}
+}
+
+/* If JavaScript is disabled, never hide content waiting for IntersectionObserver. */
+.no-js .reveal,
+.no-js .reveal-fade {
+	opacity: 1;
+	transform: none;
+}
+
+::selection {
+	background: var(--color-accent-200);
+	color: var(--color-ink-900);
+}
+
+/* --------- Mobile/tablet native-app utilities --------- */
+
+.app-page {
+	padding-left: 16px;
+	padding-right: 16px;
+}
+
+@media (min-width: 40rem) {
+	.app-page {
+		padding-left: 0;
+		padding-right: 0;
+	}
+}
+
+.app-section {
+	margin-top: 80px;
+}
+
+.app-section:first-child {
+	margin-top: 0;
+}
+
+@media (min-width: 40rem) {
+	.app-section {
+		margin-top: 0;
+	}
+}
+
+.app-section-eyebrow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding: 0 4px;
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: var(--color-ink-500);
+	margin-bottom: 16px;
+}
+
+.app-section-eyebrow a,
+.app-section-eyebrow button {
+	text-transform: none;
+	letter-spacing: 0;
+	font-size: 13px;
+	color: var(--color-accent-700);
+}
+
+/* Product detail — tighter rhythm than default app-section gaps. */
+.pdp-content > .app-section,
+.pdp-content .app-section {
+	margin-top: 0;
+}
+
+.pdp-content > * + * {
+	margin-top: 1.25rem;
+}
+
+@media (min-width: 48rem) {
+	.pdp-content > * + * {
+		margin-top: 2rem;
+	}
+}
+
+/* Mobile shop home — category + filter dock fixed above the bottom tab bar. */
+.shop-listing-toolbar-sticky {
+	position: fixed;
+	inset-inline: var(--mobile-shop-toolbar-inline-inset);
+	bottom: var(--mobile-shop-toolbar-bottom);
+	top: auto;
+	z-index: 30;
+	overflow: hidden;
+	padding-bottom: 0;
+	border-radius: var(--radius-full);
+}
+
+.shop-listing-toolbar-sticky .shop-listing-toolbar {
+	border-radius: var(--radius-full);
+	border: 1px solid var(--color-ink-100);
+	background: var(--color-canvas);
+	box-shadow: var(--shadow-lg);
+}
+
+/* Extra scroll room so the last product row clears the dock + tab bar. */
+.shop-listing-mobile-scroll-pad {
+	padding-bottom: calc(var(--mobile-tabbar-bottom-offset) + var(--mobile-tabbar-h) + var(--mobile-shop-toolbar-h) + var(--mobile-shop-toolbar-gap) + 2.5rem);
+}
+
+@media (min-width: 48rem) {
+	.shop-listing-toolbar-sticky {
+		position: static;
+		inset-inline: auto;
+		bottom: auto;
+		z-index: auto;
+		overflow: visible;
+		border-radius: 0;
+		padding-bottom: 1rem;
+	}
+
+	.shop-listing-toolbar-sticky .shop-listing-toolbar {
+		border-radius: var(--radius-lg);
+		border: 1px solid color-mix(in srgb, var(--color-accent-200) 45%, var(--color-ink-100));
+		background: color-mix(in srgb, var(--color-surface) 88%, var(--color-accent-50));
+		box-shadow: var(--shadow-sm);
+	}
+
+	.shop-listing-mobile-scroll-pad {
+		padding-bottom: 0;
+	}
+}
+
+.pdp-related-panel {
+	border: 1px solid var(--color-ink-100);
+	border-radius: var(--radius-xl);
+	background: linear-gradient(
+		145deg,
+		color-mix(in srgb, var(--color-accent-50) 70%, var(--color-surface)) 0%,
+		var(--color-surface) 45%,
+		color-mix(in srgb, var(--color-canvas-deep) 35%, var(--color-surface)) 100%
+	);
+	padding: 1rem;
+	box-shadow: var(--shadow-sm);
+}
+
+@media (min-width: 48rem) {
+	.pdp-related-panel {
+		padding: 1.5rem 1.75rem;
+	}
+}
+
+.app-list {
+	display: flex;
+	flex-direction: column;
+	background: var(--color-surface);
+	border-radius: 14px;
+	border: 1px solid var(--color-ink-100);
+	overflow: hidden;
+}
+
+.app-list-row {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	padding: 12px 14px;
+	text-align: left;
+	width: 100%;
+}
+
+.app-list-row + .app-list-row {
+	border-top: 1px solid var(--color-ink-100);
+}
+
+/* ----- Scrollbar styling -----
+   Thin, rounded scrollbars site-wide. Track stays transparent; thumb uses
+   brand gunmetal (ink scale) with a deeper hover state. */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: var(--color-ink-500) transparent;
+}
+
+*::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+	background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+	background-color: var(--color-ink-500);
+	background-clip: padding-box;
+	border: 2px solid transparent;
+	border-radius: 9999px;
+	transition: background-color var(--motion-base) var(--ease-out-quart);
+}
+
+*::-webkit-scrollbar-thumb:hover {
+	background-color: var(--color-ink-700);
+}
+
+*::-webkit-scrollbar-corner {
+	background: transparent;
+}
+
+/* ============================================================
+   2026 motion toolkit
+   ------------------------------------------------------------
+   Additive, progressively-enhanced building blocks for the hero
+   and product/category tiles. Everything here is either
+   `@supports`-guarded or degrades to a static, fully-visible
+   state, so a browser without the feature simply shows the
+   content with no motion. All motion is disabled under
+   `prefers-reduced-motion: reduce`.
+   ============================================================ */
+
+/* --- Native scroll-driven reveal ---------------------------------
+   When the browser supports scroll-driven animations we let the
+   compositor run the reveal off the main thread, tied to the
+   element's own view progress — no IntersectionObserver, no JS.
+   Falls back (no `@supports`) to a plain visible element. */
+@supports (animation-timeline: view()) {
+	@media (prefers-reduced-motion: no-preference) {
+		.scroll-reveal {
+			animation: scroll-reveal-in both;
+			animation-timeline: view();
+			/* Start as the top edge enters, finish ~35% up the viewport. */
+			animation-range: entry 0% cover 35%;
+		}
+	}
+}
+@keyframes scroll-reveal-in {
+	from {
+		opacity: 0;
+		transform: translate3d(0, 24px, 0);
+	}
+	to {
+		opacity: 1;
+		transform: translate3d(0, 0, 0);
+	}
+}
+
+/* Route preloader overlay & origami animation */
+@keyframes nav-overlay-in {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+@keyframes cvs-fold {
+	0% {
+		transform: perspective(140px) rotateX(-180deg);
+		opacity: 0;
+	}
+	25%,
+	75% {
+		transform: perspective(140px) rotateX(0deg);
+		opacity: 1;
+	}
+	100% {
+		transform: perspective(140px) rotateY(180deg);
+		opacity: 0;
+	}
+}
+
+/* ----- Storefront ambient breeze (no tint — wind only) ----- */
+.air-flow-bg {
+	position: fixed;
+	inset: 0;
+	z-index: 0;
+	pointer-events: none;
+	overflow: hidden;
+}
+
+.air-flow-bg__canvas {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	mix-blend-mode: multiply;
+	opacity: 0.36;
+}

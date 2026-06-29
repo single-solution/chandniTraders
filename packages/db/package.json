@@ -1,0 +1,24 @@
+{
+	"name": "@store/db",
+	"version": "0.0.0",
+	"private": true,
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"exports": {
+		".": "./src/index.ts"
+	},
+	"engines": {
+		"node": ">=22.0.0"
+	},
+	"scripts": {
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@store/shared": "*",
+		"mongoose": "^9.6.2",
+		"next": "^16.2.6"
+	},
+	"devDependencies": {
+		"typescript": "^6.0.3"
+	}
+}

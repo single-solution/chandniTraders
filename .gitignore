@@ -1,0 +1,41 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Testing
+coverage
+
+# Next.js
+.next
+out
+
+# Turborepo
+.turbo
+
+# Production
+build
+dist
+
+# Database backups (PF.2)
+backups/
+
+# Local image staging (one-off import runs)
+tmp/
+
+# Environment
+.env*
+!.env.example
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# IDE / OS
+.DS_Store
+.vscode
+.idea
+*.tsbuildinfo
+next-env.d.ts
