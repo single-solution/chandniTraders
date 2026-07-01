@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, History, Search, TrendingUp, X } from "lucide-react";
 import { classNames, formatPrice, type Product, type StoredImage } from "@store/shared";
+import { resolveProductHeroImage } from "@/lib/productSummary";
 
 import { useNavigationTransition } from "@/lib/navigation/navigationProgress";
 import { usePresence } from "@/components/shared/motion/usePresence";
@@ -420,7 +421,7 @@ function toSearchResult(product: Product): SearchResult {
 		name: product.name,
 		brandSlug: product.brandSlug,
 		brandName: product.brandName,
-		image: product.images?.[0] ?? null,
+		image: resolveProductHeroImage(product) ?? null,
 		variantCount: product.variants.length,
 		fromPriceRupees: minPrice,
 	};

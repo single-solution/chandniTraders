@@ -3,31 +3,9 @@ import type { StoredImage } from "../storage/types";
 
 export const MAX_PRODUCT_IMAGES = 24;
 
-/** Variant gallery when present, combined with product-level gallery. */
+/** Variant gallery. Product-level global images are no longer used. */
 export function resolveVariantGalleryImages(product: Pick<Product, "images">, variant: Pick<Variant, "images">): StoredImage[] {
-	if (variant.images && variant.images.length > 0) {
-		const seen = new Set<string>();
-		const combined: StoredImage[] = [];
-		
-		for (const img of variant.images) {
-			const key = img.variants.full || img.variants.detail || img.variants.card;
-			if (key && !seen.has(key)) {
-				seen.add(key);
-				combined.push(img);
-			}
-		}
-		
-		for (const img of product.images ?? []) {
-			const key = img.variants.full || img.variants.detail || img.variants.card;
-			if (key && !seen.has(key)) {
-				seen.add(key);
-				combined.push(img);
-			}
-		}
-		
-		return combined;
-	}
-	return product.images ?? [];
+	return variant.images && variant.images.length > 0 ? variant.images : [];
 }
 
 /** First image from {@link resolveVariantGalleryImages}. */

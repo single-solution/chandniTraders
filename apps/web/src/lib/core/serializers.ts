@@ -146,7 +146,8 @@ export function toProduct(product: ProductLean, brandsByCategoryAndSlug: Map<str
 		return null;
 	}
 
-	const images = asStoredImageArray(product.images);
+	// Global product images are deprecated; we only use variant images now.
+	const images: StoredImage[] = [];
 
 	return {
 		id: objectIdString(product._id),

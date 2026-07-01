@@ -59,8 +59,6 @@ export function ProductEditDrawer({ productId, step, catalog, isOpen, onClose, o
 	const [brandSlug, setBrandSlug] = useState("");
 	const [pendingBrandSlug, setPendingBrandSlug] = useState<string | null>(null);
 	const [seo, setSeo] = useState<SeoMeta>({});
-	const [images, setImages] = useState<GalleryImage[]>([]);
-	const [imagesError, setImagesError] = useState<string | null>(null);
 	const [saving, setSaving] = useState(false);
 	const [attributeConfig, setAttributeConfig] = useState<ProductAttributeConfig>({
 		attributeSlugs: [],
@@ -117,8 +115,6 @@ export function ProductEditDrawer({ productId, step, catalog, isOpen, onClose, o
 				setCategorySlug(loaded.categorySlug);
 				setBrandSlug(loaded.brand.slug);
 				setSeo(loaded.seo ?? {});
-				setImages((loaded.images ?? []) as GalleryImage[]);
-				setImagesError(null);
 				const attrs = catalogRef.current.attributesByCategory[loaded.categorySlug] ?? [];
 				setAttributeConfig(attributeConfigForEditor(loaded, attrs));
 			})
@@ -145,21 +141,7 @@ export function ProductEditDrawer({ productId, step, catalog, isOpen, onClose, o
 				toast.danger("Product name is required.");
 				return;
 			}
-			const imageProblems = collectProductImageErrors(images);
-			if (imageProblems.length > 0) {
-				const message = imageProblems[0].message;
-				setImagesError(message);
-				toast.danger(message);
-				return;
-			}
-			setImagesError(null);
-
 			const attributePayload = buildAttributeConfigForSave(attributeConfigRef.current, categoryAttributesRef.current);
-
-			const uploaded = await uploadGalleryImages(images, {
-				subjectKind: "products",
-				subjectId: product.id,
-			});
 
 			const saved = await apiFetch<AdminProduct>(`/api/products/${product.id}`, {
 				method: "PUT",
@@ -177,10 +159,6 @@ export function ProductEditDrawer({ productId, step, catalog, isOpen, onClose, o
 			setAttributeConfig(nextConfig);
 			setProduct(saved);
 
-			await apiFetch<AdminProduct>(`/api/products/${product.id}/images`, {
-				method: "PUT",
-				json: { images: uploaded },
-			});
 			loadedProductIdRef.current = null;
 			toast.success("Product updated.");
 			router.refresh();
@@ -285,14 +263,6 @@ export function ProductEditDrawer({ productId, step, catalog, isOpen, onClose, o
 										setBrandSlug(slug);
 									}}
 									showBrandPicker={Boolean(categorySlug)}
-									images={images}
-									onImagesChange={(next) => {
-										setImages(next);
-										setImagesError(null);
-									}}
-									imagesAltBase={name || product.name}
-									imagesError={imagesError}
-									showPhotos={Boolean(categorySlug)}
 									categoryAttributes={categoryAttributes}
 									attributeConfig={attributeConfig}
 									onAttributeConfigChange={setAttributeConfig}

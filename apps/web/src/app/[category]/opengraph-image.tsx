@@ -10,6 +10,7 @@ import { ImageResponse } from "next/og";
 
 import { getCategoryMetaBySlug, getProducts } from "@/lib/core/queries";
 import { getSeoSettings } from "@/lib/seo/seoSettings";
+import { resolveProductHeroImage } from "@/lib/productSummary";
 
 export const runtime = "nodejs";
 export const contentType = "image/png";
@@ -39,7 +40,7 @@ async function loadCategoryOgData(category: string): Promise<CategoryOgData | nu
 			limit: TILE_LIMIT,
 		});
 		const tiles = products
-			.map((product) => product.images[0]?.variants.detail)
+			.map((product) => resolveProductHeroImage(product)?.variants.detail)
 			.filter((url): url is string => typeof url === "string")
 			.slice(0, TILE_LIMIT);
 		return {

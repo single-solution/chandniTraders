@@ -71,23 +71,17 @@ export function ProductWizardStep1({ onClose, catalog, onCreated }: ProductWizar
 		if (!form.reportValidity()) return;
 		if (submitting) return;
 		const shell = validateShellDraft(draft);
-		const imageErrors = collectProductImageErrors(draft.images);
-		if (!shell.ok || imageErrors.length > 0) {
-			const merged = [...(shell.ok ? [] : shell.errors), ...imageErrors];
-			setErrors(merged);
-			toast.danger(merged.length === 1 ? merged[0].message : `${merged.length} fields need attention.`);
+		if (!shell.ok) {
+			setErrors(shell.errors);
+			toast.danger(shell.errors.length === 1 ? shell.errors[0].message : `${shell.errors.length} fields need attention.`);
 			return;
 		}
 		setErrors([]);
 		setSubmitting(true);
 		try {
-			const uploadedImages = await uploadGalleryImages(draft.images, {
-				subjectKind: "products/new",
-				subjectId: shell.payload.brandSlug ? `${shell.payload.categorySlug}-${shell.payload.brandSlug}-${slugHint || "draft"}` : "draft",
-			});
 			const product = await apiFetch<AdminProduct>("/api/products", {
 				method: "POST",
-				json: { ...shell.payload, images: uploadedImages, variants: [], isActive: false },
+				json: { ...shell.payload, images: [], variants: [], isActive: false },
 			});
 			const configured = await apiFetch<AdminProduct>(`/api/products/${product.id}`, {
 				method: "PUT",
@@ -119,10 +113,6 @@ export function ProductWizardStep1({ onClose, catalog, onCreated }: ProductWizar
 					brandSlug={draft.brandSlug}
 					onBrandSelect={(slug) => setDraft((prev) => ({ ...prev, brandSlug: slug }))}
 					showBrandPicker={Boolean(surface)}
-					images={draft.images}
-					onImagesChange={updateImages}
-					imagesAltBase={draft.name || "Product"}
-					showPhotos={Boolean(surface)}
 					categoryAttributes={surface?.attributes ?? []}
 					attributeConfig={attributeConfig}
 					onAttributeConfigChange={setAttributeConfig}

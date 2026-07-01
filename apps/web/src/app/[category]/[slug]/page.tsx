@@ -17,7 +17,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { VariantProvider } from "@/components/shared/VariantContext";
 import { VariantSelector } from "@/components/shared/VariantSelector";
 import { resolveExactVariantFromSearch } from "@/lib/catalog/pdpSelection";
-import { getDefaultVariant } from "@/lib/productSummary";
+import { getDefaultVariant, resolveProductHeroImage } from "@/lib/productSummary";
 import { productAbsoluteUrl, productHref, categoryHref } from "@/lib/catalog/productPaths";
 import { getAttributesCached, getBrandBySlugCached, getCategoryBySlugCached, getProductBySlugCached, getProductsPageCached } from "@/lib/core/cached";
 import { getProductLiveCommerce, mergeProductWithLiveCommerce } from "@/lib/core/liveCommerce";
@@ -73,7 +73,7 @@ export async function generateMetadata({ params, searchParams }: ProductDetailPa
 	]);
 	const attributeSlugs = attributeSlugsForProduct(product, allAttributes);
 	const variant = resolveExactVariantFromSearch(product, search, attributeSlugs) ?? getDefaultVariant(product);
-	const heroImage = product.images?.[0];
+	const heroImage = resolveProductHeroImage(product);
 	const resolved = composeProductSeo({
 		product,
 		variant,

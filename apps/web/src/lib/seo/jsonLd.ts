@@ -49,8 +49,8 @@ export function productJsonLd({
 	settings: SeoSettings;
 }): Record<string, unknown> {
 	const url = productAbsoluteUrl(settings.siteUrl, product, { variant });
-	const heroImage = product.images?.[0];
-	const images = product.images.map((image) => image?.variants?.detail || image?.variants?.full).filter((url): url is string => typeof url === "string");
+	const heroImage = variant.images?.[0];
+	const images = (variant.images ?? []).map((image) => image?.variants?.detail || image?.variants?.full).filter((url): url is string => typeof url === "string");
 
 	const offer: Record<string, unknown> = {
 		"@type": "Offer",

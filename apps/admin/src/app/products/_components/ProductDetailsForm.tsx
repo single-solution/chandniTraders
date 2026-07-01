@@ -26,12 +26,6 @@ interface ProductDetailsFormProps {
 	onBrandSelect: (slug: string) => void;
 	showBrandPicker: boolean;
 
-	images: GalleryImage[];
-	onImagesChange: (images: GalleryImage[]) => void;
-	imagesAltBase: string;
-	imagesError?: string | null;
-	showPhotos: boolean;
-
 	categoryAttributes: AdminAttribute[];
 	attributeConfig: ProductAttributeConfig;
 	onAttributeConfigChange: Dispatch<SetStateAction<ProductAttributeConfig>>;
@@ -53,11 +47,6 @@ export function ProductDetailsForm({
 	brandSlug,
 	onBrandSelect,
 	showBrandPicker,
-	images,
-	onImagesChange,
-	imagesAltBase,
-	imagesError,
-	showPhotos,
 	categoryAttributes,
 	attributeConfig,
 	onAttributeConfigChange,
@@ -136,18 +125,6 @@ export function ProductDetailsForm({
 							</div>
 						)}
 						<WizardFieldError message={errorMap?.get("brandSlug")} />
-					</WizardSection>
-
-					<WizardSection title="Photos">
-						{!showPhotos ? (
-							<WizardEmptyHint>Select a category first.</WizardEmptyHint>
-						) : (
-							<>
-								<p className="mb-2 text-[11.5px] text-[var(--color-ink-500)]">One gallery for the whole product — shared by every variant.</p>
-								<ImageGallery value={images} onChange={onImagesChange} altTextBase={imagesAltBase} maxImages={8} compact dense />
-							</>
-						)}
-						<WizardFieldError message={imagesError ?? errorMap?.get("images")} />
 					</WizardSection>
 				</div>
 			</div>

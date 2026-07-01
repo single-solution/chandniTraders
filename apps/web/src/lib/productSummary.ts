@@ -55,9 +55,10 @@ export function getProductPriceRange(product: Product): ProductPriceRange | null
 	};
 }
 
-/** Hero image for a product — first entry in the shared product gallery. */
+/** Hero image for a product — first entry in the default variant's gallery. */
 export function resolveProductHeroImage(product: Product): StoredImage | undefined {
-	return product.images?.[0];
+	const defaultVariant = getDefaultVariant(product);
+	return defaultVariant.images?.[0];
 }
 
 function storedImageKey(image: StoredImage): string {
@@ -65,8 +66,8 @@ function storedImageKey(image: StoredImage): string {
 }
 
 /**
- * Up to `maxImages` unique gallery images for listing cards — product gallery
- * first, then variant galleries in display order.
+ * Up to `maxImages` unique gallery images for listing cards — pulls from
+ * variant galleries in display order.
  */
 export function resolveProductCardGalleryImages(product: Product, maxImages = 4): StoredImage[] {
 	const seen = new Set<string>();
@@ -82,13 +83,6 @@ export function resolveProductCardGalleryImages(product: Product, maxImages = 4)
 		}
 		seen.add(key);
 		images.push(image);
-	}
-
-	for (const image of product.images ?? []) {
-		addImage(image);
-		if (images.length >= maxImages) {
-			return images;
-		}
 	}
 
 	for (const variant of getVariantsInDisplayOrder(product.variants)) {
