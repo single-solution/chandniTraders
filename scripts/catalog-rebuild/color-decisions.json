@@ -1,0 +1,1386 @@
+{
+  "antique-4-blade-ac-dc-ceiling-fan-energy-saving-quiet": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          2,
+          3
+        ]
+      },
+      {
+        "name": "Black",
+        "imageIndexes": [
+          1
+        ]
+      }
+    ]
+  },
+  "caroma-plus-56-inverter-ceiling-fan": {
+    "colors": [
+      {
+        "name": "Off-White & Gold",
+        "imageIndexes": [
+          0,
+          3
+        ]
+      },
+      {
+        "name": "White & Silver",
+        "imageIndexes": [
+          1,
+          2
+        ]
+      }
+    ]
+  },
+  "classic-eco-smart-30w-pmsm-ceiling-fan": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ]
+  },
+  "classic-eco-smart-56-ceiling-fan-quiet-wi-fi-energy-saving": {
+    "colors": [
+      {
+        "name": "Cream & Gold",
+        "imageIndexes": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "name": "Cream & Maroon",
+        "imageIndexes": [
+          0,
+          4,
+          5
+        ]
+      }
+    ]
+  },
+  "diamond-eco-smart-56-wi-fi-ceiling-fan-quiet-energy-saving": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          1,
+          2,
+          6
+        ]
+      },
+      {
+        "name": "Black",
+        "imageIndexes": [
+          3,
+          4,
+          5
+        ]
+      }
+    ]
+  },
+  "excutive-30w-eco-smart-ceiling-fan": {
+    "colors": [
+      {
+        "name": "Black & Lightwood",
+        "imageIndexes": [
+          0
+        ]
+      },
+      {
+        "name": "Off-White & Maroon",
+        "imageIndexes": [
+          1,
+          3
+        ]
+      },
+      {
+        "name": "Off-White & Wood",
+        "imageIndexes": [
+          2,
+          4,
+          5
+        ]
+      }
+    ]
+  },
+  "excutive-fancy-30w-eco-smart": {
+    "colors": [
+      {
+        "name": "Dark Wood",
+        "imageIndexes": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "name": "Light Wood",
+        "imageIndexes": [
+          3,
+          4,
+          5
+        ]
+      }
+    ]
+  },
+  "imperial-iturbo-30w-smart-ceiling-fan-energy-saving-powerful": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "name": "Grey",
+        "imageIndexes": [
+          4
+        ]
+      }
+    ]
+  },
+  "magnum-30w-eco-smart": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0,
+          10,
+          5,
+          6,
+          7,
+          8,
+          9
+        ]
+      },
+      {
+        "name": "Black & Silver",
+        "imageIndexes": [
+          1
+        ]
+      },
+      {
+        "name": "Black",
+        "imageIndexes": [
+          2
+        ]
+      },
+      {
+        "name": "Off-White & Maroon",
+        "imageIndexes": [
+          3
+        ]
+      },
+      {
+        "name": "Off-White & Gold",
+        "imageIndexes": [
+          4
+        ]
+      }
+    ],
+    "note": "Woo sells 5 variations; gallery tiles 5-9 are white-blade accent-ring shots folded into White"
+  },
+  "sapphire-eco-smart-5-blade-fan-quiet-energy-saving-cooling": {
+    "colors": [
+      {
+        "name": "Dark Wood",
+        "imageIndexes": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "name": "Light Wood",
+        "imageIndexes": [
+          3,
+          4
+        ]
+      },
+      {
+        "name": "Black",
+        "imageIndexes": [
+          5,
+          6
+        ]
+      },
+      {
+        "name": "White",
+        "imageIndexes": [
+          7,
+          8
+        ]
+      }
+    ]
+  },
+  "sk-magnum-plus-30w-inverter-smart-ceiling-fan": {
+    "colors": [
+      {
+        "name": "Black & Silver",
+        "imageIndexes": [
+          0,
+          6
+        ]
+      },
+      {
+        "name": "Black & Darkwood",
+        "imageIndexes": [
+          1,
+          7
+        ]
+      },
+      {
+        "name": "Off-White & Gold",
+        "imageIndexes": [
+          2,
+          3,
+          4,
+          5
+        ]
+      }
+    ],
+    "note": "Woo A1/A2 are visually identical off-white; merged"
+  },
+  "nova-brave-56-eco-smart-fan-quiet-wi-fi-modern-design": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      {
+        "name": "Black",
+        "imageIndexes": [
+          1,
+          2,
+          3
+        ]
+      }
+    ]
+  },
+  "royal-legacy-56-energy-saving-iturbo-ceiling-fan-with-remote": {
+    "colors": [
+      {
+        "name": "Silver",
+        "imageIndexes": [
+          0,
+          5
+        ]
+      },
+      {
+        "name": "Golden",
+        "imageIndexes": [
+          1,
+          7
+        ]
+      },
+      {
+        "name": "Black & Silver",
+        "imageIndexes": [
+          2,
+          4,
+          8
+        ]
+      },
+      {
+        "name": "Black & Darkwood",
+        "imageIndexes": [
+          3,
+          6
+        ]
+      }
+    ]
+  },
+  "ovate-luminous-smart-fan-whisper-quiet-efficient-light-app-control": {
+    "colors": [
+      {
+        "name": "Light Wood",
+        "imageIndexes": [
+          0
+        ]
+      },
+      {
+        "name": "White",
+        "imageIndexes": [
+          1
+        ]
+      },
+      {
+        "name": "Black",
+        "imageIndexes": [
+          2
+        ]
+      },
+      {
+        "name": "Dark Wood",
+        "imageIndexes": [
+          3
+        ]
+      }
+    ]
+  },
+  "passion-grace-iturbo-classic-30w-energy-saving-ceiling-fan": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "name": "Black",
+        "imageIndexes": [
+          3
+        ]
+      }
+    ]
+  },
+  "penta-5-blade-30w-eco-smart": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "name": "Black",
+        "imageIndexes": [
+          3,
+          4,
+          5
+        ]
+      }
+    ]
+  },
+  "regency-iturbo-classic-fan-silent-powerful-energy-saving-comfort-your-home": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "name": "Black",
+        "imageIndexes": [
+          4
+        ]
+      }
+    ]
+  },
+  "royal-deluxe-imperial-ceiling-fan-elegant-quiet-powerful": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      }
+    ]
+  },
+  "royal-smart-passion-ac-dc-fan-uninterrupted-comfort-savings": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "name": "Black",
+        "imageIndexes": [
+          4,
+          5
+        ]
+      }
+    ]
+  },
+  "sk-caroma-plus-56-fan-pure-copper-motor": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          1,
+          2
+        ]
+      },
+      {
+        "name": "Black",
+        "imageIndexes": [
+          3
+        ]
+      }
+    ]
+  },
+  "sk-super-deluxe-multi-30w-inverter-ceiling-fan-ultra-efficient-quiet-smart": {
+    "colors": [
+      {
+        "name": "White & Silver",
+        "imageIndexes": [
+          0
+        ]
+      },
+      {
+        "name": "Cream & Copper",
+        "imageIndexes": [
+          1
+        ]
+      },
+      {
+        "name": "Cream",
+        "imageIndexes": [
+          2
+        ]
+      },
+      {
+        "name": "White & Black",
+        "imageIndexes": [
+          3
+        ]
+      },
+      {
+        "name": "Cream & Teal",
+        "imageIndexes": [
+          4
+        ]
+      },
+      {
+        "name": "White & Pink",
+        "imageIndexes": [
+          5
+        ]
+      }
+    ],
+    "note": "Multi accent-cap fan; kept 6 accent options"
+  },
+  "super-deluxe-56-inverter-ceiling-fan": {
+    "colors": [
+      {
+        "name": "White & Silver",
+        "imageIndexes": [
+          0
+        ]
+      },
+      {
+        "name": "Off-White & Black",
+        "imageIndexes": [
+          1
+        ]
+      },
+      {
+        "name": "Cream",
+        "imageIndexes": [
+          2
+        ]
+      },
+      {
+        "name": "Cream & Copper",
+        "imageIndexes": [
+          3
+        ]
+      },
+      {
+        "name": "Cream & Teal",
+        "imageIndexes": [
+          4
+        ]
+      },
+      {
+        "name": "White & Pink",
+        "imageIndexes": [
+          5
+        ]
+      }
+    ],
+    "note": "Multi accent-cap fan"
+  },
+  "super-pearl-eco-smart-56-fan-luxury-smart-control-silent-energy-savings": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "name": "Black",
+        "imageIndexes": [
+          4,
+          5
+        ]
+      }
+    ]
+  },
+  "taimoor-executive-ac-dc-inverter-fan-energy-saving-dual-power": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      }
+    ]
+  },
+  "14-inch-louver-bracket-durable-fan": {
+    "colors": [
+      {
+        "name": "Silver",
+        "imageIndexes": [
+          0,
+          1
+        ]
+      }
+    ]
+  },
+  "circomatic-18%e2%80%b3-fan-powerful-cooling-for-pakistani-summers": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0
+        ]
+      },
+      {
+        "name": "Black",
+        "imageIndexes": [
+          1
+        ]
+      }
+    ]
+  },
+  "eco-smart-30w-waterproof-smart-outdoor-ceiling-fan": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          1
+        ]
+      }
+    ]
+  },
+  "executive-quiet-exhaust-fan-powerful-ventilation-for-home-office": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0,
+          1
+        ]
+      }
+    ]
+  },
+  "royal-18-ac-dc-wall-fan": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0
+        ]
+      },
+      {
+        "name": "Black",
+        "imageIndexes": [
+          1
+        ]
+      }
+    ]
+  },
+  "royal-18-copper-motor-wall-fan": {
+    "colors": [
+      {
+        "name": "Black",
+        "imageIndexes": [
+          0
+        ]
+      },
+      {
+        "name": "White",
+        "imageIndexes": [
+          1
+        ]
+      }
+    ]
+  },
+  "royal-desire-iturbo-30w-56-ceiling-fan-quiet-powerful-energy-saving": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          1
+        ]
+      }
+    ]
+  },
+  "royal-divine-iturbo-30w-fan-quiet-powerful-and-energy-saving": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          1
+        ]
+      }
+    ]
+  },
+  "royal-jade-iturbo-bldc-fan-silent-energy-saving-elegant": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          1
+        ]
+      }
+    ]
+  },
+  "royal-monarch-56-5-blade-ac-dc-fan-uninterrupted-comfort-savings": {
+    "colors": [
+      {
+        "name": "Dark Wood",
+        "imageIndexes": [
+          0
+        ]
+      },
+      {
+        "name": "Light Wood",
+        "imageIndexes": [
+          1
+        ]
+      }
+    ]
+  },
+  "royal-room-cooler-rac-4700": {
+    "colors": [
+      {
+        "name": "White & Grey",
+        "imageIndexes": [
+          0
+        ]
+      },
+      {
+        "name": "White & Black",
+        "imageIndexes": [
+          1
+        ]
+      }
+    ]
+  },
+  "royal-room-cooler-rac-5700": {
+    "colors": [
+      {
+        "name": "White & Grey",
+        "imageIndexes": [
+          0,
+          1
+        ]
+      }
+    ]
+  },
+  "royal-smart-deluxe-fan-quiet-efficient-lifetime-warranty": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0,
+          1
+        ]
+      }
+    ],
+    "note": "Woo variation is size (56 inch), not color"
+  },
+  "s-k-fans-deluxe-40-compact-ceiling-fan-energy-efficient-power": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0
+        ]
+      },
+      {
+        "name": "Cream",
+        "imageIndexes": [
+          1
+        ]
+      }
+    ]
+  },
+  "sk-24-industrial-pedestal-fan-pure-copper-motor": {
+    "colors": [
+      {
+        "name": "Black",
+        "imageIndexes": [
+          0
+        ]
+      },
+      {
+        "name": "Cream",
+        "imageIndexes": [
+          1
+        ]
+      }
+    ]
+  },
+  "sk-bracket-fan-18-high-velocity-wall-mounted-cooling": {
+    "colors": [
+      {
+        "name": "Black",
+        "imageIndexes": [
+          0
+        ]
+      },
+      {
+        "name": "White",
+        "imageIndexes": [
+          1
+        ]
+      }
+    ]
+  },
+  "sk-deluxe-56-ceiling-fan-silent-efficient-pure-copper-motor": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0
+        ]
+      },
+      {
+        "name": "Cream",
+        "imageIndexes": [
+          1
+        ]
+      }
+    ]
+  },
+  "sk-executive-56-fan": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          1
+        ]
+      }
+    ]
+  },
+  "sk-sareen-56-ceiling-fan-elegant-energy-efficient-quiet-cooling": {
+    "colors": [
+      {
+        "name": "Light Wood",
+        "imageIndexes": [
+          0
+        ]
+      },
+      {
+        "name": "Dark Wood",
+        "imageIndexes": [
+          1
+        ]
+      }
+    ]
+  },
+  "super-deluxe-ac-dc-ceiling-fan-dual-power": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          1
+        ]
+      }
+    ]
+  },
+  "iris-5-blade-30w-ceiling-fan": {
+    "colors": [
+      {
+        "name": "Dark Wood",
+        "imageIndexes": [
+          0
+        ]
+      },
+      {
+        "name": "Light Wood",
+        "imageIndexes": [
+          1
+        ]
+      },
+      {
+        "name": "Ash Wood",
+        "imageIndexes": [
+          2
+        ]
+      }
+    ]
+  },
+  "louver-pedestal-14-inch-fan-powerful-quiet-energy-efficient": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0
+        ]
+      },
+      {
+        "name": "Grey",
+        "imageIndexes": [
+          1
+        ]
+      },
+      {
+        "name": "Copper",
+        "imageIndexes": [
+          2
+        ]
+      }
+    ]
+  },
+  "magnum-56-eco-smart-wi-fi-ceiling-fan": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0
+        ]
+      },
+      {
+        "name": "Black",
+        "imageIndexes": [
+          1
+        ]
+      },
+      {
+        "name": "White",
+        "imageIndexes": [
+          2
+        ]
+      }
+    ]
+  },
+  "room-cooler-sk4000": {
+    "colors": [
+      {
+        "name": "White & Black",
+        "imageIndexes": [
+          0,
+          1,
+          2
+        ]
+      }
+    ]
+  },
+  "royal-galant-iturbo-30w-ceiling-fan-silent-energy-saving-power": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          1
+        ]
+      },
+      {
+        "name": "Black",
+        "imageIndexes": [
+          2
+        ]
+      }
+    ]
+  },
+  "royal-iturbo-30w-energy-saving-ceiling-fan-quiet-56": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0
+        ]
+      },
+      {
+        "name": "Blue",
+        "imageIndexes": [
+          1
+        ]
+      },
+      {
+        "name": "Black",
+        "imageIndexes": [
+          2
+        ]
+      }
+    ]
+  },
+  "royal-iturbo-30w-fan-quiet-powerful-energy-saving-cooling": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          2
+        ]
+      },
+      {
+        "name": "Grey",
+        "imageIndexes": [
+          1
+        ]
+      }
+    ]
+  },
+  "royal-ornament-5-blades-iturbo-56-energy-saving-dc-inverter-ceiling-fan-30w": {
+    "colors": [
+      {
+        "name": "Dark Wood",
+        "imageIndexes": [
+          0
+        ]
+      },
+      {
+        "name": "Black",
+        "imageIndexes": [
+          1
+        ]
+      },
+      {
+        "name": "Light Wood",
+        "imageIndexes": [
+          2
+        ]
+      }
+    ]
+  },
+  "royal-passion-56%e2%80%b3-copper-ceiling-fan": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          1,
+          2
+        ]
+      }
+    ]
+  },
+  "royal-rl-050-inverter-ceiling-fan-56-75-energy-saving": {
+    "colors": [
+      {
+        "name": "Off-White",
+        "imageIndexes": [
+          0,
+          1,
+          2
+        ]
+      }
+    ],
+    "note": "Woo A1/A2 visually identical off-white; merged"
+  },
+  "sk-supreme-multi-56-inverter-fan-energy-saving-quiet-copper": {
+    "colors": [
+      {
+        "name": "White & Silver",
+        "imageIndexes": [
+          0
+        ]
+      },
+      {
+        "name": "Cream & Golden",
+        "imageIndexes": [
+          1
+        ]
+      },
+      {
+        "name": "Cream",
+        "imageIndexes": [
+          2
+        ]
+      }
+    ]
+  },
+  "sober-30w-eco-smart": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0,
+          1,
+          2
+        ]
+      }
+    ]
+  },
+  "24-inch-royal-pedestal-fan-powerful-wide-area-cooling": {
+    "colors": [
+      {
+        "name": "Black",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "butterfly-56-inch-inverter-ceiling-fan": {
+    "colors": [
+      {
+        "name": "Black",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "deluxe-iturbo-fan-quiet-energy-saving-luxury-cooling-for-room": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "energy-savour-50w": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "eco-supreme-20-inch-pedestal-ac-dc-fan-unstoppable-cooling-anywhere": {
+    "colors": [
+      {
+        "name": "Black",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "false-ceiling-fan-remote-control": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "grace-black-5-blade-30w": {
+    "colors": [
+      {
+        "name": "Walnut",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ],
+    "note": "Product named Black but blades are dark walnut wood; confirm"
+  },
+  "grace-gold-5-blade-30w-ceiling-fan": {
+    "colors": [
+      {
+        "name": "Black & Gold",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ],
+    "note": "Black blades with gold hub"
+  },
+  "mega-bracket-20-ac-dc-wall-fan": {
+    "colors": [
+      {
+        "name": "Black",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "metal-exhaust": {
+    "colors": [
+      {
+        "name": "Red",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "metal-exhaust-fan-powerful-ventilation-for-kitchens-factories-homes": {
+    "colors": [
+      {
+        "name": "Red",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "metal-exhaust-round": {
+    "colors": [
+      {
+        "name": "Red",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ],
+    "note": "Woo variation is size (24 inch), not color"
+  },
+  "mystic-mist-outdoor-misting-fan-patio-garden-cooling": {
+    "colors": [
+      {
+        "name": "Black",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "plastic-exahust": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "plastic-exhaust": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ],
+    "note": "Woo variation is size (8 inch), not color"
+  },
+  "plastic-exhaust-fan-8-inch": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "power-max-24-ac-dc-pedestal-fan-large-space-off-grid-cooling-with-remote": {
+    "colors": [
+      {
+        "name": "Black",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "royal-12-inch-copper-winding-table-fan": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "royal-2x2-false-ceiling-fan-energy-efficient-quiet": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "royal-8-quiet-ceiling-exhaust-fan-energy-saving": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "royal-fan-magnum-bracket-24-industrial-grade-wall-mounted-cooling": {
+    "colors": [
+      {
+        "name": "Black",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "royal-iturbo-56-energy-saving-ceiling-fan-30w-power-quiet": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "royal-silent-ceiling-exhaust-fan-panel": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "s-k-fans-56-deluxe-plus-quiet-energy-saving-fan-for-large-rooms": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "sk-14-inch-wall-fan-powerful-quiet-space-saving-cooling": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "sk-21-ceiling-fan-silent-energy-saving-low-ceiling": {
+    "colors": [
+      {
+        "name": "Black",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "sk-fans-12-wall-fan-pure-copper-winding-energy-efficient": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "sk-metal-exhaust-fan-quiet-elegant-energy-efficient": {
+    "colors": [
+      {
+        "name": "White & Black",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "sk-room-cooler-sk-5000": {
+    "colors": [
+      {
+        "name": "White & Black",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "tamoor-metal-exhaust-fan": {
+    "colors": [
+      {
+        "name": "Grey",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "tcp-18-pedestal-fan": {
+    "colors": [
+      {
+        "name": "White & Black",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "ultra-quiet-ceiling-exhaust-fan-copper-motor-for-false-ceiling": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  },
+  "window-exhaust-fan-fresh-air-humidity": {
+    "colors": [
+      {
+        "name": "White",
+        "imageIndexes": [
+          0
+        ]
+      }
+    ]
+  }
+}

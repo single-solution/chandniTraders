@@ -1,5 +1,5 @@
 import { connectDB, getStoreSettings, Setting } from "@store/db";
-import { resolvePublicSiteUrl, type StoredImage } from "@store/shared";
+import { logger, resolvePublicSiteUrl, type StoredImage } from "@store/shared";
 
 import { organizationJsonLd, websiteJsonLd, jsonLdScriptContent } from "@/lib/seo/jsonLd";
 
@@ -56,10 +56,15 @@ function parseSameAs(value: unknown, fallback: string[]): string[] {
 }
 
 async function loadSiteJsonLdPayload() {
-	await connectDB();
-	const [store, docs] = await Promise.all([
-		getStoreSettings(),
-		Setting.find({
+	// `getStoreSettings` already falls back to factory defaults on a DB outage.
+	// The raw org-detail read is the only throwing call, so guard it separately
+	// so a build-time Atlas hiccup degrades the JSON-LD instead of failing the
+	// static prerender of every page that renders this component.
+	const store = await getStoreSettings();
+	let docs: Array<{ key: string; value: unknown }> = [];
+	try {
+		await connectDB();
+		docs = await Setting.find({
 			key: {
 				$in: [
 					"seo.organization.legalName",
@@ -73,8 +78,10 @@ async function loadSiteJsonLdPayload() {
 			},
 		})
 			.select({ key: 1, value: 1 })
-			.lean<Array<{ key: string; value: unknown }>>(),
-	]);
+			.lean<Array<{ key: string; value: unknown }>>();
+	} catch (error) {
+		logger.error({ error }, "site-json-ld: org details load failed, using store fallbacks this render");
+	}
 
 	const map = new Map(docs.map((doc) => [doc.key, doc.value]));
 	const siteUrl = resolvePublicSiteUrl(store.publicSiteUrl);
