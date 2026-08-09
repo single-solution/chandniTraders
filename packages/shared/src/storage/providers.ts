@@ -11,7 +11,7 @@ export interface StorageProvider {
 
 export type StorageProviderName = "vercel-blob" | "s3";
 
-const DEFAULT_PROVIDER_NAME: StorageProviderName = "vercel-blob";
+const DEFAULT_PROVIDER_NAME: StorageProviderName = "s3";
 
 function readProviderName(settings?: IntegrationSettingsValues): StorageProviderName {
 	const raw = (settings?.storageProvider || process.env.STORAGE_PROVIDER)?.trim().toLowerCase();
@@ -26,13 +26,17 @@ function readProviderName(settings?: IntegrationSettingsValues): StorageProvider
 
 function readS3Config(settings?: IntegrationSettingsValues) {
 	const bucket = settings?.awsS3Bucket?.trim() || process.env.AWS_S3_BUCKET?.trim();
-	const region = settings?.awsS3Region?.trim() || process.env.AWS_S3_REGION?.trim();
+	const region = settings?.awsS3Region?.trim() || process.env.AWS_S3_REGION?.trim() || "auto";
 	const accessKeyId = settings?.awsAccessKeyId?.trim() || process.env.AWS_ACCESS_KEY_ID?.trim();
 	const secretAccessKey = settings?.awsSecretAccessKey?.trim() || process.env.AWS_SECRET_ACCESS_KEY?.trim();
+	// Custom endpoint for S3-compatible stores (Cloudflare R2, Backblaze B2, MinIO).
+	// Blank means real AWS S3. Path-style addressing avoids bucket-subdomain DNS,
+	// which these providers require.
+	const endpoint = settings?.awsS3Endpoint?.trim() || process.env.AWS_S3_ENDPOINT?.trim() || undefined;
 	if (!bucket || !region || !accessKeyId || !secretAccessKey) {
 		throw new Error("S3 storage requires bucket, region, and AWS credentials.");
 	}
-	return { bucket, region, accessKeyId, secretAccessKey };
+	return { bucket, region, accessKeyId, secretAccessKey, endpoint };
 }
 
 function readBlobToken(settings?: IntegrationSettingsValues): string {
@@ -97,11 +101,12 @@ export function resolveStorageProviderFromSettings(settings?: IntegrationSetting
 
 	return {
 		async put(key, body, contentType) {
-			const { bucket, region, accessKeyId, secretAccessKey } = readS3Config(settings);
+			const { bucket, region, accessKeyId, secretAccessKey, endpoint } = readS3Config(settings);
 			const { S3Client, PutObjectCommand } = await import("@aws-sdk/client-s3");
 			const client = new S3Client({
 				region,
 				credentials: { accessKeyId, secretAccessKey },
+				...(endpoint ? { endpoint, forcePathStyle: true } : {}),
 			});
 			await client.send(
 				new PutObjectCommand({
@@ -114,7 +119,7 @@ export function resolveStorageProviderFromSettings(settings?: IntegrationSetting
 			return publicUrlForS3Key(key, bucket, region, settings);
 		},
 		async remove(url) {
-			const { bucket, region, accessKeyId, secretAccessKey } = readS3Config(settings);
+			const { bucket, region, accessKeyId, secretAccessKey, endpoint } = readS3Config(settings);
 			const key = s3KeyFromPublicUrl(url, bucket, region, settings);
 			if (!key) {
 				return;
@@ -123,6 +128,7 @@ export function resolveStorageProviderFromSettings(settings?: IntegrationSetting
 			const client = new S3Client({
 				region,
 				credentials: { accessKeyId, secretAccessKey },
+				...(endpoint ? { endpoint, forcePathStyle: true } : {}),
 			});
 			try {
 				await client.send(

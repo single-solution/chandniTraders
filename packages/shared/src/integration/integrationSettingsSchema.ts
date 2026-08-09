@@ -41,6 +41,8 @@ export interface IntegrationSettingsValues {
 	awsAccessKeyId: string;
 	awsSecretAccessKey: string;
 	awsS3PublicUrlBase: string;
+	/** Custom S3 endpoint for S3-compatible stores (Cloudflare R2, Backblaze B2, MinIO). Blank = real AWS. */
+	awsS3Endpoint: string;
 }
 
 export const INTEGRATION_SETTING_DEFAULTS: IntegrationSettingsValues = {
@@ -75,6 +77,7 @@ export const INTEGRATION_SETTING_DEFAULTS: IntegrationSettingsValues = {
 	awsAccessKeyId: "",
 	awsSecretAccessKey: "",
 	awsS3PublicUrlBase: "",
+	awsS3Endpoint: "",
 };
 
 export const INTEGRATION_SETTING_KEYS = Object.keys(INTEGRATION_SETTING_DEFAULTS) as Array<keyof IntegrationSettingsValues>;
@@ -111,6 +114,7 @@ const INTEGRATION_SETTING_DB_KEYS: Record<keyof IntegrationSettingsValues, strin
 	awsAccessKeyId: "integration.awsAccessKeyId",
 	awsSecretAccessKey: "integration.awsSecretAccessKey",
 	awsS3PublicUrlBase: "integration.awsS3PublicUrlBase",
+	awsS3Endpoint: "integration.awsS3Endpoint",
 };
 
 export const INTEGRATION_SETTING_DB_KEY_LIST = Object.values(INTEGRATION_SETTING_DB_KEYS);
@@ -187,6 +191,7 @@ export function coerceIntegrationSettingValue<K extends keyof IntegrationSetting
 		case "staffNotifyEmail":
 		case "adminSiteUrl":
 		case "awsS3PublicUrlBase":
+		case "awsS3Endpoint":
 			return trimSecret(value, 500) as IntegrationSettingsValues[K] | null;
 		case "staffNotifyWhatsApp":
 			return trimSecret(value, 32) as IntegrationSettingsValues[K] | null;
@@ -241,6 +246,7 @@ export function mergeIntegrationSettingsFromDb(rows: ReadonlyArray<{ key: string
 		awsAccessKeyId: readIntegrationSetting(map, "awsAccessKeyId"),
 		awsSecretAccessKey: readIntegrationSetting(map, "awsSecretAccessKey"),
 		awsS3PublicUrlBase: readIntegrationSetting(map, "awsS3PublicUrlBase"),
+		awsS3Endpoint: readIntegrationSetting(map, "awsS3Endpoint"),
 	};
 }
 

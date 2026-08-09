@@ -319,6 +319,13 @@ export function IntegrationCredentialsPanel({ canUpdate }: IntegrationCredential
 						placeholder="https://cdn.yourdomain.com"
 						disabled={!canUpdate || draft.storageProvider !== "s3"}
 					/>
+					<TextField
+						label="S3 endpoint (optional)"
+						value={draft.awsS3Endpoint}
+						onChange={(event) => setField("awsS3Endpoint", event.target.value)}
+						placeholder="https://<account>.r2.cloudflarestorage.com"
+						disabled={!canUpdate || draft.storageProvider !== "s3"}
+					/>
 				</FormGrid>
 			</FormSection>
 

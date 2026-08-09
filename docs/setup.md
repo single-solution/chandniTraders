@@ -110,7 +110,7 @@ Common optional:
 | `STAFF_NOTIFY_WHATSAPP` + `WHATSAPP_STAFF_NOTIFY_TEMPLATE` | Staff WhatsApp on orders + chat |
 | `WHATSAPP_CUSTOMER_ORDER_TEMPLATE` | Customer WhatsApp on orders + agent replies |
 | `OPENAI_API_KEY` / `GOOGLE_AI_API_KEY` / `ANTHROPIC_API_KEY` | Chat assistant |
-| `AWS_S3_*` | S3 storage when `STORAGE_PROVIDER=s3` |
+| `AWS_S3_*` | S3 / S3-compatible storage when `STORAGE_PROVIDER=s3`. For Cloudflare R2 (or B2/MinIO) set `AWS_S3_REGION=auto`, `AWS_S3_ENDPOINT` to the account endpoint, and `AWS_S3_PUBLIC_URL_BASE` to the public CDN/custom-domain URL. Best configured in Admin → Settings → Integrations. |
 | `DEV_SKIP_PUBLIC_DNS` | `true` if local DNS blocks public resolvers |
 
 Full list: [.env.example](../.env.example).

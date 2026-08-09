@@ -14,17 +14,17 @@ export const CATALOG_BRAND_DEFINITIONS: CatalogBrandDefinition[] = [
 	{
 		slug: "royal",
 		name: "Royal",
-		logoUrl: "https://chandnitraders.pk/wp-content/uploads/2025/01/New-Project-4-1.png",
+		logoUrl: "https://pub-17431e1c427d40d0985dbd2d1204474c.r2.dev/brands/royal/e47999ffa6/logo.webp",
 	},
 	{
 		slug: "sk",
 		name: "SK",
-		logoUrl: "https://chandnitraders.pk/wp-content/uploads/2025/01/New-Project-5.png",
+		logoUrl: "https://pub-17431e1c427d40d0985dbd2d1204474c.r2.dev/brands/sk/ba9cd3861f/logo.webp",
 	},
 	{
 		slug: "taimoor",
 		name: "Taimoor",
-		logoUrl: "https://chandnitraders.pk/wp-content/uploads/2025/01/New-Project-3.png",
+		logoUrl: "https://pub-17431e1c427d40d0985dbd2d1204474c.r2.dev/brands/taimoor/2dec7708a3/logo.webp",
 	},
 ];
 

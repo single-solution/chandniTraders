@@ -8,21 +8,21 @@ export interface HomeBannerTile {
 
 export const HOME_BANNER_TILES: HomeBannerTile[] = [
 	{
-		src: "https://chandnitraders.pk/wp-content/uploads/2025/12/ceilling-fan.webp",
-		alt: "Modern ceiling fan in a living room",
-		caption: "Inverter ceiling fans",
-		href: "/ceiling-fans",
-	},
-	{
-		src: "https://chandnitraders.pk/wp-content/uploads/2026/01/furniture-998265_1280.webp",
-		alt: "Home appliances and cooling equipment",
-		caption: "Home appliances",
+		src: "https://pub-17431e1c427d40d0985dbd2d1204474c.r2.dev/banners/banner1.jpg",
+		alt: "Room cooler and washing machine side by side in a modern home setup",
+		caption: "Coolers & Washers",
 		href: "/room-coolers",
 	},
 	{
-		src: "https://chandnitraders.pk/wp-content/uploads/2025/01/whispers-comfort-breezing-through-life-with-stylish-fan_941561-8650-600x600.jpg",
-		alt: "Wall-mounted bracket fan",
-		caption: "Bracket & exhaust fans",
-		href: "/bracket-fans",
+		src: "https://pub-17431e1c427d40d0985dbd2d1204474c.r2.dev/banners/banner2.jpg",
+		alt: "Elegant modern ceiling fan in a warm contemporary living room",
+		caption: "Premium Ceiling Fans",
+		href: "/ceiling-fans",
+	},
+	{
+		src: "https://pub-17431e1c427d40d0985dbd2d1204474c.r2.dev/banners/banner3.png",
+		alt: "Sleek modern pedestal fan in a well-lit living room",
+		caption: "Pedestal & Stand Fans",
+		href: "/pedestal-fans",
 	},
 ];
