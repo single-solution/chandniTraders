@@ -226,7 +226,7 @@ export function CustomerProfile({ customer }: CustomerProfileProps) {
 			</div>
 			{addressError && <ErrorBanner message={addressError} />}
 
-			<ul className="reveal-stagger cv-auto mt-3 space-y-3">
+			<ul className="reveal-stagger mt-3 space-y-3">
 				{addresses.length === 0 ? (
 					<li className="reveal">
 						<Card className="p-6 text-center text-[12.5px] text-[var(--color-ink-500)]">No saved addresses yet — add one to speed up future checkouts.</Card>

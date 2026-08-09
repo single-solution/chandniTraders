@@ -48,7 +48,7 @@ export function MobileShopTypesSection({ categories }: ShopTypesSectionProps) {
 	const homeCategorySlug = categories.find((category) => category.isActive)?.slug ?? "";
 
 	return (
-		<section className="app-section cv-auto">
+		<section className="app-section">
 			<div className="reveal mb-4 text-center">
 				<p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--color-ink-500)]">Explore Collections</p>
 				<h2 className="mt-2 text-[1.75rem] font-light leading-[1] tracking-[-0.02em] text-[var(--color-ink-900)]">
@@ -56,9 +56,9 @@ export function MobileShopTypesSection({ categories }: ShopTypesSectionProps) {
 				</h2>
 				<p className="mx-auto mt-2 max-w-prose text-[13px] leading-relaxed text-[var(--color-ink-600)] font-light">Discover our curated range of cooling solutions tailored for every space.</p>
 			</div>
-			<div className={`reveal-scroll-list mx-auto ${getHomeCategoryGridClass(featured.length, "mobile")}`}>
+			<div className={`mx-auto ${getHomeCategoryGridClass(featured.length, "mobile")}`}>
 				{featured.map((meta) => (
-					<ShopTypeCard key={meta.slug} meta={meta} variant="mobile" homeCategorySlug={homeCategorySlug} scrollReveal />
+					<ShopTypeCard key={meta.slug} meta={meta} variant="mobile" homeCategorySlug={homeCategorySlug} />
 				))}
 			</div>
 			{showBrowseAll ? (
@@ -145,7 +145,7 @@ export function MobileHero({ heroProducts, settings, shopHref, showVisitStoreBut
 
 export function MobileProcessSection({ flows }: ProcessSectionProps) {
 	return (
-		<section id="how-to-buy" className="app-section cv-auto">
+		<section id="how-to-buy" className="app-section">
 			<div className="reveal mb-7 text-center">
 				<p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-accent-700)]">How it works</p>
 				<KineticHeading
@@ -156,13 +156,13 @@ export function MobileProcessSection({ flows }: ProcessSectionProps) {
 				/>
 				<p className="mx-auto mt-3 max-w-prose text-[13px] leading-snug text-[var(--color-ink-500)]">From sourcing to refund — every step on record.</p>
 			</div>
-			<div className="reveal-scroll-list space-y-4">
+			<div className="space-y-4">
 				{flows.map((flow) => {
 					const Icon = flow.icon;
 					return (
 						<div
 							key={flow.key}
-							className="reveal reveal-scroll reveal-rise overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-ink-100)] bg-[var(--color-surface)]"
+							className="overflow-hidden rounded-[var(--radius-lg)] border border-[var(--color-ink-100)] bg-[var(--color-surface)]"
 						>
 							<div className="flex items-center gap-2.5 bg-[var(--color-ink-900)] px-3.5 py-3 text-[var(--color-canvas)]">
 								<span className="grid size-8 shrink-0 place-items-center rounded-full bg-[var(--color-accent-500)] text-[var(--color-ink-900)]">
@@ -196,7 +196,7 @@ export function MobileProcessSection({ flows }: ProcessSectionProps) {
 
 export function MobileVisitStoreSection({ settings }: VisitStoreSectionProps) {
 	return (
-		<section id="contact" className="app-section cv-auto">
+		<section id="contact" className="app-section">
 			<div className="reveal mb-7 text-center">
 				<p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--color-accent-700)]">Visit · Call · Chat</p>
 				<KineticHeading

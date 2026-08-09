@@ -43,7 +43,7 @@ export default async function AccountPage() {
 			<AccountHeader name={overview.customer.name} joinedAt={overview.customer.joinedAt} />
 
 			<div className="mt-6 grid gap-6 md:mt-8 md:grid-cols-[1fr_360px] md:gap-6 lg:gap-8 lg:grid-cols-[1fr_400px]">
-				<div className="cv-auto space-y-6 md:space-y-8">
+				<div className="space-y-6 md:space-y-8">
 					<div className="reveal-stagger grid gap-4 md:grid-cols-3 md:gap-5">
 						<div className="reveal h-full">
 							<StatCard icon={<Truck size={16} />} label="Active orders" value={String(overview.activeCount)} href="#orders" accent="amber" />

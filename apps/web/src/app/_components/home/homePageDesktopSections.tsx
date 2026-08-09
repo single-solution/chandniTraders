@@ -131,7 +131,7 @@ export function DesktopShopTypesSection({ categories }: ShopTypesSectionProps) {
 	const homeCategorySlug = categories.find((category) => category.isActive)?.slug ?? "";
 
 	return (
-		<section className="cv-auto relative mx-auto w-full max-w-[1440px] overflow-hidden px-4 py-24 sm:px-6 lg:px-8">
+		<section className="relative mx-auto w-full max-w-[1440px] overflow-hidden px-4 py-24 sm:px-6 lg:px-8">
 			<SectionAmbience intensity="soft" side="right" />
 			<div className="relative z-10 reveal">
 				<DesktopSectionHeader
@@ -141,9 +141,9 @@ export function DesktopShopTypesSection({ categories }: ShopTypesSectionProps) {
 					description="Discover our curated range of cooling solutions tailored for every space."
 				/>
 			</div>
-			<div className={`relative z-10 mx-auto mt-12 reveal-scroll-list ${getHomeCategoryGridClass(featured.length, "desktop")}`}>
+			<div className={`relative z-10 mx-auto mt-12 ${getHomeCategoryGridClass(featured.length, "desktop")}`}>
 				{featured.map((meta) => (
-					<ShopTypeCard key={meta.slug} meta={meta} variant="desktop" homeCategorySlug={homeCategorySlug} scrollReveal />
+					<ShopTypeCard key={meta.slug} meta={meta} variant="desktop" homeCategorySlug={homeCategorySlug} />
 				))}
 			</div>
 			{showBrowseAll ? (
@@ -254,19 +254,19 @@ export function ShopTypeIcon({ category }: { category: HomePageCategory }) {
 
 export function DesktopProcessSection({ flows }: ProcessSectionProps) {
 	return (
-		<section id="how-to-buy" className="cv-auto relative mx-auto w-full max-w-[1440px] scroll-mt-[var(--desktop-header-h)] overflow-hidden px-4 py-24 sm:px-6 lg:px-8">
+		<section id="how-to-buy" className="relative mx-auto w-full max-w-[1440px] scroll-mt-[var(--desktop-header-h)] overflow-hidden px-4 py-24 sm:px-6 lg:px-8">
 			<SectionAmbience intensity="soft" side="left" />
 			<div className="relative z-10">
 				<div className="reveal">
 					<DesktopSectionHeader eyebrow="How it works" title="Three flows behind every order." description="From sourcing to refund — every step on record." />
 				</div>
-				<div className="reveal-scroll-list mt-12 grid grid-cols-3 gap-4">
+				<div className="mt-12 grid grid-cols-3 gap-4">
 					{flows.map((flow) => {
 						const Icon = flow.icon;
 						return (
 							<div
 								key={flow.key}
-								className="reveal reveal-scroll reveal-rise flex flex-col overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-ink-100)] bg-[var(--color-surface)] transition-shadow hover:shadow-[var(--shadow-md)]"
+								className="flex flex-col overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-ink-100)] bg-[var(--color-surface)] transition-shadow hover:shadow-[var(--shadow-md)]"
 							>
 								<div className="flex items-center gap-3 bg-[var(--color-ink-900)] px-6 py-4 text-[var(--color-canvas)]">
 									<span className="grid size-9 shrink-0 place-items-center rounded-full bg-[var(--color-accent-500)] text-[var(--color-ink-900)]">
@@ -301,7 +301,7 @@ export function DesktopProcessSection({ flows }: ProcessSectionProps) {
 
 export function DesktopVisitStore({ settings }: VisitStoreSectionProps) {
 	return (
-		<section id="contact" className="cv-auto relative mx-auto w-full max-w-[1440px] overflow-hidden px-4 py-24 sm:px-6 lg:px-8">
+		<section id="contact" className="relative mx-auto w-full max-w-[1440px] overflow-hidden px-4 py-24 sm:px-6 lg:px-8">
 			<SectionAmbience intensity="soft" side="right" />
 			<div className="relative z-10 reveal overflow-hidden rounded-[var(--radius-xl)] border border-[var(--color-ink-100)] bg-[var(--color-surface)] shadow-[var(--shadow-sm)]">
 				<div className="grid grid-cols-[1.15fr_1fr]">

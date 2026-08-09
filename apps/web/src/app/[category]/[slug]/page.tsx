@@ -200,7 +200,7 @@ export default async function ProductDetailPage({ params, searchParams }: Produc
 						</Suspense>
 					</div>
 
-					<section className="reveal pdp-related-panel cv-auto">
+					<section className="reveal pdp-related-panel">
 						<div className="app-section-eyebrow mb-3">
 							<span className="text-[var(--color-accent-800)]">More from {brandName}</span>
 							<Link href={brandFilterHref}>See all</Link>
@@ -231,7 +231,7 @@ export default async function ProductDetailPage({ params, searchParams }: Produc
 					</div>
 				</div>
 
-				<section className="reveal pdp-related-panel cv-auto mt-16">
+				<section className="reveal pdp-related-panel mt-16">
 					<div className="flex items-end justify-between gap-3">
 						<h2 className="text-3xl font-semibold tracking-tight text-[var(--color-ink-900)]">More from {brandName}</h2>
 						<Link href={brandFilterHref} className="text-sm font-medium text-[var(--color-accent-700)] hover:underline">
@@ -324,9 +324,9 @@ async function MobileRelatedRail({ product, brandName }: { product: Product; bra
 		);
 	}
 	return (
-		<div className="reveal-scroll-list grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 md:grid-cols-4">
+		<div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3 md:grid-cols-4">
 			{related.map((relatedProduct) => (
-				<div key={relatedProduct.id} className="reveal reveal-scroll reveal-rise h-full">
+				<div key={relatedProduct.id} className="h-full">
 					<ProductCard product={relatedProduct} />
 				</div>
 			))}
@@ -344,9 +344,9 @@ async function DesktopRelatedRail({ product, brandName }: { product: Product; br
 		);
 	}
 	return (
-		<div className="reveal-scroll-list mt-6 grid grid-cols-4 gap-5">
+		<div className="mt-6 grid grid-cols-4 gap-5">
 			{related.map((relatedProduct) => (
-				<div key={relatedProduct.id} className="reveal reveal-scroll reveal-rise h-full">
+				<div key={relatedProduct.id} className="h-full">
 					<ProductCard product={relatedProduct} />
 				</div>
 			))}

@@ -44,9 +44,9 @@ export function ShopProductGrid({ products, categoryLabel, priorityCount = DEFAU
 	}
 
 	return (
-		<div className={`reveal-scroll-list ${gridClassName}${isListingSwap ? " listing-swap" : ""}`}>
+		<div className={`${gridClassName}${isListingSwap ? " listing-swap" : ""}`}>
 			{products.map((product, index) => (
-				<div key={product.id} className="reveal reveal-rise reveal-scroll h-full">
+				<div key={product.id} className="h-full">
 					<ProductCard product={product} priority={index < priorityCount} />
 				</div>
 			))}

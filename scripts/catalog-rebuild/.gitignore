@@ -1,3 +1,0 @@
-# Regenerable pipeline artifacts (Woo snapshot, downloaded images, montages, plan).
-# The hand-classified color-decisions.json and dry-run-report.md are kept.
-.data/

@@ -121,6 +121,7 @@ const nextConfig: NextConfig = {
 	// worker.js'` followed by "the worker thread exited" in dev).
 	serverExternalPackages: ["pino", "pino-pretty", "thread-stream", "pino-abstract-transport", "sonic-boom", "mongoose", "bcryptjs"],
 	images: {
+		unoptimized: true,
 		formats: ["image/avif", "image/webp"],
 		qualities: [65, 70, 75, 80, 85],
 		remotePatterns: [

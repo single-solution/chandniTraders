@@ -95,7 +95,7 @@ export function OrderHistory({ orders }: OrderHistoryProps) {
 				})}
 			</div>
 
-			<div className="cv-auto mt-5 md:mt-6">
+			<div className="mt-5 md:mt-6">
 				{filtered.length === 0 ? (
 					<Empty filter={filter} onClearFilter={() => setFilter("all")} />
 				) : (

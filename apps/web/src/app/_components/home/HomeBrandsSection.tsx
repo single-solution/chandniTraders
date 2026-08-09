@@ -11,7 +11,7 @@ export async function HomeBrandsSection() {
 	const shopCategorySlug = categories.find((category) => category.isActive)?.slug ?? "ceiling-fans";
 
 	return (
-		<section className="cv-auto border-t border-[var(--color-ink-100)] bg-[var(--color-canvas)]">
+		<section className="border-t border-[var(--color-ink-100)] bg-[var(--color-canvas)]">
 			<div className="app-section mx-auto max-w-[1440px] text-center md:px-6 lg:px-8">
 				<div className="reveal mb-6 md:mb-8">
 					<p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--color-ink-500)]">The Curators</p>

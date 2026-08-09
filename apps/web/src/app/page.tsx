@@ -68,7 +68,7 @@ async function CatalogSearchResults({ query, requestedPage }: { query: string; r
 			<HomeBanner compact />
 			<div className="mx-auto w-full max-w-[1440px] px-4 pb-24 pt-2 md:px-6 md:pb-16 md:pt-4 lg:px-8">
 				{page.products.length > 0 ? (
-					<div className="cv-auto-lg mt-4">
+					<div className="mt-4">
 						<ShopProductFeed
 							initialPage={page}
 							categoryLabel="results"
