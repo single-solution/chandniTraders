@@ -121,9 +121,10 @@ const nextConfig: NextConfig = {
 	// worker.js'` followed by "the worker thread exited" in dev).
 	serverExternalPackages: ["pino", "pino-pretty", "thread-stream", "pino-abstract-transport", "sonic-boom", "mongoose", "bcryptjs"],
 	images: {
-		// Dev: load Blob URLs in the browser — skips `/_next/image` server fetch,
-		// which fails when local DNS cannot resolve `*.public.blob.vercel-storage.com`.
-		unoptimized: !isProduction,
+		// Serve pre-optimized WebP variants directly from Cloudflare R2 in all environments.
+		// Bypassing `/_next/image` proxy eliminates Vercel serverless latency for image requests,
+		// fixing post-migration sluggishness.
+		unoptimized: true,
 		formats: ["image/avif", "image/webp"],
 		qualities: [65, 70, 75, 80, 85],
 		remotePatterns: [
