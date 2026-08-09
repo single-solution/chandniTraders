@@ -121,10 +121,6 @@ const nextConfig: NextConfig = {
 	// worker.js'` followed by "the worker thread exited" in dev).
 	serverExternalPackages: ["pino", "pino-pretty", "thread-stream", "pino-abstract-transport", "sonic-boom", "mongoose", "bcryptjs"],
 	images: {
-		// Serve pre-optimized WebP variants directly from Cloudflare R2 in all environments.
-		// Bypassing `/_next/image` proxy eliminates Vercel serverless latency for image requests,
-		// fixing post-migration sluggishness.
-		unoptimized: true,
 		formats: ["image/avif", "image/webp"],
 		qualities: [65, 70, 75, 80, 85],
 		remotePatterns: [
