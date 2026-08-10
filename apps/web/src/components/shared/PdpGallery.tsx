@@ -377,7 +377,7 @@ function Lightbox({ images, initialIndex, name, closing = false, onClose, onNavi
 			aria-label={`Zoom view of ${name}`}
 			tabIndex={-1}
 			className={
-				"fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-[var(--color-ink-900)]/90 p-4 outline-none " +
+				"fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-[var(--color-ink-900)]/90 p-4 outline-none will-change-opacity [transform:translateZ(0)] " +
 				(closing ? "animate-sheet-fade-out" : "animate-sheet-fade")
 			}
 		>
