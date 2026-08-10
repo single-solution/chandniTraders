@@ -108,7 +108,7 @@ const nextConfig: NextConfig = {
 			dynamic: 30,
 			static: 60,
 		},
-		optimizePackageImports: ["lucide-react", "@store/shared"],
+		optimizePackageImports: ["lucide-react", "@store/shared", "@store/ui"],
 	},
 	// Treat the workspace packages as part of the build so Next.js compiles
 	// their TypeScript instead of expecting a published .js bundle.
