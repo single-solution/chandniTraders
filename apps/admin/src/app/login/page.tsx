@@ -68,9 +68,11 @@ function LoginForm() {
 	const requestedCallback = searchParams.get("callbackUrl");
 	const callbackUrl = requestedCallback && requestedCallback.startsWith("/") && !requestedCallback.startsWith("//") ? requestedCallback : "/";
 
+	const paramError = searchParams.get("error");
+
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const [error, setError] = useState("");
+	const [error, setError] = useState(paramError ? GENERIC_LOGIN_ERROR : "");
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -78,20 +80,25 @@ function LoginForm() {
 		setError("");
 		setIsSubmitting(true);
 
-		const result = await signIn("credentials", {
-			email: email.trim(),
-			password,
-			redirect: false,
-		});
+		try {
+			const result = await signIn("credentials", {
+				email: email.trim(),
+				password,
+				redirect: false,
+			});
 
-		if (!result || result.error) {
+			if (!result || result.error) {
+				setError(GENERIC_LOGIN_ERROR);
+				setIsSubmitting(false);
+				return;
+			}
+
+			router.replace(callbackUrl);
+			router.refresh();
+		} catch {
 			setError(GENERIC_LOGIN_ERROR);
 			setIsSubmitting(false);
-			return;
 		}
-
-		router.replace(callbackUrl);
-		router.refresh();
 	}
 
 	return (
