@@ -2,8 +2,6 @@
 
 export type IntegrationOtpProvider = "auto" | "whatsapp-cloud" | "console";
 
-export type IntegrationStorageProvider = "vercel-blob" | "s3";
-
 /** Pakistan online payment gateway — admin picks one active provider. */
 export type OnlinePaymentProvider = "none" | "payfast" | "rapid-gateway";
 
@@ -17,8 +15,11 @@ export interface IntegrationSettingsValues {
 	whatsappCloudApiVersion: string;
 	whatsappOtpTemplateIncludesButton: boolean;
 
-	resendApiKey: string;
-	resendFromEmail: string;
+	smtpHost: string;
+	smtpPort: string;
+	smtpUser: string;
+	smtpPass: string;
+	smtpFrom: string;
 	staffNotifyEmail: string;
 	staffNotifyWhatsApp: string;
 	whatsappStaffNotifyTemplate: string;
@@ -34,14 +35,12 @@ export interface IntegrationSettingsValues {
 	rapidGatewayWebhookSecret: string;
 	rapidGatewaySandbox: boolean;
 
-	storageProvider: IntegrationStorageProvider;
-	blobReadWriteToken: string;
 	awsS3Bucket: string;
 	awsS3Region: string;
 	awsAccessKeyId: string;
 	awsSecretAccessKey: string;
 	awsS3PublicUrlBase: string;
-	/** Custom S3 endpoint for S3-compatible stores (Cloudflare R2, Backblaze B2, MinIO). Blank = real AWS. */
+	/** S3-compatible endpoint (e.g. Cloudflare R2). Empty = native AWS S3. */
 	awsS3Endpoint: string;
 }
 
@@ -53,8 +52,11 @@ export const INTEGRATION_SETTING_DEFAULTS: IntegrationSettingsValues = {
 	whatsappCloudApiVersion: "v21.0",
 	whatsappOtpTemplateIncludesButton: true,
 
-	resendApiKey: "",
-	resendFromEmail: "",
+	smtpHost: "",
+	smtpPort: "587",
+	smtpUser: "",
+	smtpPass: "",
+	smtpFrom: "",
 	staffNotifyEmail: "",
 	staffNotifyWhatsApp: "",
 	whatsappStaffNotifyTemplate: "",
@@ -70,8 +72,6 @@ export const INTEGRATION_SETTING_DEFAULTS: IntegrationSettingsValues = {
 	rapidGatewayWebhookSecret: "",
 	rapidGatewaySandbox: true,
 
-	storageProvider: "vercel-blob",
-	blobReadWriteToken: "",
 	awsS3Bucket: "",
 	awsS3Region: "",
 	awsAccessKeyId: "",
@@ -90,8 +90,11 @@ const INTEGRATION_SETTING_DB_KEYS: Record<keyof IntegrationSettingsValues, strin
 	whatsappCloudApiVersion: "integration.whatsappCloudApiVersion",
 	whatsappOtpTemplateIncludesButton: "integration.whatsappOtpTemplateIncludesButton",
 
-	resendApiKey: "integration.resendApiKey",
-	resendFromEmail: "integration.resendFromEmail",
+	smtpHost: "integration.smtpHost",
+	smtpPort: "integration.smtpPort",
+	smtpUser: "integration.smtpUser",
+	smtpPass: "integration.smtpPass",
+	smtpFrom: "integration.smtpFrom",
 	staffNotifyEmail: "integration.staffNotifyEmail",
 	staffNotifyWhatsApp: "integration.staffNotifyWhatsApp",
 	whatsappStaffNotifyTemplate: "integration.whatsappStaffNotifyTemplate",
@@ -107,8 +110,6 @@ const INTEGRATION_SETTING_DB_KEYS: Record<keyof IntegrationSettingsValues, strin
 	rapidGatewayWebhookSecret: "integration.rapidGatewayWebhookSecret",
 	rapidGatewaySandbox: "integration.rapidGatewaySandbox",
 
-	storageProvider: "integration.storageProvider",
-	blobReadWriteToken: "integration.blobReadWriteToken",
 	awsS3Bucket: "integration.awsS3Bucket",
 	awsS3Region: "integration.awsS3Region",
 	awsAccessKeyId: "integration.awsAccessKeyId",
@@ -149,11 +150,6 @@ export function coerceIntegrationSettingValue<K extends keyof IntegrationSetting
 				return value as IntegrationSettingsValues[K];
 			}
 			return null;
-		case "storageProvider":
-			if (value === "vercel-blob" || value === "s3") {
-				return value as IntegrationSettingsValues[K];
-			}
-			return null;
 		case "whatsappOtpTemplateIncludesButton":
 		case "payfastSandbox":
 		case "rapidGatewaySandbox":
@@ -177,15 +173,17 @@ export function coerceIntegrationSettingValue<K extends keyof IntegrationSetting
 		case "whatsappPhoneNumberId":
 		case "whatsappOtpTemplateName":
 		case "whatsappCloudApiVersion":
-		case "resendFromEmail":
+		case "smtpHost":
+		case "smtpPort":
+		case "smtpUser":
+		case "smtpFrom":
 		case "whatsappStaffNotifyTemplate":
 		case "whatsappCustomerOrderTemplate":
 			return trimSecret(value, 200) as IntegrationSettingsValues[K] | null;
-		case "resendApiKey":
+		case "smtpPass":
 		case "payfastSecuredKey":
 		case "rapidGatewaySecretKey":
 		case "rapidGatewayWebhookSecret":
-		case "blobReadWriteToken":
 		case "awsSecretAccessKey":
 			return trimSecret(value, 500) as IntegrationSettingsValues[K] | null;
 		case "staffNotifyEmail":
@@ -224,8 +222,11 @@ export function mergeIntegrationSettingsFromDb(rows: ReadonlyArray<{ key: string
 		whatsappOtpTemplateName: readIntegrationSetting(map, "whatsappOtpTemplateName"),
 		whatsappCloudApiVersion: readIntegrationSetting(map, "whatsappCloudApiVersion"),
 		whatsappOtpTemplateIncludesButton: readIntegrationSetting(map, "whatsappOtpTemplateIncludesButton"),
-		resendApiKey: readIntegrationSetting(map, "resendApiKey"),
-		resendFromEmail: readIntegrationSetting(map, "resendFromEmail"),
+		smtpHost: readIntegrationSetting(map, "smtpHost"),
+		smtpPort: readIntegrationSetting(map, "smtpPort"),
+		smtpUser: readIntegrationSetting(map, "smtpUser"),
+		smtpPass: readIntegrationSetting(map, "smtpPass"),
+		smtpFrom: readIntegrationSetting(map, "smtpFrom"),
 		staffNotifyEmail: readIntegrationSetting(map, "staffNotifyEmail"),
 		staffNotifyWhatsApp: readIntegrationSetting(map, "staffNotifyWhatsApp"),
 		whatsappStaffNotifyTemplate: readIntegrationSetting(map, "whatsappStaffNotifyTemplate"),
@@ -239,8 +240,6 @@ export function mergeIntegrationSettingsFromDb(rows: ReadonlyArray<{ key: string
 		rapidGatewaySecretKey: readIntegrationSetting(map, "rapidGatewaySecretKey"),
 		rapidGatewayWebhookSecret: readIntegrationSetting(map, "rapidGatewayWebhookSecret"),
 		rapidGatewaySandbox: readIntegrationSetting(map, "rapidGatewaySandbox"),
-		storageProvider: readIntegrationSetting(map, "storageProvider"),
-		blobReadWriteToken: readIntegrationSetting(map, "blobReadWriteToken"),
 		awsS3Bucket: readIntegrationSetting(map, "awsS3Bucket"),
 		awsS3Region: readIntegrationSetting(map, "awsS3Region"),
 		awsAccessKeyId: readIntegrationSetting(map, "awsAccessKeyId"),
@@ -255,11 +254,10 @@ export function toAdminIntegrationSettings(settings: IntegrationSettingsValues):
 	return {
 		...settings,
 		whatsappCloudAccessToken: maskSecret(settings.whatsappCloudAccessToken),
-		resendApiKey: maskSecret(settings.resendApiKey),
+		smtpPass: maskSecret(settings.smtpPass),
 		payfastSecuredKey: maskSecret(settings.payfastSecuredKey),
 		rapidGatewaySecretKey: maskSecret(settings.rapidGatewaySecretKey),
 		rapidGatewayWebhookSecret: maskSecret(settings.rapidGatewayWebhookSecret),
-		blobReadWriteToken: maskSecret(settings.blobReadWriteToken),
 		awsSecretAccessKey: maskSecret(settings.awsSecretAccessKey),
 	};
 }

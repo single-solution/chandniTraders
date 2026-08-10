@@ -1,6 +1,6 @@
 import { logger } from "../logger";
 
-import { sendResendEmail } from "./resendEmail";
+import { sendOutboundEmail } from "./smtpEmail";
 import { trySendWhatsAppCloudUtilityText } from "./whatsappCloudApi";
 
 /** Plain-text staff alert to one or more inboxes (deduped upstream). */
@@ -17,7 +17,7 @@ export async function dispatchStaffEmailAlerts(input: {
 
 	await Promise.all(
 		unique.map(async (to) => {
-			const sent = await sendResendEmail({ to, subject: input.subject, text: input.body });
+			const sent = await sendOutboundEmail({ to, subject: input.subject, text: input.body });
 			if (!sent) {
 				logger.warn({ to, ...input.context }, "Staff email alert skipped or failed");
 			}

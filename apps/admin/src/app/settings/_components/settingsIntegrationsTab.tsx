@@ -103,7 +103,7 @@ export function IntegrationsSettings({ draft, saved, setField, onSaved, canUpdat
 		},
 		{
 			label: "Media storage",
-			value: storageStatus?.ready ? "Ready" : storageStatus?.provider === "s3" ? "S3 incomplete" : "Token missing",
+			value: storageStatus?.ready ? "Ready" : "Incomplete",
 			hint: storageStatus?.summary,
 			tone: storageStatus?.ready ? "good" : "warn",
 			icon: CloudUpload,

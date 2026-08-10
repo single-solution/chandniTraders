@@ -8,7 +8,7 @@
 export * from "./notifications/inquiryStaffNotify";
 export * from "./notifications/orderEventNotify";
 export * from "./notifications/staffAlertDispatch";
-export * from "./notifications/resendEmail";
+export * from "./notifications/smtpEmail";
 export * from "./notifications/whatsappCloudApi";
 export * from "./serverEnv";
 export { resolveStorageProvider } from "./storage/resolveStorageProvider";

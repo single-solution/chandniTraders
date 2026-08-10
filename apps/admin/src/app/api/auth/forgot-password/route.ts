@@ -10,7 +10,7 @@ import {
 	parseBody,
 	badRequest,
 } from "@store/shared";
-import { sendResendEmail } from "@store/shared/server";
+import { sendOutboundEmail } from "@store/shared/server";
 
 const FORGOT_PASSWORD_RATE_LIMIT_SCOPE = "admin:forgot-password";
 const TOKEN_BYTES = 32;
@@ -85,7 +85,7 @@ export async function POST(request: Request) {
 
 		const adminBase = await resolveAdminBaseUrl();
 		const resetPath = adminBase ? `${adminBase}/login/reset-password?token=${rawToken}` : `/login/reset-password?token=${rawToken}`;
-		const emailSent = await sendResendEmail({
+		const emailSent = await sendOutboundEmail({
 			to: user.email,
 			subject: "Reset your admin password",
 			text: [
@@ -99,7 +99,7 @@ export async function POST(request: Request) {
 		});
 
 		if (!emailSent) {
-			logger.warn({ userId: String(user.id) }, "Password reset token saved but Resend is not configured");
+			logger.warn({ userId: String(user.id) }, "Password reset token saved but SMTP is not configured");
 		} else {
 			logger.info({ userId: String(user.id) }, "Password reset email sent");
 		}
