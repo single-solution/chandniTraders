@@ -1078,14 +1078,16 @@ html {
 */
 .reveal {
 	opacity: 0;
-	transform: translate3d(0, var(--reveal-distance, 20px), 0);
+	transform: translate3d(0, var(--reveal-distance, 22px), 0);
+	will-change: opacity, transform;
+	backface-visibility: hidden;
 	/* Opacity fades cleanly (ease-out); the slide rides a soft spring so the
      element settles with a touch of overshoot — the "springy" feel without
      a JS animation lib. Transform gets a longer duration so the spring has
      room to read. */
 	transition:
-		opacity 480ms var(--ease-out-quart),
-		transform var(--reveal-spring-duration, 0.72s) var(--ease-spring);
+		opacity 500ms var(--ease-out-quart),
+		transform var(--reveal-spring-duration, 0.7s) var(--ease-spring);
 	transition-delay: var(--reveal-delay, 0ms);
 	/* Safety net: independent CSS-only fallback so a missing JS bundle
      or a hydration race never leaves content invisible. The JS path
@@ -1100,14 +1102,17 @@ html {
      a containing block — otherwise any `position: fixed` descendant (e.g. the
      mobile PDP sticky CTA) anchors to this box instead of the viewport. */
 	transform: none;
+	will-change: auto;
 	animation: none;
 }
 
 /* Stronger entrance for hero/section-level blocks — more travel + scale
    pop so big surfaces feel like they spring into place. */
 .reveal-rise {
-	--reveal-distance: 22px;
-	--reveal-spring-duration: 0.62s;
+	--reveal-distance: 26px;
+	--reveal-spring-duration: 0.7s;
+	will-change: opacity, transform;
+	backface-visibility: hidden;
 }
 .reveal-rise:not([data-reveal="visible"]) {
 	transform: translate3d(0, var(--reveal-distance), 0) scale(0.985);
@@ -1115,12 +1120,14 @@ html {
 .reveal-fade {
 	opacity: 0;
 	transform: none;
+	will-change: opacity;
 	transition: opacity var(--motion-base) var(--ease-out-quart);
 	transition-delay: var(--reveal-delay, 0ms);
 	animation: reveal-fade-safety 0.45s var(--ease-out-quart) 2.5s forwards;
 }
 .reveal-fade[data-reveal="visible"] {
 	opacity: 1;
+	will-change: auto;
 	animation: none;
 }
 @keyframes reveal-safety {

@@ -67,33 +67,40 @@ function RevealRootDriver({ routeKey }: { routeKey: string }) {
 				return;
 			}
 			document.querySelectorAll<HTMLElement>(REVEAL_CANDIDATE).forEach((element) => {
-				if (isInViewport(element)) {
-					reveal(element, isScrollRevealTarget(element));
-					return;
-				}
 				observer?.observe(element);
 			});
 		};
 
 		const visitAddedNode = (node: HTMLElement) => {
-			if (node.matches?.(REVEAL_CANDIDATE)) {
-				if (isInViewport(node)) {
+			if (!supportsIO || !observer) {
+				if (node.matches?.(REVEAL_CANDIDATE)) {
 					reveal(node, isScrollRevealTarget(node));
-				} else {
-					observer?.observe(node);
 				}
-			}
-			const querySelector = node.querySelector?.bind(node);
-			if (!querySelector || !querySelector(".reveal, .reveal-fade")) {
+				node.querySelectorAll?.(REVEAL_CANDIDATE).forEach((element) => {
+					reveal(element as HTMLElement, isScrollRevealTarget(element));
+				});
 				return;
 			}
-			node.querySelectorAll<HTMLElement>(REVEAL_CANDIDATE).forEach((element) => {
-				if (isInViewport(element)) {
-					reveal(element, isScrollRevealTarget(element));
-				} else {
+
+			if (node.matches?.(REVEAL_CANDIDATE)) {
+				observer.observe(node);
+			}
+			if (node.querySelector?.(".reveal, .reveal-fade")) {
+				node.querySelectorAll<HTMLElement>(REVEAL_CANDIDATE).forEach((element) => {
 					observer?.observe(element);
+				});
+			}
+		};
+
+		/** Soft-nav / RSC streams insert HTML before React hydrates. Mutating
+		 *  `data-reveal` in that window causes hydration mismatches — defer. */
+		const scheduleVisitAddedNode = (node: HTMLElement) => {
+			window.setTimeout(() => {
+				if (!node.isConnected) {
+					return;
 				}
-			});
+				visitAddedNode(node);
+			}, 0);
 		};
 
 		const bootstrap = () => {
@@ -121,7 +128,7 @@ function RevealRootDriver({ routeKey }: { routeKey: string }) {
 				for (const record of records) {
 					record.addedNodes.forEach((node) => {
 						if (node instanceof HTMLElement) {
-							visitAddedNode(node);
+							scheduleVisitAddedNode(node);
 						}
 					});
 				}
@@ -134,15 +141,15 @@ function RevealRootDriver({ routeKey }: { routeKey: string }) {
 		const frame = window.requestAnimationFrame(bootstrap);
 
 		const onRouteReveal = () => {
-			window.requestAnimationFrame(observeAll);
+			window.setTimeout(() => {
+				window.requestAnimationFrame(observeAll);
+			}, 0);
 		};
 		window.addEventListener(ROUTE_REVEAL_EVENT, onRouteReveal);
 
 		const watchdog = window.setTimeout(() => {
 			document.querySelectorAll<HTMLElement>(REVEAL_CANDIDATE).forEach((element) => {
-				if (isInViewport(element)) {
-					reveal(element, isScrollRevealTarget(element));
-				}
+				reveal(element, isScrollRevealTarget(element));
 			});
 		}, REVEAL_WATCHDOG_MS);
 
