@@ -282,7 +282,7 @@ function PdpGalleryInner({ galleryKey, images, name, brandName, brandSlug, layou
 								(index === activeIndex ? "border-[var(--color-ink-900)]" : "border-[var(--color-ink-100)] hover:border-[var(--color-ink-300)]")
 							}
 						>
-							<div className="absolute inset-0 transition-transform duration-500 ease-out group-hover:scale-[1.05]">
+							<div className="absolute inset-0 transition-transform duration-500 ease-out will-change-transform [backface-visibility:hidden] group-hover:scale-[1.05]">
 								<ProductImage image={image} variant="thumb" name={name} brandName={brandName} brandSlug={brandSlug} sizes="96px" />
 							</div>
 						</button>
