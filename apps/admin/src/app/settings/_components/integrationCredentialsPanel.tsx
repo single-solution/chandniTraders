@@ -60,7 +60,15 @@ export function IntegrationCredentialsPanel({ canUpdate }: IntegrationCredential
 				status: { otp: OtpIntegrationStatus; storage: StorageIntegrationStatus; onlinePayment: OnlinePaymentIntegrationStatus };
 			}>("/api/settings/integrations", {
 				method: "PUT",
-				body: JSON.stringify(draft),
+				body: JSON.stringify({
+					smtpHost: draft.smtpHost,
+					smtpPort: draft.smtpPort,
+					smtpUser: draft.smtpUser,
+					smtpPass: draft.smtpPass,
+					smtpFrom: draft.smtpFrom,
+					staffNotifyEmail: draft.staffNotifyEmail,
+					adminSiteUrl: draft.adminSiteUrl,
+				}),
 			});
 			setDraft(data.settings);
 			setStatus(data.status);
