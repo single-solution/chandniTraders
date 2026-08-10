@@ -382,7 +382,7 @@ function Lightbox({ images, initialIndex, name, closing = false, onClose, onNavi
 			}
 		>
 			<button type="button" aria-label="Close zoom" onClick={onClose} className="absolute inset-0" />
-			<div className={"relative max-h-[96vh] max-w-[96vw] touch-pan-y " + (closing ? "animate-lightbox-out" : "animate-lightbox-in")} {...(images.length > 1 ? lightboxSwipe : {})}>
+			<div className={"relative max-h-[calc(100dvh-4rem)] max-w-[92vw] touch-pan-y " + (closing ? "animate-lightbox-out" : "animate-lightbox-in")} {...(images.length > 1 ? lightboxSwipe : {})}>
 				<Image
 					src={image.variants.full || image.variants.detail || image.variants.card}
 					alt={image.alt || name}
@@ -392,7 +392,7 @@ function Lightbox({ images, initialIndex, name, closing = false, onClose, onNavi
 					loading="eager"
 					placeholder={image.blurDataURL ? "blur" : undefined}
 					blurDataURL={image.blurDataURL || undefined}
-					className="max-h-[96vh] max-w-[96vw] object-contain"
+					className="max-h-[calc(100dvh-4rem)] max-w-[92vw] object-contain"
 				/>
 			</div>
 			<button
