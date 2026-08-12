@@ -31,7 +31,7 @@ export interface VariantAttributes {
 	_id?: mongoose.Types.ObjectId;
 	id: string;
 	priceRupees: number;
-	compareAtPriceRupees?: number;
+	discountRupees?: number;
 	quantity: number;
 	/** When true, storefront treats variant as sold out; `quantity` is unchanged. */
 	forceOutOfStock: boolean;
@@ -87,7 +87,7 @@ const variantSchema = new Schema<VariantAttributes>(
 	{
 		id: { type: String, required: true },
 		priceRupees: { type: Number, required: true, min: 0 },
-		compareAtPriceRupees: { type: Number, min: 0 },
+		discountRupees: { type: Number, min: 0 },
 		quantity: { type: Number, required: true, min: 0, default: 0 },
 		forceOutOfStock: { type: Boolean, required: true, default: false },
 		warrantyDays: { type: Number, min: 0 },

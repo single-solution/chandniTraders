@@ -20,6 +20,7 @@ const MAX_QUANTITY = 100_000;
 export interface VariantInput {
 	id?: unknown;
 	priceRupees?: unknown;
+	discountRupees?: unknown;
 	compareAtPriceRupees?: unknown;
 	quantity?: unknown;
 	forceOutOfStock?: unknown;
@@ -57,6 +58,17 @@ export async function validateVariant(input: VariantInput, requireAll: boolean, 
 			return { ok: false, error: "Price must be a non-negative number." };
 		}
 		value.priceRupees = price;
+	}
+
+	if (input.discountRupees !== undefined && input.discountRupees !== null) {
+		const discount = Number(input.discountRupees);
+		if (!Number.isInteger(discount) || discount < 0) {
+			return { ok: false, error: "Discount must be a non-negative integer" };
+		}
+		if (typeof value.priceRupees === "number" && discount >= value.priceRupees) {
+			return { ok: false, error: "Discount must be less than the price" };
+		}
+		value.discountRupees = discount;
 	}
 
 	if (input.compareAtPriceRupees !== undefined && input.compareAtPriceRupees !== null && input.compareAtPriceRupees !== "") {

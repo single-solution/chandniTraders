@@ -182,6 +182,7 @@ export function VariantSelector({ product, brandName }: VariantSelectorProps) {
 	}, [product.variants]);
 
 	const listUnitPriceRupees = selected.priceRupees;
+	const saleUnitPriceRupees = listUnitPriceRupees - (selected.discountRupees || 0);
 	const pricedItem = useMemo(() => {
 		if (!selected.id) {
 			return null;
@@ -189,18 +190,18 @@ export function VariantSelector({ product, brandName }: VariantSelectorProps) {
 		return buildEvaluatableItemWithQuantity(product, selected, orderQuantity);
 	}, [orderQuantity, product, selected]);
 
-	const { unitPriceRupees: saleUnitPriceRupees } = useMemo(() => {
+	const { unitPriceRupees: finalOfferUnitPrice } = useMemo(() => {
 		if (!pricedItem) {
-			return { unitPriceRupees: listUnitPriceRupees, hasOfferDiscount: false };
+			return { unitPriceRupees: saleUnitPriceRupees, hasOfferDiscount: false };
 		}
-		return resolvePdpOfferUnitPrice(listUnitPriceRupees, pricedItem, selectedOffer);
-	}, [listUnitPriceRupees, pricedItem, selectedOffer]);
+		return resolvePdpOfferUnitPrice(saleUnitPriceRupees, pricedItem, selectedOffer);
+	}, [saleUnitPriceRupees, pricedItem, selectedOffer]);
 
 	const attributeSummary = useMemo(() => describeSelection(selected, categoryAttributes), [selected, categoryAttributes]);
 
 	const whatsappMessage = `Salam! I'd like to order the ${brandName} ${product.name}${
 		attributeSummary ? ` (${attributeSummary})` : ""
-	} for ${formatPrice(saleUnitPriceRupees)}.`;
+	} for ${formatPrice(finalOfferUnitPrice)}.`;
 
 	const handleAddToCart = () => {
 		if (!selected.id || !heroImage || !inStock) {
@@ -217,7 +218,7 @@ export function VariantSelector({ product, brandName }: VariantSelectorProps) {
 			brandSlug: product.brandSlug,
 			brandName,
 			image: heroImage,
-			unitPriceRupees: selected.priceRupees,
+			unitPriceRupees: saleUnitPriceRupees,
 			categorySlug: product.categorySlug,
 			productSlug: product.slug,
 			attributes: selected.attributes ?? {},
@@ -292,8 +293,7 @@ export function VariantSelector({ product, brandName }: VariantSelectorProps) {
 					stockQuantity={stockQuantity}
 					remainingStock={remainingStock}
 					listPriceRupees={listUnitPriceRupees}
-					saleUnitPriceRupees={saleUnitPriceRupees}
-					compareAtPriceRupees={selected.compareAtPriceRupees}
+					saleUnitPriceRupees={finalOfferUnitPrice}
 					quantity={orderQuantity}
 					maxQuantity={maxSelectableQuantity}
 					onQuantityChange={setAddQuantity}
@@ -310,8 +310,7 @@ export function VariantSelector({ product, brandName }: VariantSelectorProps) {
 				onAddToCart={handleAddToCart}
 				hasJustBeenAdded={hasJustBeenAdded}
 				listPriceRupees={listUnitPriceRupees}
-				saleUnitPriceRupees={saleUnitPriceRupees}
-				compareAtPriceRupees={selected.compareAtPriceRupees}
+				saleUnitPriceRupees={finalOfferUnitPrice}
 				isInStock={inStock}
 				stockQuantity={stockQuantity}
 				remainingStock={remainingStock}

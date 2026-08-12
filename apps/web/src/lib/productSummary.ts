@@ -45,15 +45,29 @@ export interface ProductPriceRange {
 }
 
 export function getProductPriceRange(product: Product): ProductPriceRange | null {
-	const prices = product.variants.map((variant) => variant.priceRupees).filter((price) => price > 0);
-	if (prices.length === 0) {
+	const finalPrices = product.variants.map((v) => v.priceRupees - (v.discountRupees || 0)).filter((price) => price > 0);
+	if (finalPrices.length === 0) {
 		return null;
 	}
-	const compareAtPrices = product.variants.map((variant) => variant.compareAtPriceRupees ?? 0).filter((price) => price > 0);
+	
+	const min = Math.min(...finalPrices);
+	const max = Math.max(...finalPrices);
+
+	let hasDiscount = false;
+	const originalPrices = product.variants
+		.map((variant) => variant.priceRupees)
+		.filter((p): p is number => typeof p === "number" && p > 0);
+	if (originalPrices.length > 0) {
+		const maxOriginal = Math.max(...originalPrices);
+		if (maxOriginal > max) {
+			hasDiscount = true;
+		}
+	}
+
 	return {
-		min: Math.min(...prices),
-		max: Math.max(...prices),
-		compareAt: compareAtPrices.length > 0 ? Math.max(...compareAtPrices) : undefined,
+		min,
+		max,
+		compareAt: hasDiscount ? Math.max(...originalPrices) : undefined,
 	};
 }
 

@@ -30,19 +30,13 @@ export interface PurchaseSummaryProps {
 	hasJustBeenAdded: boolean;
 }
 
-function PriceDisplay({ listPriceRupees, saleUnitPriceRupees, compareAtPriceRupees }: { listPriceRupees: number; saleUnitPriceRupees: number; compareAtPriceRupees?: number }) {
+function PriceDisplay({ listPriceRupees, saleUnitPriceRupees }: { listPriceRupees: number; saleUnitPriceRupees: number; }) {
 	const hasOfferDiscount = saleUnitPriceRupees < listPriceRupees;
-	
-	const displayCompareAt = compareAtPriceRupees && compareAtPriceRupees > (hasOfferDiscount ? saleUnitPriceRupees : listPriceRupees) 
-		? compareAtPriceRupees 
-		: null;
 
 	return (
 		<div className="flex flex-col items-end leading-none">
 			{hasOfferDiscount ? (
 				<p className="text-[13px] font-medium leading-none text-[var(--color-ink-500)] line-through md:text-[14px]">{formatPrice(listPriceRupees)}</p>
-			) : displayCompareAt ? (
-				<p className="text-[13px] font-medium leading-none text-[var(--color-ink-500)] line-through md:text-[14px]">{formatPrice(displayCompareAt)}</p>
 			) : null}
 			<p className="font-headline text-[22px] font-semibold tracking-tight text-[var(--color-ink-900)] md:text-[24px]">
 				{formatPrice(hasOfferDiscount ? saleUnitPriceRupees : listPriceRupees)}
@@ -104,7 +98,7 @@ export function PurchaseSummary({
 					</div>
 					{isComplete ? (
 						<div className="flex flex-col items-end">
-							<PriceDisplay listPriceRupees={listPriceRupees} saleUnitPriceRupees={saleUnitPriceRupees} compareAtPriceRupees={compareAtPriceRupees} />
+							<PriceDisplay listPriceRupees={listPriceRupees} saleUnitPriceRupees={saleUnitPriceRupees} />
 							<p className="text-right text-[12.5px] text-[var(--color-ink-500)] md:text-[13px]">Incl. all taxes</p>
 						</div>
 					) : hasPrice ? (
@@ -142,7 +136,6 @@ export interface MobileStickyCtaProps {
 	hasJustBeenAdded: boolean;
 	listPriceRupees: number;
 	saleUnitPriceRupees: number;
-	compareAtPriceRupees?: number;
 	isInStock: boolean;
 	stockQuantity: number;
 	remainingStock: number;
@@ -160,7 +153,6 @@ export function MobileStickyCta({
 	hasJustBeenAdded,
 	listPriceRupees,
 	saleUnitPriceRupees,
-	compareAtPriceRupees,
 	isInStock,
 	stockQuantity,
 	remainingStock,

@@ -60,7 +60,7 @@ export interface AdminAttribute {
 export interface AdminVariant {
 	id: string;
 	priceRupees: number;
-	compareAtPriceRupees?: number;
+	discountRupees?: number;
 	quantity: number;
 	warrantyDays?: number;
 	/** Storefront sold-out override — stock stays in `quantity`. */

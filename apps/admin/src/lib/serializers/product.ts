@@ -21,7 +21,7 @@ function toVariantResponse(variant: VariantAttributes): AdminVariant {
 	return {
 		id: objectIdString(variant._id),
 		priceRupees: asNumber(variant.priceRupees),
-		compareAtPriceRupees: variant.compareAtPriceRupees ? asNumber(variant.compareAtPriceRupees) : undefined,
+		discountRupees: variant.discountRupees ? asNumber(variant.discountRupees) : undefined,
 		quantity: asNumber(variant.quantity) ?? 0,
 		forceOutOfStock: variant.forceOutOfStock === true,
 		warrantyDays: resolveWarrantyDays(variant),

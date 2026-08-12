@@ -138,11 +138,11 @@ export function VariantCard({
 						error={fieldError("priceRupees")}
 					/>
 					<NumberField
-						label="Original Price"
-						value={variant.compareAtPriceRupees ?? 0}
+						label="Discount (Rs)"
+						value={variant.discountRupees ?? 0}
 						min={0}
-						onChange={(value) => onChange({ ...variant, compareAtPriceRupees: value || undefined })}
-						error={fieldError("compareAtPriceRupees")}
+						onChange={(value) => onChange({ ...variant, discountRupees: value || undefined })}
+						error={fieldError("discountRupees")}
 					/>
 					<NumberField label="Quantity" value={variant.quantity} min={0} onChange={(value) => onChange({ ...variant, quantity: value })} error={fieldError("quantity")} />
 					<WarrantyDaysField value={variant.warrantyDays} onChange={(value) => onChange({ ...variant, warrantyDays: value })} error={fieldError("warrantyDays")} />
@@ -177,12 +177,12 @@ export function VariantDetailFooter({ variant, errorPathPrefix, errorByPath, onC
 					error={fieldError("priceRupees")}
 				/>
 				<NumberField
-					label="Original Price"
-					value={variant.compareAtPriceRupees ?? 0}
+					label="Discount (Rs)"
+					value={variant.discountRupees ?? 0}
 					min={0}
 					compact
-					onChange={(value) => onChange({ ...variant, compareAtPriceRupees: value || undefined })}
-					error={fieldError("compareAtPriceRupees")}
+					onChange={(value) => onChange({ ...variant, discountRupees: value || undefined })}
+					error={fieldError("discountRupees")}
 				/>
 				<NumberField label="Quantity" value={variant.quantity} min={0} compact onChange={(value) => onChange({ ...variant, quantity: value })} error={fieldError("quantity")} />
 				<WarrantyDaysField value={variant.warrantyDays} compact onChange={(value) => onChange({ ...variant, warrantyDays: value })} error={fieldError("warrantyDays")} />

@@ -17,7 +17,7 @@ export interface VariantDraft {
 	/** Local-only React key so the same draft can be re-rendered after edits. */
 	uid: string;
 	priceRupees: number;
-	compareAtPriceRupees?: number;
+	discountRupees?: number;
 	quantity: number;
 	/** Force sold out on storefront without changing `quantity`. */
 	forceOutOfStock: boolean;
@@ -144,7 +144,7 @@ export function adminVariantToDraft(variant: AdminVariant): VariantDraft {
 	return {
 		uid: variant.id,
 		priceRupees: variant.priceRupees,
-		compareAtPriceRupees: variant.compareAtPriceRupees,
+		discountRupees: variant.discountRupees,
 		quantity: variant.quantity,
 		forceOutOfStock: variant.forceOutOfStock ?? false,
 		warrantyDays: variant.warrantyDays ?? null,
@@ -169,7 +169,7 @@ export interface ProductValidationOk {
 		brandSlug: string;
 		variants: Array<{
 			priceRupees: number;
-			compareAtPriceRupees?: number;
+			discountRupees?: number;
 			quantity: number;
 			forceOutOfStock: boolean;
 			warrantyDays?: number;
@@ -246,11 +246,11 @@ function collectVariantErrors(
 				message: "Price must be a positive integer",
 			});
 		}
-		if (variant.compareAtPriceRupees !== undefined && variant.compareAtPriceRupees !== null) {
-			if (!Number.isInteger(variant.compareAtPriceRupees) || variant.compareAtPriceRupees < 0) {
+		if (variant.discountRupees !== undefined && variant.discountRupees !== null) {
+			if (!Number.isInteger(variant.discountRupees) || variant.discountRupees < 0) {
 				errors.push({
-					path: `${prefix}.compareAtPriceRupees`,
-					message: "Original price must be a non-negative integer",
+					path: `${prefix}.discountRupees`,
+					message: "Discount must be a non-negative integer",
 				});
 			}
 		}
@@ -319,7 +319,7 @@ export function validateVariantDrafts(
 			variants: variants.map((variant) => {
 				const out: ProductValidationOk["payload"]["variants"][number] = {
 					priceRupees: variant.priceRupees,
-					compareAtPriceRupees: variant.compareAtPriceRupees,
+					discountRupees: variant.discountRupees,
 					quantity: variant.quantity,
 					forceOutOfStock: variant.forceOutOfStock,
 					attributes: mergeVariantDraftAttributes(variant),
@@ -380,7 +380,7 @@ export function validateDraft(draft: ProductDraft, surface: CategorySurface | nu
 			variants: draft.variants.map((variant) => {
 				const out: ProductValidationOk["payload"]["variants"][number] = {
 					priceRupees: variant.priceRupees,
-					compareAtPriceRupees: variant.compareAtPriceRupees,
+					discountRupees: variant.discountRupees,
 					quantity: variant.quantity,
 					forceOutOfStock: variant.forceOutOfStock,
 					attributes: mergeVariantDraftAttributes(variant),
