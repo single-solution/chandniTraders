@@ -237,14 +237,18 @@ export async function getBrands(categorySlug?: string): Promise<Brand[]> {
 		productFilter.categorySlug = categorySlug;
 	}
 
-	const [brands, counts] = await Promise.all([
+	let [brands, counts] = await Promise.all([
 		BrandModel.find(brandFilter).sort({ name: 1 }).lean<BrandLean[]>(),
 		ProductModel.aggregate<{ _id: string; count: number }>([{ $match: productFilter }, { $group: { _id: "$brandSlug", count: { $sum: 1 } } }]),
 	]);
+
+	if (categorySlug && brands.length === 0) {
+		brands = await BrandModel.find({ isActive: true }).sort({ name: 1 }).lean<BrandLean[]>();
+	}
+
 	const countByBrandSlug = new Map(counts.map((row) => [row._id, row.count]));
 
 	return brands
-		.filter((brand) => isCanonicalBrandSlug(brand.slug))
 		.map((brand) => toBrand(brand, countByBrandSlug.get(brand.slug) ?? 0));
 }
 

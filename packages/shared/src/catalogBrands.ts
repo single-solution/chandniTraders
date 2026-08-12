@@ -9,28 +9,7 @@ export interface CatalogBrandDefinition {
 	logoUrl: string;
 }
 
-/** Official brands on chandnitraders.pk — only these appear in the storefront picker. */
-export const CATALOG_BRAND_DEFINITIONS: CatalogBrandDefinition[] = [
-	{
-		slug: "royal",
-		name: "Royal",
-		logoUrl: "https://pub-17431e1c427d40d0985dbd2d1204474c.r2.dev/brands/royal/e47999ffa6/logo.webp",
-	},
-	{
-		slug: "sk",
-		name: "SK",
-		logoUrl: "https://pub-17431e1c427d40d0985dbd2d1204474c.r2.dev/brands/sk/ba9cd3861f/logo.webp",
-	},
-	{
-		slug: "taimoor",
-		name: "Taimoor",
-		logoUrl: "https://pub-17431e1c427d40d0985dbd2d1204474c.r2.dev/brands/taimoor/2dec7708a3/logo.webp",
-	},
-];
-
-const BRAND_BY_SLUG = new Map(CATALOG_BRAND_DEFINITIONS.map((brand) => [brand.slug, brand]));
-
-
+export const CATALOG_BRAND_DEFINITIONS: CatalogBrandDefinition[] = [];
 
 export function brandInitials(name: string): string {
 	const words = name.trim().split(/\s+/).filter(Boolean);
@@ -39,12 +18,12 @@ export function brandInitials(name: string): string {
 	return `${words[0][0] ?? ""}${words[1][0] ?? ""}`.toUpperCase();
 }
 
-export function catalogBrandLogoUrl(slug: string): string | undefined {
-	return BRAND_BY_SLUG.get(slug)?.logoUrl;
+export function catalogBrandLogoUrl(_slug: string): string | undefined {
+	return undefined;
 }
 
-export function isCanonicalBrandSlug(slug: string): boolean {
-	return BRAND_BY_SLUG.has(slug);
+export function isCanonicalBrandSlug(_slug: string): boolean {
+	return true;
 }
 
-export const CANONICAL_BRAND_SLUGS = CATALOG_BRAND_DEFINITIONS.map((brand) => brand.slug);
+export const CANONICAL_BRAND_SLUGS: string[] = [];

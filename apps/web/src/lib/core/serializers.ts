@@ -63,7 +63,7 @@ export function toBrand(brand: BrandLean, productCount: number): Brand {
 	return {
 		slug,
 		name: asString(brand.name),
-		logoUrl: catalogBrandLogoUrl(slug),
+		logoUrl: asString(brand.logoUrl) || catalogBrandLogoUrl(slug),
 		productCount: asNumber(productCount),
 		seo: brand.seo,
 	};

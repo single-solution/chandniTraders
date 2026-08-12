@@ -70,7 +70,10 @@ async function HomeProductFeed({ filters }: { filters: ProductFilters }) {
 				<ShopProductFeed 
 					initialPage={page} 
 					categoryLabel="Products" 
-					apiParams={filters.categorySlug ? { category: filters.categorySlug } : {}} 
+					apiParams={{
+						...(filters.categorySlug ? { category: filters.categorySlug } : {}),
+						...(filters.brandSlugs?.length ? { brand: filters.brandSlugs.join(",") } : {}),
+					}} 
 					priorityCount={4} 
 				/>
 			</div>

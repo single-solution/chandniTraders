@@ -30,17 +30,19 @@ interface BrandEditorProps {
 
 interface FormState {
 	name: string;
+	logoUrl: string;
 	isActive: boolean;
 	seo: SeoMeta;
 }
 
 function emptyForm(): FormState {
-	return { name: "", isActive: true, seo: {} };
+	return { name: "", logoUrl: "", isActive: true, seo: {} };
 }
 
 function formFromBrand(brand: AdminBrand): FormState {
 	return {
 		name: brand.name,
+		logoUrl: brand.logoUrl ?? "",
 		isActive: brand.isActive,
 		seo: brand.seo ?? {},
 	};
@@ -76,6 +78,7 @@ export function BrandEditor({ isOpen, onClose, brand, category, siblings, onSave
 					method: "PUT",
 					json: {
 						name: form.name.trim(),
+						logoUrl: form.logoUrl.trim(),
 						categorySlugs,
 						isActive: form.isActive,
 						seo: form.seo,
@@ -87,6 +90,7 @@ export function BrandEditor({ isOpen, onClose, brand, category, siblings, onSave
 					method: "POST",
 					json: {
 						name: form.name.trim(),
+						logoUrl: form.logoUrl.trim(),
 						categorySlugs: [category.slug],
 						isActive: form.isActive,
 						seo: form.seo,
@@ -136,6 +140,20 @@ export function BrandEditor({ isOpen, onClose, brand, category, siblings, onSave
 							maxLength={BRAND_FIELD_LIMITS.name}
 							required
 							placeholder="e.g. Brand name"
+							autoComplete="off"
+							className="block w-full rounded-md border border-[var(--color-ink-200)] bg-[var(--color-surface)] px-3 py-2 text-[14px] text-[var(--color-ink-900)] placeholder:text-[var(--color-ink-400)] focus:border-[var(--color-accent-500)] focus:outline-none"
+						/>
+					</div>
+					<div>
+						<label htmlFor="brand-logo" className="mb-1 block text-[11.5px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-700)]">
+							Logo Image URL
+						</label>
+						<input
+							id="brand-logo"
+							type="text"
+							value={form.logoUrl}
+							onChange={(e) => setForm((prev) => ({ ...prev, logoUrl: e.target.value }))}
+							placeholder="https://..."
 							autoComplete="off"
 							className="block w-full rounded-md border border-[var(--color-ink-200)] bg-[var(--color-surface)] px-3 py-2 text-[14px] text-[var(--color-ink-900)] placeholder:text-[var(--color-ink-400)] focus:border-[var(--color-accent-500)] focus:outline-none"
 						/>

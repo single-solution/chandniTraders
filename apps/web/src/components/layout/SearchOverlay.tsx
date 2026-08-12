@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, History, Search, TrendingUp, X } from "lucide-react";
-import { classNames, formatPrice, type Product, type StoredImage } from "@store/shared";
+import { classNames, formatPrice, variantEffectivePrice, type Product, type StoredImage } from "@store/shared";
 import { resolveProductHeroImage } from "@/lib/productSummary";
 
 import { useNavigationTransition } from "@/lib/navigation/navigationProgress";
@@ -413,7 +413,7 @@ function SearchEmptyState({ hints, recentSearches, recentProducts, onPick, onNav
 }
 
 function toSearchResult(product: Product): SearchResult {
-	const minPrice = product.variants.length ? Math.min(...product.variants.map((variant) => variant.priceRupees)) : 0;
+	const minPrice = product.variants.length ? Math.min(...product.variants.map((variant) => variantEffectivePrice(variant))) : 0;
 	return {
 		id: product.id,
 		slug: product.slug,

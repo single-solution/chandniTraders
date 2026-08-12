@@ -43,6 +43,7 @@ export async function GET(request: Request) {
 
 interface BrandInput {
 	name?: unknown;
+	logoUrl?: unknown;
 	categorySlugs?: unknown;
 	slug?: unknown;
 	isActive?: unknown;
@@ -103,6 +104,8 @@ export async function POST(request: Request) {
 		return badRequest("Slug could not be derived from name.");
 	}
 
+	const logoUrl = typeof body.logoUrl === "string" ? body.logoUrl.trim() : "";
+
 	let seo: Record<string, unknown> | undefined;
 	if (body.seo !== undefined) {
 		const parsed = parseSeoPayload(body.seo);
@@ -123,6 +126,7 @@ export async function POST(request: Request) {
 		const doc = await Brand.create({
 			slug,
 			name: nameResult,
+			logoUrl,
 			categorySlugs: categorySlugsResult,
 			isActive: body.isActive !== false,
 			...(seo ? { seo } : {}),

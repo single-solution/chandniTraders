@@ -65,6 +65,7 @@ export async function GET(_request: Request, { params }: RouteContext) {
 
 interface BrandUpdateInput {
 	name?: unknown;
+	logoUrl?: unknown;
 	categorySlugs?: unknown;
 	slug?: unknown;
 	isActive?: unknown;
@@ -97,6 +98,9 @@ export async function PUT(request: Request, { params }: RouteContext) {
 			return badRequest(result.error);
 		}
 		update.name = result;
+	}
+	if (body.logoUrl !== undefined && typeof body.logoUrl === "string") {
+		update.logoUrl = body.logoUrl.trim();
 	}
 	if (body.categorySlugs !== undefined) {
 		const categorySlugs = validateCategorySlugs(body.categorySlugs);

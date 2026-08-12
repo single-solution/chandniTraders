@@ -16,7 +16,7 @@
  *     products.
  */
 
-import { DECIMAL_RADIX, logger, ok, PER_MINUTE_WINDOW_MS, serverError, type StoredImage } from "@store/shared";
+import { DECIMAL_RADIX, logger, ok, PER_MINUTE_WINDOW_MS, serverError, variantEffectivePrice, type StoredImage } from "@store/shared";
 
 import { enforcePublicRateLimit } from "@/lib/api/publicRateLimit";
 import { getProductsPage } from "@/lib/core";
@@ -71,7 +71,7 @@ export async function GET(request: Request) {
 		});
 
 		const results: SearchResult[] = page.products.map((product) => {
-			const minPrice = product.variants.length ? Math.min(...product.variants.map((variant) => variant.priceRupees)) : 0;
+			const minPrice = product.variants.length ? Math.min(...product.variants.map((variant) => variantEffectivePrice(variant))) : 0;
 			const heroImage = product?.images?.[0] ?? null;
 			return {
 				id: product.id,

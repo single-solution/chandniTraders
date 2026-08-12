@@ -248,7 +248,7 @@ export function ChatFabShell() {
 		return () => window.clearTimeout(timer);
 	}, [hidden, chatSettings.proactiveNudgeEnabled, chatSettings.proactiveNudgeMinutes, isOpen, unread, nudge, pageContext]);
 
-	if (hidden) return null;
+	// We do NOT return early if hidden, because #shop-floating-filters portal target lives inside this dock.
 
 	const chatOverlay =
 		isPanelMounted && isHydrated
@@ -278,7 +278,7 @@ export function ChatFabShell() {
 	return (
 		<>
 			{chatOverlay}
-			<div className={classNames("floating-dock fixed flex flex-col gap-2.5 md:items-end", isOpen ? "z-[calc(var(--z-modal)+1)]" : "z-40", "right-4 md:right-7", "max-md:hidden")}>
+			<div className={classNames("floating-dock fixed flex flex-col gap-2.5 md:items-end", isOpen ? "z-[calc(var(--z-modal)+1)]" : "z-40", "right-4 md:right-7")}>
 				{Boolean(nudge) && !isOpen && unread === 0 && (
 					<div className="reveal-rise flex max-w-[260px] items-start gap-2 rounded-[var(--radius-lg)] border border-[var(--color-ink-100)] bg-[var(--color-surface)] py-2.5 pl-3 pr-2 shadow-[var(--shadow-md)]">
 						<button type="button" onClick={() => openChat()} className="tap text-left text-[12.5px] leading-snug text-[var(--color-ink-700)] hover:text-[var(--color-ink-900)]">
@@ -300,35 +300,37 @@ export function ChatFabShell() {
 
 				<div className="flex items-center gap-3">
 					<div id="shop-floating-filters" className="empty:hidden flex items-center gap-2" />
-					<button
-						type="button"
-						onClick={() => (isOpen ? closeChat() : openChat())}
-						aria-label={isOpen ? "Close chat" : "Need any help? Open chat support"}
-						aria-expanded={isOpen}
-						className={classNames(
-							"tap group relative flex cursor-pointer items-center rounded-[var(--radius-full)] bg-[var(--color-ink-900)] py-2.5 text-[var(--color-on-dark)] shadow-[var(--shadow-md)] transition-transform duration-300 hover:-translate-y-0.5 hover:bg-[var(--color-ink-800)] hover:shadow-[var(--shadow-lg)]",
-							isLabelVisible && !isOpen ? "gap-2 pl-3 pr-4" : "gap-0 px-2.5",
-							"md:gap-2 md:pl-3 md:pr-4",
-						)}
-					>
-						<span className="grid size-7 place-items-center rounded-full bg-gradient-to-br from-[var(--color-accent-400)] to-[var(--color-accent-500)] text-[var(--color-ink-900)] transition-transform group-hover:scale-110">
-							{isOpen ? <X size={14} strokeWidth={2.4} /> : <MessageSquare size={14} strokeWidth={2.4} />}
-						</span>
-						<span
+					{!hidden && (
+						<button
+							type="button"
+							onClick={() => (isOpen ? closeChat() : openChat())}
+							aria-label={isOpen ? "Close chat" : "Need any help? Open chat support"}
+							aria-expanded={isOpen}
 							className={classNames(
-								"overflow-hidden whitespace-nowrap text-sm font-medium transition-all duration-300",
-								isLabelVisible && !isOpen ? "max-w-[160px] opacity-100" : "max-w-0 opacity-0",
-								"md:max-w-[160px] md:opacity-100",
+								"tap group relative flex cursor-pointer items-center rounded-[var(--radius-full)] bg-[var(--color-ink-900)] py-2.5 text-[var(--color-on-dark)] shadow-[var(--shadow-md)] transition-transform duration-300 hover:-translate-y-0.5 hover:bg-[var(--color-ink-800)] hover:shadow-[var(--shadow-lg)]",
+								isLabelVisible && !isOpen ? "gap-2 pl-3 pr-4" : "gap-0 px-2.5",
+								"md:gap-2 md:pl-3 md:pr-4",
 							)}
 						>
-							{isOpen ? "Close" : "Need any help?"}
-						</span>
-						{!isOpen && unread > 0 && (
-							<span className="absolute -right-0.5 -top-0.5 flex min-w-[18px] items-center justify-center rounded-full bg-[var(--color-danger-500)] px-1 text-[10px] font-bold text-[var(--color-on-dark)]">
-								{unread > 9 ? "9+" : unread}
+							<span className="grid size-7 place-items-center rounded-full bg-gradient-to-br from-[var(--color-accent-400)] to-[var(--color-accent-500)] text-[var(--color-ink-900)] transition-transform group-hover:scale-110">
+								{isOpen ? <X size={14} strokeWidth={2.4} /> : <MessageSquare size={14} strokeWidth={2.4} />}
 							</span>
-						)}
-					</button>
+							<span
+								className={classNames(
+									"overflow-hidden whitespace-nowrap text-sm font-medium transition-all duration-300",
+									isLabelVisible && !isOpen ? "max-w-[160px] opacity-100" : "max-w-0 opacity-0",
+									"md:max-w-[160px] md:opacity-100",
+								)}
+							>
+								{isOpen ? "Close" : "Chat with us"}
+							</span>
+							{unread > 0 && (
+								<span className="absolute -right-1 -top-1 grid size-5 place-items-center rounded-full bg-[var(--color-rose-500)] text-[10px] font-bold text-white shadow-sm">
+									{unread > 9 ? "9+" : unread}
+								</span>
+							)}
+						</button>
+					)}
 				</div>
 			</div>
 		</>

@@ -26,8 +26,8 @@ export function ShopBrandCards({ brands, className, centered = false, linkCatego
 	const filterApi = useFilterParams();
 	const selectedSlugs = linkCategorySlug ? [] : filterApi.getMulti(FILTER_PARAM_KEYS.brands);
 	const visibleBrands = brands.filter((brand) => {
-		const logoUrl = catalogBrandLogoUrl(brand.slug);
-		return Boolean(logoUrl); // Temporarily show all brands even if productCount is 0
+		const logoUrl = brand.logoUrl || catalogBrandLogoUrl(brand.slug);
+		return Boolean(logoUrl);
 	});
 
 	if (visibleBrands.length === 0) {
@@ -45,7 +45,7 @@ export function ShopBrandCards({ brands, className, centered = false, linkCatego
 				{/* "All" Brand Card */}
 				{(() => {
 					const isAllActive = !linkCategorySlug && selectedSlugs.length === 0;
-					const topBrandLogos = visibleBrands.slice(0, 4).map(b => catalogBrandLogoUrl(b.slug)).filter(Boolean) as string[];
+					const topBrandLogos = visibleBrands.slice(0, 4).map(b => b.logoUrl || catalogBrandLogoUrl(b.slug)).filter(Boolean) as string[];
 					
 					const allCardBody = (
 						<div className="relative w-full">
@@ -119,7 +119,7 @@ export function ShopBrandCards({ brands, className, centered = false, linkCatego
 				})()}
 
 				{visibleBrands.map((brand) => {
-					const logoUrl = catalogBrandLogoUrl(brand.slug);
+					const logoUrl = brand.logoUrl || catalogBrandLogoUrl(brand.slug);
 					if (!logoUrl) {
 						return null;
 					}
