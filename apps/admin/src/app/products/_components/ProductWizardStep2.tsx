@@ -180,21 +180,24 @@ export function ProductWizardStep2({
 			return;
 		}
 
+		const basePrice = variants.find((v) => v.priceRupees > 0)?.priceRupees ?? product?.variants?.find((v) => v.priceRupees > 0)?.priceRupees ?? 1;
+
 		const newVariants: VariantDraft[] = pendingCombinations.map((attributes: Record<string, string>) => {
 			const attributeDisplay = attributeDisplayForCombination(attributeConfig, attributes);
 			return {
 				...emptyVariantDraft(),
 				uid: newVariantUid(),
-				priceRupees: 0,
+				priceRupees: basePrice,
 				discountRupees: 0,
-				quantity: 0,
-				forceOutOfStock: true,
+				quantity: 1,
+				forceOutOfStock: false,
 				attributes: { ...attributes },
 				attributeDisplay,
 			};
 		});
 
 		const firstNewUid = newVariants[0]?.uid ?? null;
+		setErrors([]);
 		setVariants((prev) => [...prev, ...newVariants]);
 		if (firstNewUid) {
 			setSelectedVariantUid(firstNewUid);
