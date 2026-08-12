@@ -1,4 +1,5 @@
-import { FIELD_LIMITS, isGlobalOptionInProductPool, resolveProductAttributeConfig, WARRANTY_DAYS_PER_MONTH, type ProductAttributeConfig } from "@store/shared";
+import mongoose from "mongoose";
+import { FIELD_LIMITS, isGlobalOptionInProductPool, isValidId, resolveProductAttributeConfig, WARRANTY_DAYS_PER_MONTH, type ProductAttributeConfig } from "@store/shared";
 import { Attribute, connectDB, Product } from "@store/db";
 
 import { validateProductImages } from "./productImagesValidation";
@@ -52,6 +53,12 @@ interface ValidationContext {
 export async function validateVariant(input: VariantInput, requireAll: boolean, context: ValidationContext): Promise<VariantValidationResult> {
 	await connectDB();
 	const value: Record<string, unknown> = {};
+
+	if (typeof input.id === "string" && input.id.trim().length > 0 && isValidId(input.id.trim())) {
+		value.id = input.id.trim();
+	} else if (requireAll || input.id === undefined) {
+		value.id = new mongoose.Types.ObjectId().toHexString();
+	}
 	if (input.priceRupees !== undefined || requireAll) {
 		const price = Number(input.priceRupees);
 		if (!Number.isFinite(price) || price < 0 || price > MAX_RUPEE_AMOUNT) {
@@ -182,32 +189,38 @@ export async function validateVariant(input: VariantInput, requireAll: boolean, 
 				};
 			}
 
-			const optionValues = new Set(def.options.map((option) => option.value));
+			const globalOptionsMap = new Map(def.options.map((option) => [option.value.toLowerCase(), option.value]));
 			const normalizedSlug = slug.slice(0, FIELD_LIMITS.shortLabel);
 
-			for (const optionValue of values) {
-				const inGlobalCatalog = optionValues.has(optionValue);
-				const inProductPool = context.productConfig && isGlobalOptionInProductPool(context.productConfig, slug, optionValue);
+			const canonicalValues: string[] = [];
+			for (const rawOptionValue of values) {
+				const optionValue = rawOptionValue.toLowerCase();
+				const matchedGlobalValue = globalOptionsMap.get(optionValue);
+				const inGlobalCatalog = matchedGlobalValue !== undefined;
+				const inProductPool = context.productConfig && isGlobalOptionInProductPool(context.productConfig, slug, rawOptionValue);
 
 				if (!inGlobalCatalog) {
 					if (!inProductPool) {
 						return {
 							ok: false,
-							error: `Unknown option '${optionValue}' for attribute '${slug}'.`,
+							error: `Unknown option '${rawOptionValue}' for attribute '${slug}'.`,
 						};
 					}
+					canonicalValues.push(rawOptionValue);
 					continue;
 				}
 
 				if (context.productConfig && !inProductPool) {
 					return {
 						ok: false,
-						error: `Option '${optionValue}' is not enabled for '${slug}' on this product.`,
+						error: `Option '${rawOptionValue}' is not enabled for '${slug}' on this product.`,
 					};
 				}
+
+				canonicalValues.push(matchedGlobalValue);
 			}
 
-			validated[normalizedSlug] = values.length === 1 ? values[0] : values.map((optionValue) => optionValue);
+			validated[normalizedSlug] = canonicalValues.length === 1 ? canonicalValues[0] : canonicalValues;
 		}
 
 		if (requireAll && context.productConfig) {

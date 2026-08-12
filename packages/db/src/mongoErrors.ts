@@ -41,7 +41,10 @@ export function handleMongoError(error: unknown): NextResponse {
 
 		if (mongoError?.name === "ValidationError") {
 			logger.error({ error }, "Mongoose validation error");
-			return badRequest("The submitted data failed validation. Please check all fields and try again.");
+			const rawErrors = (mongoError as { errors?: Record<string, { message?: string }> }).errors;
+			const messages = rawErrors ? Object.values(rawErrors).map((e) => e.message).filter(Boolean) : [];
+			const detail = messages.length > 0 ? messages.join("; ") : "The submitted data failed validation. Please check all fields and try again.";
+			return badRequest(detail);
 		}
 
 		if (mongoError?.name === "CastError") {
