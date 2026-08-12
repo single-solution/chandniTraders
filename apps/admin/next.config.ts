@@ -54,7 +54,7 @@ const baseSecurityHeaders = [
 			"object-src 'none'",
 			"script-src 'self' 'unsafe-eval' 'unsafe-inline'",
 			"style-src 'self' 'unsafe-inline'",
-			`img-src 'self' blob: data: https://images.unsplash.com https://cdn.simpleicons.org https://*.public.blob.vercel-storage.com ${S3_IMAGE_HOSTS.join(" ")}`,
+			`img-src 'self' blob: data: https: https://*.r2.dev https://*.cloudflarestorage.com https://images.unsplash.com https://cdn.simpleicons.org https://*.public.blob.vercel-storage.com ${S3_IMAGE_HOSTS.join(" ")}`,
 			"font-src 'self' data:",
 			"connect-src 'self'",
 			"media-src 'self'",
@@ -101,6 +101,8 @@ const nextConfig: NextConfig = {
 		remotePatterns: [
 			{ protocol: "https", hostname: "images.unsplash.com" },
 			{ protocol: "https", hostname: "cdn.simpleicons.org" },
+			{ protocol: "https", hostname: "*.r2.dev" },
+			{ protocol: "https", hostname: "*.cloudflarestorage.com" },
 			{ protocol: "https", hostname: "*.public.blob.vercel-storage.com" },
 			{ protocol: "https", hostname: "*.amazonaws.com" },
 			...(process.env.AWS_S3_PUBLIC_URL_BASE?.trim()

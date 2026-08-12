@@ -252,6 +252,11 @@ function collectVariantErrors(
 					path: `${prefix}.discountRupees`,
 					message: "Discount must be a non-negative integer",
 				});
+			} else if (variant.priceRupees > 0 && variant.discountRupees >= variant.priceRupees) {
+				errors.push({
+					path: `${prefix}.discountRupees`,
+					message: "Discount must be less than the price",
+				});
 			}
 		}
 		if (!Number.isInteger(variant.quantity) || variant.quantity < 0) {

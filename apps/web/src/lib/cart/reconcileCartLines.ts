@@ -2,7 +2,7 @@ import type { VariantAttributes } from "@store/db";
 import type { Types } from "mongoose";
 
 import { connectDB, Product as ProductModel } from "@store/db";
-import { isVariantInStock, objectIdString } from "@store/shared";
+import { isVariantInStock, objectIdString, variantEffectivePrice } from "@store/shared";
 
 import { applyCatalogVisibility, resolveCatalogVisibility } from "@/lib/core/queries";
 import { variantMatchesSelection } from "@/lib/catalog/pdpSelection";
@@ -48,7 +48,7 @@ function selectionFromCartLine(line: Pick<CartReconcileInputLine, "attributes">)
 function storefrontVariantFromLean(variant: VariantAttributes) {
 	return {
 		id: objectIdString(variant._id),
-		priceRupees: variant.priceRupees,
+		priceRupees: variantEffectivePrice(variant),
 		quantity: variant.quantity ?? 0,
 		forceOutOfStock: variant.forceOutOfStock === true,
 		attributes: variant.attributes ?? {},
@@ -129,7 +129,7 @@ export async function reconcileCartLines(lines: CartReconcileInputLine[]): Promi
 			status: remapped ? ("remapped" as const) : ("ok" as const),
 			productName: product.name,
 			variantId,
-			unitPriceRupees: variant.priceRupees,
+			unitPriceRupees: variantEffectivePrice(variant),
 			maxQuantity: variant.quantity ?? 0,
 			...(remapped
 				? {

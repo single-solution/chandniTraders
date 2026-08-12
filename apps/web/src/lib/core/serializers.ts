@@ -118,6 +118,7 @@ export function toStorefrontVariant(variant: VariantAttributes, fallbackId?: str
 	return {
 		id,
 		priceRupees: asNumber(variant.priceRupees),
+		discountRupees: variant.discountRupees ? asNumber(variant.discountRupees) : undefined,
 		quantity: variant.quantity ?? 0,
 		forceOutOfStock: variant.forceOutOfStock === true,
 		warrantyDays: resolveWarrantyDays(variant),

@@ -4,6 +4,18 @@ export type VariantStockFields = {
 	forceOutOfStock?: boolean | null;
 };
 
+export type VariantPriceFields = {
+	priceRupees?: number | null;
+	discountRupees?: number | null;
+};
+
+/** Calculate effective price after subtracting variant discount. */
+export function variantEffectivePrice(variant: VariantPriceFields): number {
+	const price = variant.priceRupees ?? 0;
+	const discount = variant.discountRupees ?? 0;
+	return Math.max(0, price - discount);
+}
+
 /** Admin override — variant reads as sold out while `quantity` stays unchanged. */
 export function isVariantForceOutOfStock(variant: VariantStockFields): boolean {
 	return variant.forceOutOfStock === true;

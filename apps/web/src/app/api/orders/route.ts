@@ -64,6 +64,7 @@ import {
 	isValidationError,
 	logger,
 	isVariantInStock,
+	variantEffectivePrice,
 	LOYALTY_MIN_REDEEM,
 	maxRedeemable,
 	parseBody,
@@ -416,7 +417,7 @@ export async function POST(request: Request) {
 	if (!checkoutPaymentId || !getPaymentMethods(settings).some((method) => method.id === checkoutPaymentId)) {
 		return badRequest("This payment method is not available right now.");
 	}
-	const subtotalRupees = resolvedItems.reduce((sum, line) => sum + line.variant.priceRupees * line.quantity, 0);
+	const subtotalRupees = resolvedItems.reduce((sum, line) => sum + variantEffectivePrice(line.variant) * line.quantity, 0);
 
 	// Promotional offers — server-authoritative. The client computes the same
 	// numbers for display, but the discount that actually bills the customer is
@@ -429,7 +430,7 @@ export async function POST(request: Request) {
 		variantId: line.variant._id.toString(),
 		categorySlug: line.productDoc.categorySlug,
 		brandSlug: line.productDoc.brandSlug,
-		price: line.variant.priceRupees,
+		price: variantEffectivePrice(line.variant),
 		quantity: line.quantity,
 		attributes: line.variant.attributes ?? {},
 	}));
@@ -589,7 +590,7 @@ export async function POST(request: Request) {
 					variantId: line.variant._id,
 					productName: line.productDoc.name,
 					variantSummary: buildVariantSummary(line.variant),
-					unitPriceRupees: line.variant.priceRupees,
+					unitPriceRupees: variantEffectivePrice(line.variant),
 					quantity: line.quantity,
 					...(line.appliedOfferId
 						? {
