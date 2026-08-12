@@ -12,6 +12,7 @@ import { useToast } from "@/components/ui/Toast";
 import { apiFetch, ApiError } from "@/lib/api";
 import { BRAND_FIELD_LIMITS } from "@/lib/api/fieldLimits";
 import type { AdminBrand, AdminCategory } from "@/types/models";
+import { BrandImageUpload } from "@/components/shared/uploads/BrandImageUpload";
 
 import { PreviewPanel } from "./previewPanel";
 import { BrandChipPreview, BrandFilterRowPreview, type BrandDraft } from "./previews";
@@ -145,17 +146,11 @@ export function BrandEditor({ isOpen, onClose, brand, category, siblings, onSave
 						/>
 					</div>
 					<div>
-						<label htmlFor="brand-logo" className="mb-1 block text-[11.5px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-700)]">
-							Logo Image URL
-						</label>
-						<input
-							id="brand-logo"
-							type="text"
+						<BrandImageUpload
 							value={form.logoUrl}
-							onChange={(e) => setForm((prev) => ({ ...prev, logoUrl: e.target.value }))}
-							placeholder="https://..."
-							autoComplete="off"
-							className="block w-full rounded-md border border-[var(--color-ink-200)] bg-[var(--color-surface)] px-3 py-2 text-[14px] text-[var(--color-ink-900)] placeholder:text-[var(--color-ink-400)] focus:border-[var(--color-accent-500)] focus:outline-none"
+							onChange={(url) => setForm((prev) => ({ ...prev, logoUrl: url }))}
+							label="Brand Logo Image"
+							hint="Upload or replace the brand logo image."
 						/>
 					</div>
 					<p className="rounded-md bg-[var(--color-canvas-deep)] px-3 py-2 text-[12px] text-[var(--color-ink-500)]">

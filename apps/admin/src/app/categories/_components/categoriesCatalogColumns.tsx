@@ -20,9 +20,19 @@ export function buildBrandColumns({ selectedCategory, openDrawerUrl, openDeleteU
 			sortable: true,
 			sortAccessor: (row) => row.name,
 			cell: (row) => (
-				<div className="min-w-0">
-					<p className="truncate text-xs font-semibold text-[var(--color-ink-900)]">{row.name}</p>
-					<p className="truncate text-[10px] text-[var(--color-ink-500)]">{row.slug}</p>
+				<div className="flex items-center gap-2.5 min-w-0">
+					{row.logoUrl ? (
+						// eslint-disable-next-line @next/next/no-img-element
+						<img src={row.logoUrl} alt={row.name} className="size-7 rounded object-contain border border-[var(--color-ink-100)] bg-white p-0.5 shrink-0" />
+					) : (
+						<div className="grid size-7 shrink-0 place-items-center rounded bg-[var(--color-canvas-deep)] text-[10px] font-bold text-[var(--color-ink-500)]">
+							{row.name.slice(0, 2).toUpperCase()}
+						</div>
+					)}
+					<div className="min-w-0">
+						<p className="truncate text-xs font-semibold text-[var(--color-ink-900)]">{row.name}</p>
+						<p className="truncate text-[10px] text-[var(--color-ink-500)]">{row.slug}</p>
+					</div>
 				</div>
 			),
 		},

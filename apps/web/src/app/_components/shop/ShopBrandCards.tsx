@@ -169,7 +169,13 @@ export function ShopBrandCards({ brands, className, centered = false, linkCatego
 							key={brand.slug}
 							type="button"
 							disabled={filterApi.isPending}
-							onClick={() => filterApi.toggleInMulti(FILTER_PARAM_KEYS.brands, brand.slug)}
+							onClick={() => {
+								if (isActive) {
+									filterApi.setSingle(FILTER_PARAM_KEYS.brands, undefined);
+								} else {
+									filterApi.setSingle(FILTER_PARAM_KEYS.brands, brand.slug);
+								}
+							}}
 							aria-pressed={isActive}
 							className={cardClassName}
 						>
