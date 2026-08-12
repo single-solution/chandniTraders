@@ -62,6 +62,7 @@ export interface AdminVariant {
 	priceRupees: number;
 	compareAtPriceRupees?: number;
 	quantity: number;
+	warrantyDays?: number;
 	/** Storefront sold-out override — stock stays in `quantity`. */
 	forceOutOfStock: boolean;
 	/** Optional variant-specific gallery; empty means use product-level images. */

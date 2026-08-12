@@ -19,7 +19,7 @@ function asStoredImageArray(raw: unknown): StoredImage[] {
 
 function toVariantResponse(variant: VariantAttributes): AdminVariant {
 	return {
-		id: variant.id ?? new mongoose.Types.ObjectId().toHexString(),
+		id: objectIdString(variant._id),
 		priceRupees: asNumber(variant.priceRupees),
 		compareAtPriceRupees: variant.compareAtPriceRupees ? asNumber(variant.compareAtPriceRupees) : undefined,
 		quantity: asNumber(variant.quantity) ?? 0,
