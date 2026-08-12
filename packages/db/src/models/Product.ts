@@ -29,7 +29,9 @@ import { storedImageSchema } from "../schemas/storedImageSchema";
 export interface VariantAttributes {
 	/** Mongoose-generated when pushing into the parent doc. */
 	_id?: mongoose.Types.ObjectId;
+	id: string;
 	priceRupees: number;
+	compareAtPriceRupees?: number;
 	quantity: number;
 	/** When true, storefront treats variant as sold out; `quantity` is unchanged. */
 	forceOutOfStock: boolean;
@@ -83,7 +85,9 @@ export interface ProductAttributes {
 
 const variantSchema = new Schema<VariantAttributes>(
 	{
+		id: { type: String, required: true },
 		priceRupees: { type: Number, required: true, min: 0 },
+		compareAtPriceRupees: { type: Number, min: 0 },
 		quantity: { type: Number, required: true, min: 0, default: 0 },
 		forceOutOfStock: { type: Boolean, required: true, default: false },
 		warrantyDays: { type: Number, min: 0 },

@@ -22,6 +22,7 @@ export interface PurchaseSummaryProps {
 	remainingStock: number;
 	listPriceRupees: number;
 	saleUnitPriceRupees: number;
+	compareAtPriceRupees?: number;
 	quantity: number;
 	maxQuantity: number;
 	onQuantityChange: (quantity: number) => void;
@@ -29,13 +30,21 @@ export interface PurchaseSummaryProps {
 	hasJustBeenAdded: boolean;
 }
 
-function PriceDisplay({ listPriceRupees, saleUnitPriceRupees }: { listPriceRupees: number; saleUnitPriceRupees: number }) {
+function PriceDisplay({ listPriceRupees, saleUnitPriceRupees, compareAtPriceRupees }: { listPriceRupees: number; saleUnitPriceRupees: number; compareAtPriceRupees?: number }) {
 	const hasOfferDiscount = saleUnitPriceRupees < listPriceRupees;
+	
+	const displayCompareAt = compareAtPriceRupees && compareAtPriceRupees > (hasOfferDiscount ? saleUnitPriceRupees : listPriceRupees) 
+		? compareAtPriceRupees 
+		: null;
 
 	return (
-		<div className="flex flex-wrap items-baseline justify-end gap-x-2 gap-y-0.5">
-			{hasOfferDiscount ? <p className="text-[13px] font-medium leading-none text-[var(--color-ink-500)] line-through md:text-[14px]">{formatPrice(listPriceRupees)}</p> : null}
-			<p className={classNames("text-xl font-semibold leading-none tracking-tight", hasOfferDiscount ? "text-[var(--color-accent-800)]" : "text-[var(--color-ink-900)]")}>
+		<div className="flex flex-col items-end leading-none">
+			{hasOfferDiscount ? (
+				<p className="text-[13px] font-medium leading-none text-[var(--color-ink-500)] line-through md:text-[14px]">{formatPrice(listPriceRupees)}</p>
+			) : displayCompareAt ? (
+				<p className="text-[13px] font-medium leading-none text-[var(--color-ink-500)] line-through md:text-[14px]">{formatPrice(displayCompareAt)}</p>
+			) : null}
+			<p className="font-headline text-[22px] font-semibold tracking-tight text-[var(--color-ink-900)] md:text-[24px]">
 				{formatPrice(hasOfferDiscount ? saleUnitPriceRupees : listPriceRupees)}
 			</p>
 		</div>
@@ -52,6 +61,7 @@ export function PurchaseSummary({
 	remainingStock,
 	listPriceRupees,
 	saleUnitPriceRupees,
+	compareAtPriceRupees,
 	quantity,
 	maxQuantity,
 	onQuantityChange,
@@ -93,7 +103,10 @@ export function PurchaseSummary({
 						)}
 					</div>
 					{isComplete ? (
-						<PriceDisplay listPriceRupees={listPriceRupees} saleUnitPriceRupees={saleUnitPriceRupees} />
+						<div className="flex flex-col items-end">
+							<PriceDisplay listPriceRupees={listPriceRupees} saleUnitPriceRupees={saleUnitPriceRupees} compareAtPriceRupees={compareAtPriceRupees} />
+							<p className="text-right text-[12.5px] text-[var(--color-ink-500)] md:text-[13px]">Incl. all taxes</p>
+						</div>
 					) : hasPrice ? (
 						<p className="text-xl font-semibold leading-none tracking-tight text-[var(--color-ink-900)]">
 							{priceLabel}
@@ -126,8 +139,10 @@ export interface MobileStickyCtaProps {
 	missingAttributeLabels?: string[];
 	minPrice?: number;
 	maxPrice?: number;
+	hasJustBeenAdded: boolean;
 	listPriceRupees: number;
 	saleUnitPriceRupees: number;
+	compareAtPriceRupees?: number;
 	isInStock: boolean;
 	stockQuantity: number;
 	remainingStock: number;
@@ -135,7 +150,6 @@ export interface MobileStickyCtaProps {
 	maxQuantity: number;
 	onQuantityChange: (quantity: number) => void;
 	onAddToCart: () => void;
-	hasJustBeenAdded: boolean;
 }
 
 export function MobileStickyCta({
@@ -143,8 +157,10 @@ export function MobileStickyCta({
 	missingAttributeLabels = [],
 	minPrice,
 	maxPrice,
+	hasJustBeenAdded,
 	listPriceRupees,
 	saleUnitPriceRupees,
+	compareAtPriceRupees,
 	isInStock,
 	stockQuantity,
 	remainingStock,
@@ -152,7 +168,6 @@ export function MobileStickyCta({
 	maxQuantity,
 	onQuantityChange,
 	onAddToCart,
-	hasJustBeenAdded,
 }: MobileStickyCtaProps) {
 	const showBuyAll = isInStock && maxQuantity > 1 && quantity < maxQuantity;
 

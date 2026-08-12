@@ -18,7 +18,9 @@ const MAX_WARRANTY_DAYS = 60 * WARRANTY_DAYS_PER_MONTH;
 const MAX_QUANTITY = 100_000;
 
 export interface VariantInput {
+	id?: unknown;
 	priceRupees?: unknown;
+	compareAtPriceRupees?: unknown;
 	quantity?: unknown;
 	forceOutOfStock?: unknown;
 	warrantyDays?: unknown;
@@ -49,13 +51,22 @@ interface ValidationContext {
 export async function validateVariant(input: VariantInput, requireAll: boolean, context: ValidationContext): Promise<VariantValidationResult> {
 	await connectDB();
 	const value: Record<string, unknown> = {};
-
 	if (input.priceRupees !== undefined || requireAll) {
 		const price = Number(input.priceRupees);
 		if (!Number.isFinite(price) || price < 0 || price > MAX_RUPEE_AMOUNT) {
 			return { ok: false, error: "Price must be a non-negative number." };
 		}
 		value.priceRupees = price;
+	}
+
+	if (input.compareAtPriceRupees !== undefined && input.compareAtPriceRupees !== null && input.compareAtPriceRupees !== "") {
+		const comparePrice = Number(input.compareAtPriceRupees);
+		if (!Number.isFinite(comparePrice) || comparePrice < 0 || comparePrice > MAX_RUPEE_AMOUNT) {
+			return { ok: false, error: "Compare-at price must be a non-negative number." };
+		}
+		value.compareAtPriceRupees = comparePrice || undefined;
+	} else if (requireAll && input.compareAtPriceRupees === null) {
+		value.compareAtPriceRupees = undefined;
 	}
 
 	if (input.quantity !== undefined || requireAll) {

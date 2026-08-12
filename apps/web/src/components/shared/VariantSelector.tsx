@@ -293,6 +293,7 @@ export function VariantSelector({ product, brandName }: VariantSelectorProps) {
 					remainingStock={remainingStock}
 					listPriceRupees={listUnitPriceRupees}
 					saleUnitPriceRupees={saleUnitPriceRupees}
+					compareAtPriceRupees={selected.compareAtPriceRupees}
 					quantity={orderQuantity}
 					maxQuantity={maxSelectableQuantity}
 					onQuantityChange={setAddQuantity}
@@ -310,6 +311,7 @@ export function VariantSelector({ product, brandName }: VariantSelectorProps) {
 				hasJustBeenAdded={hasJustBeenAdded}
 				listPriceRupees={listUnitPriceRupees}
 				saleUnitPriceRupees={saleUnitPriceRupees}
+				compareAtPriceRupees={selected.compareAtPriceRupees}
 				isInStock={inStock}
 				stockQuantity={stockQuantity}
 				remainingStock={remainingStock}

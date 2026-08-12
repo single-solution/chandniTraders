@@ -41,17 +41,19 @@ export function isProductInStock(product: Product): boolean {
 export interface ProductPriceRange {
 	min: number;
 	max: number;
+	compareAt?: number;
 }
 
-/** Min/max variant prices on a product (in-stock not required). */
 export function getProductPriceRange(product: Product): ProductPriceRange | null {
 	const prices = product.variants.map((variant) => variant.priceRupees).filter((price) => price > 0);
 	if (prices.length === 0) {
 		return null;
 	}
+	const compareAtPrices = product.variants.map((variant) => variant.compareAtPriceRupees ?? 0).filter((price) => price > 0);
 	return {
 		min: Math.min(...prices),
 		max: Math.max(...prices),
+		compareAt: compareAtPrices.length > 0 ? Math.max(...compareAtPrices) : undefined,
 	};
 }
 

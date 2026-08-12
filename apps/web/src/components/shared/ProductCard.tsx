@@ -54,15 +54,21 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
 		return resolveProductCatalogDealOffers(product, offers).length;
 	}, [product, inStock, offers]);
 
-	const priceLabel = useMemo(() => {
+	const priceData = useMemo(() => {
 		const priceRange = getProductPriceRange(product);
 		if (!priceRange) {
 			return null;
 		}
-		if (priceRange.min !== priceRange.max) {
-			return `From ${formatPrice(priceRange.min)}`;
-		}
-		return formatPrice(priceRange.min);
+		
+		const label = priceRange.min !== priceRange.max
+			? `From ${formatPrice(priceRange.min)}`
+			: formatPrice(priceRange.min);
+			
+		const compareAtLabel = priceRange.compareAt && priceRange.compareAt > priceRange.max
+			? formatPrice(priceRange.compareAt)
+			: null;
+			
+		return { label, compareAtLabel };
 	}, [product]);
 
 	const variantAvailabilityLabel = useMemo(
@@ -116,10 +122,15 @@ export function ProductCard({ product, priority = false }: ProductCardProps) {
 					</div>
 
 					<div className="mt-auto border-t border-[var(--color-ink-100)] bg-[var(--color-canvas-deep)]/60 px-2 py-1.5 md:px-2.5 md:py-2">
-						{priceLabel ? (
-							<p className="text-[14px] font-bold tabular-nums tracking-tight text-[var(--color-ink-900)] md:text-[15px]">{priceLabel}</p>
+						{priceData ? (
+							<div className="flex items-center gap-2">
+								<p className="text-[14px] font-bold tabular-nums tracking-tight text-[var(--color-ink-900)] md:text-[15px]">{priceData.label}</p>
+								{priceData.compareAtLabel && (
+									<p className="text-[11px] font-medium tabular-nums tracking-tight text-[var(--color-ink-400)] line-through md:text-[12px]">{priceData.compareAtLabel}</p>
+								)}
+							</div>
 						) : null}
-						{footerChips ? <div className={`${CARD_FOOTER_CHIP_SLOT_CLASS} ${priceLabel ? "mt-1" : ""}`}>{footerChips}</div> : null}
+						{footerChips ? <div className={`${CARD_FOOTER_CHIP_SLOT_CLASS} ${priceData ? "mt-1" : ""}`}>{footerChips}</div> : null}
 					</div>
 				</div>
 

@@ -19,9 +19,10 @@ function asStoredImageArray(raw: unknown): StoredImage[] {
 
 function toVariantResponse(variant: VariantAttributes): AdminVariant {
 	return {
-		id: objectIdString(variant._id),
+		id: variant.id ?? new mongoose.Types.ObjectId().toHexString(),
 		priceRupees: asNumber(variant.priceRupees),
-		quantity: variant.quantity ?? 0,
+		compareAtPriceRupees: variant.compareAtPriceRupees ? asNumber(variant.compareAtPriceRupees) : undefined,
+		quantity: asNumber(variant.quantity) ?? 0,
 		forceOutOfStock: variant.forceOutOfStock === true,
 		warrantyDays: resolveWarrantyDays(variant),
 		images: asStoredImageArray(variant.images),

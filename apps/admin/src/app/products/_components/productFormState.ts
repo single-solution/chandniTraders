@@ -17,6 +17,7 @@ export interface VariantDraft {
 	/** Local-only React key so the same draft can be re-rendered after edits. */
 	uid: string;
 	priceRupees: number;
+	compareAtPriceRupees?: number;
 	quantity: number;
 	/** Force sold out on storefront without changing `quantity`. */
 	forceOutOfStock: boolean;
@@ -143,6 +144,7 @@ export function adminVariantToDraft(variant: AdminVariant): VariantDraft {
 	return {
 		uid: variant.id,
 		priceRupees: variant.priceRupees,
+		compareAtPriceRupees: variant.compareAtPriceRupees,
 		quantity: variant.quantity,
 		forceOutOfStock: variant.forceOutOfStock ?? false,
 		warrantyDays: variant.warrantyDays ?? null,
@@ -167,6 +169,7 @@ export interface ProductValidationOk {
 		brandSlug: string;
 		variants: Array<{
 			priceRupees: number;
+			compareAtPriceRupees?: number;
 			quantity: number;
 			forceOutOfStock: boolean;
 			warrantyDays?: number;
@@ -240,8 +243,16 @@ function collectVariantErrors(
 		if (!Number.isInteger(variant.priceRupees) || variant.priceRupees <= 0) {
 			errors.push({
 				path: `${prefix}.priceRupees`,
-				message: "Enter a price.",
+				message: "Price must be a positive integer",
 			});
+		}
+		if (variant.compareAtPriceRupees !== undefined && variant.compareAtPriceRupees !== null) {
+			if (!Number.isInteger(variant.compareAtPriceRupees) || variant.compareAtPriceRupees < 0) {
+				errors.push({
+					path: `${prefix}.compareAtPriceRupees`,
+					message: "Original price must be a non-negative integer",
+				});
+			}
 		}
 		if (!Number.isInteger(variant.quantity) || variant.quantity < 0) {
 			errors.push({
@@ -308,6 +319,7 @@ export function validateVariantDrafts(
 			variants: variants.map((variant) => {
 				const out: ProductValidationOk["payload"]["variants"][number] = {
 					priceRupees: variant.priceRupees,
+					compareAtPriceRupees: variant.compareAtPriceRupees,
 					quantity: variant.quantity,
 					forceOutOfStock: variant.forceOutOfStock,
 					attributes: mergeVariantDraftAttributes(variant),
@@ -368,6 +380,7 @@ export function validateDraft(draft: ProductDraft, surface: CategorySurface | nu
 			variants: draft.variants.map((variant) => {
 				const out: ProductValidationOk["payload"]["variants"][number] = {
 					priceRupees: variant.priceRupees,
+					compareAtPriceRupees: variant.compareAtPriceRupees,
 					quantity: variant.quantity,
 					forceOutOfStock: variant.forceOutOfStock,
 					attributes: mergeVariantDraftAttributes(variant),

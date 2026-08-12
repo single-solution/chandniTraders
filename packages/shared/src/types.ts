@@ -56,6 +56,8 @@ export interface AttributeDescriptor {
 export interface Variant {
 	id: string;
 	priceRupees: number;
+	/** Original/MSRP price before discount. */
+	compareAtPriceRupees?: number;
 	/** Current in-stock count. `>0` is "available". */
 	quantity: number;
 	/** When true, storefront treats variant as sold out; `quantity` is unchanged. */
