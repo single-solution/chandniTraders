@@ -197,6 +197,52 @@ export function mergeProductPoolIntoAttributeOptions<T extends { value: string; 
 	return merged;
 }
 
+export const MAX_VARIANT_COMBINATION_BATCH = 500;
+
+export type CartesianAttributeCombinationsResult =
+	| { ok: true; combinations: Array<Record<string, string>> }
+	| { ok: false; error: string };
+
+/**
+ * Every pick-one value per enabled attribute from the product option pool
+ * (cartesian product). Used when bulk-generating variant rows in admin.
+ */
+export function buildCartesianAttributeCombinations(config: ProductAttributeConfig): CartesianAttributeCombinationsResult {
+	const slugs = config.attributeSlugs;
+	if (slugs.length === 0) {
+		return { ok: false, error: "Enable at least one attribute on this product before generating combinations." };
+	}
+
+	for (const slug of slugs) {
+		const pool = config.attributeOptionPool[slug] ?? [];
+		if (pool.length === 0) {
+			return { ok: false, error: `Select at least one option for every enabled attribute (missing: ${slug}).` };
+		}
+	}
+
+	let combinations: Array<Record<string, string>> = [{}];
+
+	for (const slug of slugs) {
+		const values = config.attributeOptionPool[slug] ?? [];
+		const next: Array<Record<string, string>> = [];
+		for (const combo of combinations) {
+			for (const value of values) {
+				next.push({ ...combo, [slug]: value.toLowerCase() });
+			}
+		}
+		combinations = next;
+	}
+
+	if (combinations.length > MAX_VARIANT_COMBINATION_BATCH) {
+		return {
+			ok: false,
+			error: `This would create ${combinations.length} combinations (limit ${MAX_VARIANT_COMBINATION_BATCH}). Narrow the option pool first.`,
+		};
+	}
+
+	return { ok: true, combinations };
+}
+
 /** Draft defaults for a new variant (global pool values only). */
 export function buildVariantDefaultsFromProductConfig(config: ProductAttributeConfig): { attributes: Record<string, string>; attributeDisplay?: Record<string, string> } {
 	const attributes: Record<string, string> = {};

@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Plus } from "lucide-react";
-import { buildVariantDefaultsFromProductConfig, filterAttributesForProduct, isValidId } from "@store/shared";
+import { Plus, Sparkles } from "lucide-react";
+import { buildCartesianAttributeCombinations, buildVariantDefaultsFromProductConfig, filterAttributesForProduct, isValidId, type ProductAttributeConfig } from "@store/shared";
 
 import { Button } from "@store/ui";
 import { uploadGalleryImages } from "@/components/shared/uploads/imageStaging";
@@ -51,6 +51,17 @@ function combinationSignature(variant: VariantDraft): string {
 		.sort(([left], [right]) => left.localeCompare(right))
 		.map(([slug, value]) => [slug, Array.isArray(value) ? [...value].sort() : value]);
 	return JSON.stringify(entries);
+}
+
+function attributeDisplayForCombination(config: ProductAttributeConfig, attributes: Record<string, string>): Record<string, string> {
+	const display: Record<string, string> = {};
+	for (const [slug, value] of Object.entries(attributes)) {
+		const custom = config.attributeCustomOptions?.[slug]?.find((option) => option.value.toLowerCase() === value.toLowerCase());
+		if (custom) {
+			display[slug] = custom.label;
+		}
+	}
+	return display;
 }
 
 export function ProductWizardStep2({
@@ -140,6 +151,57 @@ export function ProductWizardStep2({
 		]);
 		setSelectedVariantUid(uid);
 		syncVariantWorkspaceUrl(uid);
+	}
+
+	function generateCombinations() {
+		const result = buildCartesianAttributeCombinations(attributeConfig);
+		if (!result.ok) {
+			const missingSlug = result.error.match(/\(missing: ([^)]+)\)/)?.[1];
+			const attributeLabel = missingSlug ? (productScopedAttributes.find((row) => row.slug === missingSlug)?.label ?? missingSlug) : null;
+			toast.danger(
+				missingSlug && attributeLabel
+					? result.error.replace(`(missing: ${missingSlug})`, `(missing: ${attributeLabel})`)
+					: result.error,
+			);
+			return;
+		}
+
+		const existingSignatures = new Set(variants.map((variant) => combinationSignature(variant)));
+		const pendingCombinations = result.combinations.filter((attributes: Record<string, string>) => {
+			const probe: VariantDraft = {
+				...emptyVariantDraft(),
+				attributes,
+			};
+			return !existingSignatures.has(combinationSignature(probe));
+		});
+
+		if (pendingCombinations.length === 0) {
+			toast.info("Every combination for this product already exists.");
+			return;
+		}
+
+		const newVariants: VariantDraft[] = pendingCombinations.map((attributes: Record<string, string>) => {
+			const attributeDisplay = attributeDisplayForCombination(attributeConfig, attributes);
+			return {
+				...emptyVariantDraft(),
+				uid: newVariantUid(),
+				priceRupees: 0,
+				discountRupees: 0,
+				quantity: 0,
+				forceOutOfStock: true,
+				attributes: { ...attributes },
+				attributeDisplay,
+			};
+		});
+
+		const firstNewUid = newVariants[0]?.uid ?? null;
+		setVariants((prev) => [...prev, ...newVariants]);
+		if (firstNewUid) {
+			setSelectedVariantUid(firstNewUid);
+			syncVariantWorkspaceUrl(firstNewUid);
+		}
+
+		toast.success(`Generated ${newVariants.length} variation combination${newVariants.length === 1 ? "" : "s"}.`);
 	}
 
 	function updateVariant(uid: string, next: VariantDraft) {
@@ -301,19 +363,29 @@ export function ProductWizardStep2({
 								</ul>
 							)}
 						</nav>
-						<Button variant="outline" size="sm" type="button" className="mt-2 w-full border-dashed" leadingIcon={<Plus size={13} aria-hidden />} onClick={addVariant}>
-							New variant
-						</Button>
+						<div className="mt-2 flex flex-col gap-1.5">
+							<Button variant="outline" size="sm" type="button" className="w-full border-dashed" leadingIcon={<Plus size={13} aria-hidden />} onClick={addVariant}>
+								New variant
+							</Button>
+							<Button variant="secondary" size="sm" type="button" className="w-full text-xs font-semibold" leadingIcon={<Sparkles size={13} aria-hidden />} onClick={generateCombinations}>
+								Auto-generate variations
+							</Button>
+						</div>
 					</aside>
 
 					<div className="flex min-h-0 min-w-0 flex-1 flex-col">
 						{!selectedVariant ? (
 							<div className="flex flex-1 flex-col items-center justify-center px-4 py-10 text-center">
 								<p className="text-sm font-semibold text-[var(--color-ink-800)]">No variant selected</p>
-								<p className="mt-1 max-w-xs text-[12px] text-[var(--color-ink-500)]">Add a variant or pick one from the sidebar.</p>
-								<Button variant="primary" size="sm" type="button" className="mt-4" leadingIcon={<Plus size={13} aria-hidden />} onClick={addVariant}>
-									Add variant
-								</Button>
+								<p className="mt-1 max-w-xs text-[12px] text-[var(--color-ink-500)]">Add a variant or auto-generate all attribute combinations.</p>
+								<div className="mt-4 flex flex-wrap items-center justify-center gap-2">
+									<Button variant="primary" size="sm" type="button" leadingIcon={<Sparkles size={13} aria-hidden />} onClick={generateCombinations}>
+										Auto-generate variations
+									</Button>
+									<Button variant="outline" size="sm" type="button" leadingIcon={<Plus size={13} aria-hidden />} onClick={addVariant}>
+										Add variant
+									</Button>
+								</div>
 							</div>
 						) : (
 							<>

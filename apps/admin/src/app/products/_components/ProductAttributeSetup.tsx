@@ -9,6 +9,7 @@ import type { AdminAttribute } from "@/types/models";
 
 import {
 	addProductCustomOption,
+	attributeConfigForCategory,
 	customOptionErrorMessage,
 	effectiveProductOptionPool,
 	previewProductCustomOptionSlug,
@@ -252,14 +253,29 @@ export function ProductAttributeSetup({ attributes, config, onChange, errorByPat
 
 	return (
 		<div className={compact ? "flex flex-col gap-2" : "flex flex-col gap-3"}>
-			{!compact ? (
-				<p className="text-[11.5px] leading-snug text-[var(--color-ink-500)]">Enable attributes for this product, then choose which options variants can use.</p>
-			) : (
+			{!compact && (
+				<header className="mb-2 flex flex-wrap items-center justify-between gap-2">
+					<div>
+						<p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--color-ink-700)]">Product Attributes & Option Pools</p>
+						<p className="mt-0.5 text-[10.5px] leading-snug text-[var(--color-ink-400)]">Toggle on, pick options, or add product-only options below.</p>
+					</div>
+					<button
+						type="button"
+						onClick={() => onChange(attributeConfigForCategory(sortedAttributes))}
+						className="shrink-0 rounded-md border border-[var(--color-ink-200)] bg-[var(--color-surface)] px-2.5 py-1 text-[11px] font-semibold text-[var(--color-ink-700)] transition hover:bg-[var(--color-canvas-deep)]"
+						title="Reset attributes to category defaults"
+					>
+						Reset to Category Attributes
+					</button>
+				</header>
+			)}
+
+			{compact ? (
 				<header className="mb-2 px-0.5">
 					<h3 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--color-ink-500)]">Attributes</h3>
 					<p className="mt-1 text-[10.5px] leading-snug text-[var(--color-ink-400)]">Toggle on, pick options, or add product-only options below.</p>
 				</header>
-			)}
+			) : null}
 
 			{sortedAttributes.length === 0 ? (
 				<p className="text-[12px] text-[var(--color-ink-500)]">No attributes for this category.</p>
