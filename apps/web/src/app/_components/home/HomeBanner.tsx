@@ -69,7 +69,7 @@ export async function HomeBanner({ compact = false, categorySlug }: HomeBannerPr
 			<div className={`mx-auto max-w-[1600px] px-6 ${compact ? "pb-6 md:pb-10" : "pb-10 md:px-12 md:pb-16 lg:pb-20"}`}>
 				<div className={`grid grid-cols-1 lg:grid-cols-12 ${compact ? "gap-6 lg:gap-10" : "gap-10 lg:gap-14"} items-center`}>
 					{/* Left Column: Minimalist Typography */}
-					<div className={`lg:col-span-4 ${compact ? "space-y-5" : "space-y-7"}`}>
+					<div className={`lg:col-span-5 ${compact ? "space-y-5" : "space-y-7"}`}>
 						<div className="space-y-3">
 							<p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-[var(--color-ink-500)]">
 								{settings.siteName} Gallery
@@ -98,8 +98,8 @@ export async function HomeBanner({ compact = false, categorySlug }: HomeBannerPr
 						)}
 					</div>
 
-					{/* Right Column: Expanded Visual Gallery */}
-					<div className="lg:col-span-8">
+					{/* Right Column: Single Pristine Hero Showcase */}
+					<div className="lg:col-span-7">
 						<BannerVisualGallery tiles={tiles} compact={compact} />
 					</div>
 				</div>
@@ -109,79 +109,26 @@ export async function HomeBanner({ compact = false, categorySlug }: HomeBannerPr
 }
 
 function BannerVisualGallery({ tiles, compact }: { tiles: HomeBannerTile[]; compact: boolean }) {
-	const [hero, second, third] = tiles;
+	const hero = tiles[0];
 	if (!hero) return null;
 
 	return (
-		<>
-			{/* Mobile layout: larger horizontal scroll */}
-			<div className="flex sm:hidden overflow-x-auto snap-x snap-mandatory gap-4 no-scrollbar pb-4 -mx-6 px-6">
-				{tiles.map((tile, index) => (
-					<div key={index} className="w-[90vw] shrink-0 snap-center group relative overflow-hidden rounded-[var(--radius-xl)] bg-[var(--color-surface)] aspect-[4/3] min-h-[280px] shadow-[var(--shadow-md)]">
-						{/* eslint-disable-next-line @next/next/no-img-element */}
-						<img
-							src={tile.src}
-							alt={tile.alt}
-							className="absolute inset-0 h-full w-full object-cover"
-							loading={index === 0 ? "eager" : "lazy"}
-							fetchPriority={index === 0 ? "high" : "auto"}
-						/>
-						{tile.caption && (
-							<div className="absolute bottom-4 left-4 right-4 flex justify-between items-end">
-								<div className="bg-white/90 backdrop-blur-md px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.1em] text-[var(--color-ink-900)] rounded-md shadow-sm">
-									{tile.caption}
-								</div>
-							</div>
-						)}
-					</div>
-				))}
-			</div>
-
-			{/* Desktop layout: expanded grid */}
-			<div className="hidden sm:grid grid-cols-12 gap-6">
-				{/* Main Featured Piece */}
-				<div className={`col-span-12 ${compact ? "sm:col-span-6" : "sm:col-span-7"} group relative overflow-hidden rounded-[var(--radius-xl)] bg-[var(--color-surface)] ${compact ? "aspect-[4/3]" : "aspect-[4/3] min-h-[480px] lg:min-h-[540px]"} shadow-[var(--shadow-md)]`}>
-					{/* eslint-disable-next-line @next/next/no-img-element */}
-					<img
-						src={hero.src}
-						alt={hero.alt}
-						className="h-full w-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
-						loading="eager"
-						fetchPriority="high"
-					/>
-					<div className="absolute bottom-6 left-6 right-6 flex justify-between items-end opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-						<div className="bg-white/90 backdrop-blur-md px-4 py-2 text-[11px] font-medium uppercase tracking-[0.1em] text-[var(--color-ink-900)] rounded-md shadow-sm">
-							{hero.caption}
-						</div>
+		<div className="relative w-full overflow-hidden rounded-[var(--radius-2xl)] border border-[var(--color-ink-100)] bg-[var(--color-surface)] shadow-[var(--shadow-sm)] aspect-[16/10] sm:aspect-[16/10] lg:aspect-[16/10]">
+			{/* eslint-disable-next-line @next/next/no-img-element */}
+			<img
+				src={hero.src}
+				alt={hero.alt}
+				className="h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-[1.02]"
+				loading="eager"
+				fetchPriority="high"
+			/>
+			{hero.caption && (
+				<div className="absolute bottom-5 left-5 right-5 flex items-center justify-between">
+					<div className="rounded-[var(--radius-md)] border border-[var(--color-ink-100)] bg-[var(--color-surface)]/90 px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-900)] shadow-sm backdrop-blur-md">
+						{hero.caption}
 					</div>
 				</div>
-
-				{/* Secondary Pieces */}
-				<div className={`col-span-12 ${compact ? "sm:col-span-6" : "sm:col-span-5"} flex flex-col gap-6`}>
-					{second && (
-						<div className={`group relative overflow-hidden rounded-[var(--radius-xl)] bg-[var(--color-surface)] ${compact ? "aspect-[4/3]" : "aspect-[4/3] min-h-[230px] lg:min-h-[260px]"} flex-1 shadow-[var(--shadow-md)]`}>
-							{/* eslint-disable-next-line @next/next/no-img-element */}
-							<img
-								src={second.src}
-								alt={second.alt}
-								className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
-								loading="lazy"
-							/>
-						</div>
-					)}
-					{!compact && third && (
-						<div className="group relative overflow-hidden rounded-[var(--radius-xl)] bg-[var(--color-surface)] aspect-[4/3] min-h-[230px] lg:min-h-[260px] flex-1 shadow-[var(--shadow-md)]">
-							{/* eslint-disable-next-line @next/next/no-img-element */}
-							<img
-								src={third.src}
-								alt={third.alt}
-								className="absolute inset-0 h-full w-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
-								loading="lazy"
-							/>
-						</div>
-					)}
-				</div>
-			</div>
-		</>
+			)}
+		</div>
 	);
 }
