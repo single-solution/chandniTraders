@@ -54,6 +54,12 @@ export function AppShell({ children, footer }: AppShellProps) {
 	const [areDeferredMounted, setAreDeferredMounted] = useState(false);
 
 	useEffect(() => {
+		if ("scrollRestoration" in window.history) {
+			window.history.scrollRestoration = "manual";
+		}
+	}, []);
+
+	useEffect(() => {
 		if (areDeferredMounted) return;
 		const supportsIdle = typeof window.requestIdleCallback === "function";
 		if (supportsIdle) {

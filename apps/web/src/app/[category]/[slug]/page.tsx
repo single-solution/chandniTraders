@@ -119,11 +119,12 @@ export async function generateMetadata({ params, searchParams }: ProductDetailPa
 export default async function ProductDetailPage({ params, searchParams }: ProductDetailPageProps) {
 	const [{ category, slug }, search] = await Promise.all([params, searchParams]);
 
-	const [categoryMeta, product, allAttributes, liveVariants] = await Promise.all([
+	const [categoryMeta, product, allAttributes, liveVariants, seoSettings] = await Promise.all([
 		getCategoryBySlugCached(category),
 		getProductBySlugCached(slug),
 		getAttributesCached(),
 		getProductLiveCommerce(slug),
+		getSeoSettings(),
 	]);
 
 	if (!categoryMeta) {
@@ -144,11 +145,7 @@ export default async function ProductDetailPage({ params, searchParams }: Produc
 		redirect(productHref(storefrontProduct));
 	}
 
-	// Bad URL recovery (combination doesn't exist on any variant) is handled
-	// client-side via `history.replaceState` (see usePdpUrlParams) so configurator
-	// picks never refetch this RSC page.
-
-	const [brand, seoSettings] = await Promise.all([getBrandBySlugCached(storefrontProduct.brandSlug, storefrontProduct.categorySlug), getSeoSettings()]);
+	const brand = await getBrandBySlugCached(storefrontProduct.brandSlug, storefrontProduct.categorySlug);
 	const brandName = brand?.name ?? storefrontProduct.brandSlug;
 	const brandFilterHref = `${categoryHref(categoryMeta.slug)}?brand=${storefrontProduct.brandSlug}`;
 

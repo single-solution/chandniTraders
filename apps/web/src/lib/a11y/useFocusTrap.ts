@@ -40,7 +40,7 @@ export function useFocusTrap(containerRef: RefObject<HTMLElement | null>, active
 		// Move focus into the overlay if it isn't already there.
 		if (!container.contains(document.activeElement)) {
 			const [first] = getFocusable(container);
-			(first ?? container).focus();
+			(first ?? container).focus({ preventScroll: true });
 		}
 
 		function handleKeyDown(event: KeyboardEvent) {
@@ -54,7 +54,7 @@ export function useFocusTrap(containerRef: RefObject<HTMLElement | null>, active
 			const focusable = getFocusable(node);
 			if (focusable.length === 0) {
 				event.preventDefault();
-				node.focus();
+				node.focus({ preventScroll: true });
 				return;
 			}
 			const first = focusable[0];
@@ -63,12 +63,12 @@ export function useFocusTrap(containerRef: RefObject<HTMLElement | null>, active
 
 			if (event.shiftKey && (activeElement === first || !node.contains(activeElement))) {
 				event.preventDefault();
-				last.focus();
+				last.focus({ preventScroll: true });
 				return;
 			}
 			if (!event.shiftKey && activeElement === last) {
 				event.preventDefault();
-				first.focus();
+				first.focus({ preventScroll: true });
 			}
 		}
 
