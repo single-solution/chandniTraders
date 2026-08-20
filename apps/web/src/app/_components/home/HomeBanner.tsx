@@ -113,7 +113,7 @@ function BannerVisualGallery({ tiles, compact }: { tiles: HomeBannerTile[]; comp
 	if (!hero) return null;
 
 	return (
-		<div className="relative w-full overflow-hidden rounded-[var(--radius-2xl)] border border-[var(--color-ink-100)] bg-[var(--color-surface)] shadow-[var(--shadow-sm)] aspect-[16/10] sm:aspect-[16/10] lg:aspect-[16/10]">
+		<div className="relative w-full overflow-hidden rounded-none border border-[var(--color-ink-100)] bg-[var(--color-surface)] shadow-[var(--shadow-sm)] aspect-[16/10] sm:aspect-[16/10] lg:aspect-[16/10]">
 			{/* eslint-disable-next-line @next/next/no-img-element */}
 			<img
 				src={hero.src}

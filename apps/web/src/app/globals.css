@@ -39,7 +39,7 @@
 	--text-7xl: clamp(65px, calc(48.9px + 1.61vw), 90px);
 	--text-7xl--line-height: 1.05;
 
-	--color-ink-50: #f8fafc;
+	--color-ink-50: #f8fbf8;
 	--color-ink-100: #eef2f4;
 	--color-ink-200: #dde4e7;
 	--color-ink-300: #c1cbcf;
@@ -58,9 +58,9 @@
 	--animate-marquee: marquee 25s linear infinite;
 
 	--color-canvas: #f8fbf8;
-	--color-canvas-deep: #eef5f5;
+	--color-canvas-deep: #f8fbf8;
 	--color-surface: #f8fbf8;
-	--color-surface-muted: #f3f7f7;
+	--color-surface-muted: #f8fbf8;
 
 	/* Chartreuse accent — primary CTA and active states.
      Low end (50/100/200) stays warm cream so existing gradient cards
