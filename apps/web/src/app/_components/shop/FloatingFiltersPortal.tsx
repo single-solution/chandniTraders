@@ -4,17 +4,20 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 export function FloatingFiltersPortal({ children }: { children: React.ReactNode }) {
-	const [mounted, setMounted] = useState(false);
+	const [target, setTarget] = useState<HTMLElement | null>(null);
 
 	useEffect(() => {
-		setMounted(true);
+		const el = document.getElementById("shop-floating-filters");
+		if (el) {
+			setTarget(el);
+		} else {
+			const timer = setTimeout(() => {
+				setTarget(document.getElementById("shop-floating-filters"));
+			}, 100);
+			return () => clearTimeout(timer);
+		}
 	}, []);
 
-	if (!mounted) {
-		return null;
-	}
-
-	const target = document.getElementById("shop-floating-filters");
 	if (!target) {
 		return null;
 	}

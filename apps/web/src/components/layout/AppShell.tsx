@@ -108,6 +108,7 @@ export function AppShell({ children, footer }: AppShellProps) {
 					<RouteTransition>{children}</RouteTransition>
 				</main>
 				{footer}
+				<div id="shop-floating-filters" className="empty:hidden fixed bottom-6 right-6 md:right-32 z-40 flex items-center gap-2" />
 				{areDeferredMounted ? <ChatFabShell /> : null}
 				<MobileBottomTabBar />
 				{areDeferredMounted ? <SearchOverlay isOpen={isSearchOpen} onClose={() => setIsSearchOpen(false)} /> : null}
