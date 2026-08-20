@@ -84,37 +84,32 @@ export async function autoGenerateVariantsForProduct(productId: string) {
 	}
 
 	const existingVariants = product.variants ?? [];
-	const basePrice = existingVariants.find((v) => v.priceRupees > 0)?.priceRupees ?? 1;
-	const baseDiscount = existingVariants.find((v) => v.discountRupees !== undefined)?.discountRupees ?? 0;
+	const firstVariant = existingVariants[0];
+	const firstVariantWithPrice = existingVariants.find((v) => v.priceRupees > 0);
+	const firstVariantWithImages = existingVariants.find((v) => v.images && v.images.length > 0);
 
-	// Find fallback images (first variant with images, or product gallery)
-	const variantWithImages = existingVariants.find((v) => v.images && v.images.length > 0);
-	const fallbackImages = variantWithImages?.images ?? product.images ?? [];
+	const priceToUse = firstVariant && firstVariant.priceRupees > 0 ? firstVariant.priceRupees : (firstVariantWithPrice?.priceRupees ?? 1);
+	const discountToUse = firstVariant?.discountRupees ?? (firstVariantWithPrice?.discountRupees ?? 0);
+	const quantityToUse = firstVariant?.quantity && firstVariant.quantity > 0 ? firstVariant.quantity : 1;
+	const forceOutOfStock = firstVariant?.forceOutOfStock ?? false;
+	const warrantyDays = firstVariant?.warrantyDays ?? undefined;
+	const imagesToUse = (firstVariant?.images && firstVariant.images.length > 0) ? firstVariant.images : (firstVariantWithImages?.images ?? product.images ?? []);
 
 	const newVariants = comboResult.combinations.map((combo) => {
-		// Find best matching existing variant
-		let bestMatch: typeof existingVariants[0] | null = null;
-		let maxScore = -1;
-
-		for (const existing of existingVariants) {
-			const score = attributeMatchScore(existing.attributes ?? {}, combo);
-			if (score > maxScore) {
-				maxScore = score;
-				bestMatch = existing;
-			}
-		}
-
-		const imagesToUse = (bestMatch?.images && bestMatch.images.length > 0) ? bestMatch.images : fallbackImages;
-		const priceToUse = bestMatch && bestMatch.priceRupees > 0 ? bestMatch.priceRupees : basePrice;
-		const discountToUse = bestMatch?.discountRupees ?? baseDiscount;
-		const forceOutOfStock = bestMatch?.forceOutOfStock ?? false;
-		const warrantyDays = bestMatch?.warrantyDays ?? undefined;
+		// Find matching existing variant ID if exact attribute combo match exists
+		const exactMatch = existingVariants.find((existing) => {
+			const existingAttrs = existing.attributes ?? {};
+			return Object.keys(combo).every((k) => {
+				const ev = existingAttrs[k];
+				return typeof ev === "string" ? ev.toLowerCase() === combo[k].toLowerCase() : false;
+			});
+		});
 
 		return {
-			id: bestMatch?.id && maxScore > 0 ? bestMatch.id : new mongoose.Types.ObjectId().toHexString(),
+			id: exactMatch?.id ?? new mongoose.Types.ObjectId().toHexString(),
 			priceRupees: priceToUse,
 			discountRupees: discountToUse,
-			quantity: bestMatch?.quantity && bestMatch.quantity > 0 ? bestMatch.quantity : 1,
+			quantity: quantityToUse,
 			forceOutOfStock,
 			warrantyDays,
 			attributes: combo,
