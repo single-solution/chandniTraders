@@ -10,19 +10,20 @@ import { parseFiltersFromSearchParams, type ProductFilters } from "@/lib/core";
 export async function HomePageContent({ searchParams }: { searchParams: Record<string, string | string[] | undefined> }) {
 	const filters = parseFiltersFromSearchParams(searchParams);
 	const categories = await getCategoriesCached();
-	const visibleCategories = categories.filter(c => c.isActive);
-	
-	// Default to first category if none selected
-	if (!filters.categorySlug && visibleCategories.length > 0) {
-		redirect(`/?category=${visibleCategories[0].slug}#shop-catalog`);
-	}
+	const visibleCategories = categories.filter((c) => c.isActive);
+
+	const activeCategorySlug = filters.categorySlug || visibleCategories[0]?.slug;
+	const activeFilters = {
+		...filters,
+		categorySlug: activeCategorySlug,
+	};
 
 	return (
 		<>
 			<HomeBanner />
 			<HomeMarquee />
 			<Suspense fallback={null}>
-				<HomeProductFeed filters={filters} />
+				<HomeProductFeed filters={activeFilters} />
 			</Suspense>
 		</>
 	);
