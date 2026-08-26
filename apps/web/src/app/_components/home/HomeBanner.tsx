@@ -4,6 +4,7 @@ import { ArrowRight } from "lucide-react";
 import { getStoreSettingsCached, getCategoryBySlugCached, getProductsPageCached } from "@/lib/core/cached";
 import { toYouTubeEmbedUrl, type StoreSettings } from "@store/shared";
 import { resolveProductHeroImage } from "@/lib/productSummary";
+import { FastHeroVideo } from "@/app/_components/home/FastHeroVideo";
 
 interface DynamicBannerTile {
 	src: string;
@@ -166,20 +167,7 @@ function BannerVisualGallery({ tiles, customMedia }: { tiles: DynamicBannerTile[
 							className="pointer-events-none size-full select-none border-0 object-cover"
 						/>
 					) : (
-						<video
-							src={customMedia.url}
-							autoPlay
-							loop
-							muted
-							playsInline
-							preload="auto"
-							disablePictureInPicture
-							disableRemotePlayback
-							tabIndex={-1}
-							className="size-full transform-gpu object-cover will-change-transform"
-						>
-							<source src={customMedia.url} type="video/mp4" />
-						</video>
+						<FastHeroVideo src={customMedia.url} />
 					)
 				) : (
 					/* eslint-disable-next-line @next/next/no-img-element */
