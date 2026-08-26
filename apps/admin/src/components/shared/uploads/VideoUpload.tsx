@@ -77,8 +77,8 @@ export function VideoUpload({ value, onChange, subjectKind, subjectId, label, hi
 	async function handleAttachLink() {
 		const trimmed = linkDraft.trim();
 		if (!trimmed) return;
-		if (!parseYouTubeId(trimmed)) {
-			setError("That doesn't look like a YouTube URL.");
+		if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://") && !trimmed.startsWith("/")) {
+			setError("Please enter a valid URL (e.g. https://... or /videos/...).");
 			return;
 		}
 		setError(null);
@@ -117,7 +117,7 @@ export function VideoUpload({ value, onChange, subjectKind, subjectId, label, hi
 							/>
 						</div>
 					) : (
-						<video src={value} controls playsInline preload="metadata" className="w-full rounded-md bg-black" />
+						<video src={value} controls playsInline preload="metadata" className="w-full max-h-[300px] rounded-md bg-black object-contain" />
 					)}
 					<div className="mt-3 flex flex-wrap items-center gap-2">
 						<button
@@ -143,7 +143,7 @@ export function VideoUpload({ value, onChange, subjectKind, subjectId, label, hi
 								</>
 							) : (
 								<>
-									<Film size={12} /> Uploaded file
+									<Film size={12} /> Video link / file
 								</>
 							)}
 						</span>
@@ -163,7 +163,7 @@ export function VideoUpload({ value, onChange, subjectKind, subjectId, label, hi
 					</button>
 					<div className="flex items-center gap-2 text-[10.5px] font-semibold uppercase tracking-[0.14em] text-[var(--color-ink-400)]">
 						<span className="h-px flex-1 bg-[var(--color-ink-100)]" />
-						or paste a YouTube link
+						or paste a video / CloudFront / YouTube link
 						<span className="h-px flex-1 bg-[var(--color-ink-100)]" />
 					</div>
 					<div className="flex items-center gap-2">
@@ -177,7 +177,7 @@ export function VideoUpload({ value, onChange, subjectKind, subjectId, label, hi
 								setLinkDraft(e.target.value);
 								if (error) setError(null);
 							}}
-							placeholder="https://youtube.com/watch?v=…"
+							placeholder="https://... (CloudFront, Cloudflare R2, MP4, or YouTube)"
 							disabled={busy}
 							autoComplete="off"
 							spellCheck={false}

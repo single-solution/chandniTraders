@@ -18,7 +18,7 @@ configureDevDnsResolvers();
 const isProduction = process.env.NODE_ENV === "production";
 
 function buildS3ImageHosts(): string[] {
-	const hosts = ["https://*.amazonaws.com", "https://*.s3.amazonaws.com"];
+	const hosts = ["https://*.amazonaws.com", "https://*.s3.amazonaws.com", "https://*.r2.dev", "https://*.r2.cloudflarestorage.com", "https://*.cloudflarestorage.com"];
 	const publicBase = process.env.AWS_S3_PUBLIC_URL_BASE?.trim();
 	if (publicBase) {
 		try {
@@ -54,10 +54,10 @@ const baseSecurityHeaders = [
 			"object-src 'none'",
 			"script-src 'self' 'unsafe-eval' 'unsafe-inline'",
 			"style-src 'self' 'unsafe-inline'",
-			`img-src 'self' blob: data: https: https://*.r2.dev https://*.cloudflarestorage.com https://images.unsplash.com https://cdn.simpleicons.org https://*.public.blob.vercel-storage.com ${S3_IMAGE_HOSTS.join(" ")}`,
+			`img-src 'self' blob: data: https://images.unsplash.com https://cdn.simpleicons.org ${S3_IMAGE_HOSTS.join(" ")}`,
 			"font-src 'self' data:",
-			"connect-src 'self'",
-			"media-src 'self'",
+			`connect-src 'self' https://*.r2.cloudflarestorage.com https://*.cloudflarestorage.com https://*.amazonaws.com https://*.s3.amazonaws.com https://*.r2.dev ${S3_IMAGE_HOSTS.join(" ")}`,
+			`media-src 'self' blob: https://*.r2.cloudflarestorage.com https://*.cloudflarestorage.com https://*.r2.dev https://*.amazonaws.com ${S3_IMAGE_HOSTS.join(" ")}`,
 			"manifest-src 'self'",
 			// YouTube embed for the `Grade.video` editor preview. Without an
 			// explicit `frame-src`, the spec falls back to `default-src 'self'`
