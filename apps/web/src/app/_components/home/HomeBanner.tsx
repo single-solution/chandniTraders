@@ -55,23 +55,43 @@ export async function HomeBanner({ compact = false, categorySlug }: HomeBannerPr
 			if (categoryTiles.length > 0) {
 				const requiredTiles = compact ? 2 : 3;
 				let filledTiles = [...categoryTiles];
-				// Repeat the dynamic tiles if we don't have enough to fill the gallery,
-				// so we only show products from this category, never falling back to generic ones.
 				while (filledTiles.length < requiredTiles) {
 					filledTiles = [...filledTiles, ...categoryTiles];
 				}
 				dynamicTiles = filledTiles.slice(0, requiredTiles);
-			} else {
-				// If no products have images, don't show wrong category images
-				dynamicTiles = [];
+			}
+		}
+	} else if (!hasCustomHero) {
+		// If no custom hero media is uploaded in admin yet, load top catalog products to populate the hero
+		const productsPage = await getProductsPageCached({ limit: 6 }).catch(() => null);
+		if (productsPage && productsPage.products.length > 0) {
+			const topTiles: DynamicBannerTile[] = productsPage.products
+				.map((p) => {
+					const img = resolveProductHeroImage(p);
+					return {
+						src: img?.variants.full ?? "",
+						alt: img?.alt ?? p.name,
+						caption: p.name,
+						href: p.categorySlug ? `/${p.categorySlug}/${p.slug}` : `#`,
+					};
+				})
+				.filter((t) => t.src !== "");
+
+			if (topTiles.length > 0) {
+				const requiredTiles = compact ? 2 : 3;
+				let filledTiles = [...topTiles];
+				while (filledTiles.length < requiredTiles) {
+					filledTiles = [...filledTiles, ...topTiles];
+				}
+				dynamicTiles = filledTiles.slice(0, requiredTiles);
 			}
 		}
 	}
 
 	return (
-		<section className={`relative w-full border-b border-[var(--color-ink-100)] pt-[calc(var(--mobile-header-h)+1.5rem)] md:pt-[calc(var(--desktop-header-h)+2rem)]`}>
-			<div className={`mx-auto max-w-[1600px] px-6 ${compact ? "pb-6 md:pb-10" : "pb-10 md:px-12 md:pb-16 lg:pb-20"}`}>
-				<div className={`grid grid-cols-1 lg:grid-cols-12 ${compact ? "gap-6 lg:gap-10" : "gap-10 lg:gap-14"} items-center`}>
+		<section className="relative w-full border-b border-[var(--color-ink-100)] pt-[calc(var(--mobile-header-h)+2rem)] md:pt-[calc(var(--desktop-header-h)+2.5rem)]">
+			<div className={`mx-auto max-w-[1600px] px-6 ${compact ? "pb-8 md:pb-12" : "pb-12 md:px-12 md:pb-16 lg:pb-20"}`}>
+				<div className={`grid grid-cols-1 lg:grid-cols-12 ${compact ? "gap-6 lg:gap-10" : "gap-10 lg:gap-14"} items-center min-h-[420px] lg:min-h-[500px]`}>
 					{/* Left Column: Minimalist Typography */}
 					<div className={`lg:col-span-5 ${compact ? "space-y-5" : "space-y-7"}`}>
 						<div className="space-y-3">
@@ -183,25 +203,36 @@ function BannerVisualGallery({ tiles, customMedia }: { tiles: DynamicBannerTile[
 	}
 
 	const hero = tiles[0];
-	if (!hero) return null;
+	if (hero?.src) {
+		return (
+			<div className="relative aspect-[16/10] w-full overflow-hidden rounded-none border border-[var(--color-ink-100)] bg-[var(--color-surface)] shadow-[var(--shadow-sm)] sm:aspect-[16/10] lg:aspect-[16/10]">
+				{/* eslint-disable-next-line @next/next/no-img-element */}
+				<img
+					src={hero.src}
+					alt={hero.alt}
+					className="h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-[1.02]"
+					loading="eager"
+					fetchPriority="high"
+				/>
+				{hero.caption && (
+					<div className="pointer-events-none absolute bottom-5 left-5 right-5 flex items-center justify-between">
+						<div className="rounded-[var(--radius-md)] border border-[var(--color-ink-100)] bg-[var(--color-surface)]/90 px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-900)] shadow-sm backdrop-blur-md">
+							{hero.caption}
+						</div>
+					</div>
+				)}
+			</div>
+		);
+	}
 
 	return (
-		<div className="relative aspect-[16/10] w-full overflow-hidden rounded-none border border-[var(--color-ink-100)] bg-[var(--color-surface)] shadow-[var(--shadow-sm)] sm:aspect-[16/10] lg:aspect-[16/10]">
-			{/* eslint-disable-next-line @next/next/no-img-element */}
-			<img
-				src={hero.src}
-				alt={hero.alt}
-				className="h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-[1.02]"
-				loading="eager"
-				fetchPriority="high"
-			/>
-			{hero.caption && (
-				<div className="pointer-events-none absolute bottom-5 left-5 right-5 flex items-center justify-between">
-					<div className="rounded-[var(--radius-md)] border border-[var(--color-ink-100)] bg-[var(--color-surface)]/90 px-3.5 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--color-ink-900)] shadow-sm backdrop-blur-md">
-						{hero.caption}
-					</div>
+		<div className="relative aspect-[16/10] w-full overflow-hidden rounded-none border border-[var(--color-ink-100)] bg-[var(--color-surface)] shadow-[var(--shadow-sm)] flex items-center justify-center p-8">
+			<div className="flex flex-col items-center justify-center text-center space-y-3">
+				<div className="h-12 w-12 rounded-full border border-[var(--color-ink-200)] flex items-center justify-center bg-[var(--color-canvas)] text-[var(--color-ink-400)]">
+					<ArrowRight size={20} className="-rotate-45" />
 				</div>
-			)}
+				<p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--color-ink-500)]">Curated Collection</p>
+			</div>
 		</div>
 	);
 }
