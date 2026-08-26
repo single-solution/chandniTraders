@@ -74,26 +74,24 @@ export async function uploadVideo(options: UploadVideoOptions): Promise<UploadVi
 
 	if (presignedRes?.uploadUrl && presignedRes?.publicUrl) {
 		console.info("[Upload] Streaming binary directly to Cloudflare R2...");
-		const putRes = await fetch(presignedRes.uploadUrl, {
-			method: "PUT",
-			body: options.file,
-		});
-		if (!putRes.ok) {
+		try {
+			const putRes = await fetch(presignedRes.uploadUrl, {
+				method: "PUT",
+				body: options.file,
+			});
+			if (putRes.ok) {
+				console.info("[Upload] Direct cloud upload succeeded! Public URL:", presignedRes.publicUrl);
+				return {
+					url: presignedRes.publicUrl,
+					contentType: options.file.type || "video/mp4",
+					sizeBytes: options.file.size,
+				};
+			}
 			const errorText = await putRes.text().catch(() => "");
-			console.error("[Upload] Direct R2 PUT failed with status:", putRes.status, errorText);
-			throw new Error(`Direct cloud upload failed (${putRes.status}): ${errorText || "Upload rejected by cloud storage."}`);
+			console.warn("[Upload] Direct R2 PUT returned status:", putRes.status, errorText);
+		} catch (err) {
+			console.warn("[Upload] Direct R2 browser PUT failed (likely CORS), falling back to server upload:", err);
 		}
-		console.info("[Upload] Direct cloud upload succeeded! Public URL:", presignedRes.publicUrl);
-		return {
-			url: presignedRes.publicUrl,
-			contentType: options.file.type || "video/mp4",
-			sizeBytes: options.file.size,
-		};
-	}
-
-	// For files larger than 4MB, don't attempt serverless multipart upload
-	if (options.file.size > 4 * 1024 * 1024) {
-		throw new Error("File exceeds direct upload size limit. Please ensure Cloudflare R2 / S3 storage is configured.");
 	}
 
 	const form = new FormData();

@@ -29,6 +29,8 @@ function s3ClientConfig(config: { region: string; accessKeyId: string; secretAcc
 		region: config.region,
 		credentials: { accessKeyId: config.accessKeyId, secretAccessKey: config.secretAccessKey },
 		...(config.endpoint ? { endpoint: config.endpoint, forcePathStyle: true } : {}),
+		requestChecksumCalculation: "WHEN_REQUIRED" as const,
+		responseChecksumValidation: "WHEN_REQUIRED" as const,
 	};
 }
 
