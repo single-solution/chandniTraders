@@ -1,11 +1,16 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
-import { HOME_BANNER_TILES } from "@/app/_components/home/homeBannerImages";
 import { getStoreSettingsCached, getCategoryBySlugCached, getProductsPageCached } from "@/lib/core/cached";
-import type { HomeBannerTile } from "@/app/_components/home/homeBannerImages";
 import { toYouTubeEmbedUrl, type StoreSettings } from "@store/shared";
 import { resolveProductHeroImage } from "@/lib/productSummary";
+
+interface DynamicBannerTile {
+	src: string;
+	alt: string;
+	caption?: string;
+	href?: string;
+}
 
 interface HomeBannerProps {
 	compact?: boolean;
@@ -15,17 +20,12 @@ interface HomeBannerProps {
 export async function HomeBanner({ compact = false, categorySlug }: HomeBannerProps) {
 	const settings = await getStoreSettingsCached();
 
-	let tiles = HOME_BANNER_TILES.slice(0, compact ? 2 : 3);
-	let title: React.ReactNode = (
-		<>
-			Premium Fans. <br />
-			<span className="text-[var(--color-ink-500)]">Pure Comfort.</span>
-		</>
-	);
-	let description = settings.siteTagline || "Curated ceiling, bracket, and pedestal fans. Designed for modern spaces. Engineered for silence.";
+	let dynamicTiles: DynamicBannerTile[] = [];
+	let title: React.ReactNode = settings.siteName ? <>{settings.siteName}</> : "Chandni Traders";
+	let description = settings.siteTagline || "Curated premium collection. Engineered for quality and durability.";
 	let showLink = true;
 
-	const hasCustomHero = !categorySlug && Boolean(settings.heroMediaUrl?.trim());
+	const hasCustomHero = Boolean(settings.heroMediaUrl?.trim());
 
 	if (categorySlug) {
 		const [categoryMeta, productsPage] = await Promise.all([
@@ -40,7 +40,7 @@ export async function HomeBanner({ compact = false, categorySlug }: HomeBannerPr
 		}
 
 		if (productsPage && productsPage.products.length > 0) {
-			const dynamicTiles: HomeBannerTile[] = productsPage.products
+			const categoryTiles: DynamicBannerTile[] = productsPage.products
 				.map((p) => {
 					const img = resolveProductHeroImage(p);
 					return {
@@ -52,18 +52,18 @@ export async function HomeBanner({ compact = false, categorySlug }: HomeBannerPr
 				})
 				.filter((t) => t.src !== "");
 
-			if (dynamicTiles.length > 0) {
+			if (categoryTiles.length > 0) {
 				const requiredTiles = compact ? 2 : 3;
-				let filledTiles = [...dynamicTiles];
+				let filledTiles = [...categoryTiles];
 				// Repeat the dynamic tiles if we don't have enough to fill the gallery,
 				// so we only show products from this category, never falling back to generic ones.
 				while (filledTiles.length < requiredTiles) {
-					filledTiles = [...filledTiles, ...dynamicTiles];
+					filledTiles = [...filledTiles, ...categoryTiles];
 				}
-				tiles = filledTiles.slice(0, requiredTiles);
+				dynamicTiles = filledTiles.slice(0, requiredTiles);
 			} else {
 				// If no products have images, don't show wrong category images
-				tiles = [];
+				dynamicTiles = [];
 			}
 		}
 	}
@@ -101,7 +101,7 @@ export async function HomeBanner({ compact = false, categorySlug }: HomeBannerPr
 					{/* Right Column: Single Pristine Hero Showcase */}
 					<div className="lg:col-span-7">
 						<BannerVisualGallery
-							tiles={tiles}
+							tiles={dynamicTiles}
 							customMedia={
 								hasCustomHero
 									? {
@@ -125,7 +125,7 @@ interface CustomBannerMedia {
 	alt?: string;
 }
 
-function BannerVisualGallery({ tiles, customMedia }: { tiles: HomeBannerTile[]; customMedia?: CustomBannerMedia }) {
+function BannerVisualGallery({ tiles, customMedia }: { tiles: DynamicBannerTile[]; customMedia?: CustomBannerMedia }) {
 	if (customMedia && customMedia.url) {
 		const youtubeEmbedUrl = toYouTubeEmbedUrl(customMedia.url);
 		const isYouTube = youtubeEmbedUrl !== null;
