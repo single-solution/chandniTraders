@@ -9,7 +9,7 @@
 export const MAX_IMAGE_MB = 12;
 export const MAX_IMAGE_BYTES = MAX_IMAGE_MB * 1024 * 1024;
 export const MAX_SOURCE_DIMENSION = 4000;
-export const MAX_VIDEO_MB = 64;
+export const MAX_VIDEO_MB = 100;
 export const MAX_VIDEO_BYTES = MAX_VIDEO_MB * 1024 * 1024;
 
 export const ALLOWED_IMAGE_MIME = ["image/jpeg", "image/png", "image/webp"] as const;

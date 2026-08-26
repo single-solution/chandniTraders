@@ -1,11 +1,12 @@
 "use client";
 
-import { ImagePlus, Smile, Sparkles } from "lucide-react";
+import { Film, ImagePlus, Smile, Sparkles } from "lucide-react";
 import { STORE_SETTING_GROUPS } from "@store/shared";
 import { FormSection } from "@/components/forms/FormSection";
 import { TextField } from "@/components/forms/TextField";
 import { TextArea } from "@/components/forms/TextArea";
 import { BrandImageUpload } from "@/components/shared/uploads/BrandImageUpload";
+import { SingleMediaUpload } from "@/components/shared/uploads/SingleMediaUpload";
 import { FormGrid, SettingsTabHero, type SettingsHeroMetric } from "@/app/settings/_components/settingsWorkspaceUi";
 import { SaveableSection } from "@/app/settings/_components/settingsSaveableSection";
 import type { SectionProps } from "@/app/settings/_components/settingsSectionProps";
@@ -14,6 +15,9 @@ export function StoreDetailsSettings({ draft, saved, setField, onSaved, canUpdat
 	const hasName = draft.siteName.trim().length > 0;
 	const hasTagline = draft.siteTagline.trim().length > 0;
 	const brandAssetCount = [draft.brandLogoLight, draft.brandLogoDark, draft.brandFaviconLight, draft.brandFaviconDark].filter((value) => value.trim().length > 0).length;
+	const hasHeroMedia = Boolean(draft.heroMediaUrl?.trim());
+	const heroMediaTypeLabel = draft.heroMediaType === "video" ? "Video" : "Image";
+
 	const heroMetrics: SettingsHeroMetric[] = [
 		{
 			label: "Site name",
@@ -38,6 +42,13 @@ export function StoreDetailsSettings({ draft, saved, setField, onSaved, canUpdat
 						: "Some surfaces still fall back to the wordmark",
 			tone: brandAssetCount === 4 ? "good" : brandAssetCount > 0 ? "neutral" : "off",
 			icon: ImagePlus,
+		},
+		{
+			label: "Home banner",
+			value: hasHeroMedia ? `${heroMediaTypeLabel} active` : "Default",
+			hint: hasHeroMedia ? "Custom media on storefront hero" : "Showing default banner",
+			tone: hasHeroMedia ? "good" : "neutral",
+			icon: Film,
 		},
 	];
 	return (
@@ -67,6 +78,25 @@ export function StoreDetailsSettings({ draft, saved, setField, onSaved, canUpdat
 					value={draft.siteTagline}
 					onChange={(event) => setField("siteTagline", event.target.value)}
 					placeholder="Short one-liner that sits under the site name."
+					disabled={!canUpdate}
+				/>
+			</FormSection>
+
+			<FormSection
+				title="Home banner media"
+				description="Upload a custom hero image or video shown prominently on the storefront homepage. Only 1 media asset (image or video) is active at a time. Leaving it empty falls back to the default showcase banner."
+			>
+				<SingleMediaUpload
+					value={draft.heroMediaUrl}
+					mediaType={draft.heroMediaType}
+					alt={draft.heroMediaAlt}
+					onChange={({ url, type, alt: newAlt }) => {
+						setField("heroMediaUrl", url);
+						setField("heroMediaType", type);
+						setField("heroMediaAlt", newAlt ?? "");
+					}}
+					label="Homepage hero banner (1 image or 1 video)"
+					hint="Upload 1 image (JPG, PNG, WebP) or 1 video (MP4, WebM) or paste a YouTube link. Uploading one automatically replaces the other."
 					disabled={!canUpdate}
 				/>
 			</FormSection>

@@ -42,6 +42,15 @@ export interface StoreSettings {
 	brandFaviconLight: string;
 	brandFaviconDark: string;
 
+	/**
+	 * Single hero banner media item shown at the top of the storefront homepage.
+	 * Can be an uploaded image, an uploaded video, or a YouTube link.
+	 * Only 1 item is active at a time (uploading one replaces the other).
+	 */
+	heroMediaType: "image" | "video" | "none";
+	heroMediaUrl: string;
+	heroMediaAlt: string;
+
 	/** Injected at request time — not stored in Mongo. Hides pay-online when no PK gateway is configured. */
 	cardCheckoutReady?: boolean;
 
@@ -147,6 +156,10 @@ export const STORE_SETTING_DEFAULTS: StoreSettings = {
 	brandFaviconLight: "",
 	brandFaviconDark: "",
 
+	heroMediaType: "none",
+	heroMediaUrl: "",
+	heroMediaAlt: "",
+
 	supportPhone: "03074451762",
 	supportLandline: "04237233033",
 	supportEmail: "chandnitraders502@gmail.com",
@@ -208,7 +221,7 @@ export const STORE_SETTING_KEYS = Object.keys(STORE_SETTING_DEFAULTS) as Array<k
  */
 export const STORE_SETTING_GROUPS = {
 	urls: ["publicSiteUrl"] as const,
-	branding: ["siteName", "siteTagline", "brandLogoLight", "brandLogoDark", "brandFaviconLight", "brandFaviconDark"] as const,
+	branding: ["siteName", "siteTagline", "brandLogoLight", "brandLogoDark", "brandFaviconLight", "brandFaviconDark", "heroMediaType", "heroMediaUrl", "heroMediaAlt"] as const,
 	contact: ["supportPhone", "supportLandline", "supportEmail", "whatsappNumber"] as const,
 	address: ["storeAddressLine1", "storeAddressLine2", "storeHours"] as const,
 	notices: ["globalDeliveryNote", "storeNoticeText", "storeNoticeEnabled"] as const,

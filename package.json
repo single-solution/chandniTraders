@@ -27,7 +27,8 @@
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"import:chandni": "npx tsx scripts/chandni-import.mjs",
-		"import:chandni:dry": "npx tsx scripts/chandni-import.mjs --dry-run"
+		"import:chandni:dry": "npx tsx scripts/chandni-import.mjs --dry-run",
+		"optimize:video": "node scripts/optimize-hero-video.mjs"
 	},
 	"devDependencies": {
 		"@types/node": "^22.10.0",

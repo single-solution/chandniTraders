@@ -6,7 +6,7 @@ export interface SendResendEmailInput {
 	subject: string;
 	text: string;
 	from?: string;
-	settings?: Pick<IntegrationSettingsValues, "resendApiKey" | "resendFromEmail">;
+	settings?: { resendApiKey?: string; resendFromEmail?: string };
 }
 
 /** Send a plain-text email via Resend. Returns false when skipped or failed. */
@@ -17,9 +17,9 @@ export async function sendResendEmail(input: SendResendEmailInput): Promise<bool
 	if (!apiKey || !fromDefault) {
 		try {
 			const { getIntegrationSettings } = await import("@store/db");
-			const integration = await getIntegrationSettings();
-			apiKey = apiKey || integration.resendApiKey.trim();
-			fromDefault = fromDefault || integration.resendFromEmail.trim();
+			const integration = (await getIntegrationSettings()) as unknown as { resendApiKey?: string; resendFromEmail?: string };
+			apiKey = apiKey || integration.resendApiKey?.trim();
+			fromDefault = fromDefault || integration.resendFromEmail?.trim();
 		} catch (error) {
 			logger.warn({ error }, "Resend: could not load integration settings");
 		}
