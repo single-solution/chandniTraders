@@ -83,16 +83,35 @@ export async function POST(request: Request) {
 	}
 
 	const kindRaw = (formData.get("kind") ?? "image").toString().toLowerCase();
-	const kind = kindRaw === "video" ? "video" : "image";
+	const kind = kindRaw === "video" ? "video" : kindRaw === "presigned" ? "presigned" : "image";
 
 	const subjectKind = formData.get("subjectKind")?.toString() ?? null;
 	const subjectId = formData.get("subjectId")?.toString() ?? null;
 	const altTextBase = formData.get("altTextBase")?.toString().trim() ?? "";
-	const fileType = file.type;
-	const fileSize = file.size;
 
 	try {
+		if (kind === "presigned") {
+			const storage = await resolveStorageProvider();
+			if (!storage.createPresignedUploadUrl) {
+				return badRequest("Direct presigned upload not available for current storage provider.");
+			}
+			const contentType = formData.get("contentType")?.toString() || "video/mp4";
+			const keyPrefix = buildKeyPrefix(subjectKind, subjectId);
+			const extension = contentType === "video/webm" ? "webm" : "mp4";
+			const RADIX_BASE36 = 36;
+			const key = `${keyPrefix}/video-${Date.now().toString(RADIX_BASE36)}.${extension}`;
+			const presigned = await storage.createPresignedUploadUrl(key, contentType);
+			logger.info({ userId, subjectKind, subjectId, key }, "uploads: presigned url generated");
+			return ok(presigned);
+		}
+
 		if (kind === "image") {
+			const file = formData.get("file");
+			if (!(file instanceof File)) {
+				return badRequest("Missing `file` field in multipart form data.");
+			}
+			const fileType = file.type;
+			const fileSize = file.size;
 			if (!ALLOWED_IMAGE_MIME.includes(fileType as AllowedImageMime)) {
 				return unsupportedMediaType(`Unsupported image type "${fileType}". Allowed: ${ALLOWED_IMAGE_MIME.join(", ")}.`);
 			}
@@ -125,6 +144,13 @@ export async function POST(request: Request) {
 			);
 			return ok(stored);
 		}
+
+		const file = formData.get("file");
+		if (!(file instanceof File)) {
+			return badRequest("Missing `file` field in multipart form data.");
+		}
+		const fileType = file.type;
+		const fileSize = file.size;
 
 		if (!ALLOWED_VIDEO_MIME.includes(fileType as AllowedVideoMime)) {
 			return unsupportedMediaType(`Unsupported video type "${fileType}". Allowed: ${ALLOWED_VIDEO_MIME.join(", ")}.`);

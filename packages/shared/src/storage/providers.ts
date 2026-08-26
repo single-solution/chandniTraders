@@ -7,6 +7,7 @@ import type { IntegrationSettingsValues } from "../integration/integrationSettin
 export interface StorageProvider {
 	put(key: string, body: Buffer, contentType: string): Promise<string>;
 	remove(url: string): Promise<void>;
+	createPresignedUploadUrl?(key: string, contentType: string): Promise<{ uploadUrl: string; publicUrl: string }>;
 }
 
 function readS3Config(settings?: IntegrationSettingsValues) {
@@ -67,6 +68,22 @@ export function resolveStorageProviderFromSettings(settings?: IntegrationSetting
 				}),
 			);
 			return publicUrlForS3Key(key, bucket, region, settings);
+		},
+		async createPresignedUploadUrl(key, contentType) {
+			const { bucket, region, endpoint, ...credentials } = readS3Config(settings);
+			const { S3Client, PutObjectCommand } = await import("@aws-sdk/client-s3");
+			const { getSignedUrl } = await import("@aws-sdk/s3-request-presigner");
+			const client = new S3Client(s3ClientConfig({ region, endpoint, ...credentials }));
+			const command = new PutObjectCommand({
+				Bucket: bucket,
+				Key: key,
+			});
+			const uploadUrl = await getSignedUrl(client, command, {
+				expiresIn: 900,
+				signableHeaders: new Set(["host"]),
+			});
+			const publicUrl = publicUrlForS3Key(key, bucket, region, settings);
+			return { uploadUrl, publicUrl };
 		},
 		async remove(url) {
 			const { bucket, region, endpoint, ...credentials } = readS3Config(settings);
