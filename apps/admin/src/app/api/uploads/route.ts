@@ -77,11 +77,6 @@ export async function POST(request: Request) {
 		return badRequest("Expected multipart/form-data body.");
 	}
 
-	const file = formData.get("file");
-	if (!(file instanceof File)) {
-		return badRequest("Missing `file` field in multipart form data.");
-	}
-
 	const kindRaw = (formData.get("kind") ?? "image").toString().toLowerCase();
 	const kind = kindRaw === "video" ? "video" : kindRaw === "presigned" ? "presigned" : "image";
 
