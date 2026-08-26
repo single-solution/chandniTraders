@@ -65,35 +65,50 @@ export async function uploadVideo(options: UploadVideoOptions): Promise<UploadVi
 	if (options.subjectId) presignForm.set("subjectId", options.subjectId);
 
 	let presignedRes: { uploadUrl?: string; publicUrl?: string } | null = null;
+	let presignError: string | null = null;
 	try {
 		presignedRes = (await postUpload(presignForm)) as { uploadUrl?: string; publicUrl?: string };
 		console.info("[Upload] Received presigned ticket from server:", presignedRes);
 	} catch (err) {
+		presignError = err instanceof Error ? err.message : "Presign request failed";
 		console.warn("[Upload] Presign endpoint request failed:", err);
 	}
 
 	if (presignedRes?.uploadUrl && presignedRes?.publicUrl) {
 		console.info("[Upload] Streaming binary directly to Cloudflare R2...");
-		const putRes = await fetch(presignedRes.uploadUrl, {
-			method: "PUT",
-			body: options.file,
-		});
-		if (!putRes.ok) {
-			const errorText = await putRes.text().catch(() => "");
-			console.error("[Upload] Direct R2 PUT failed with status:", putRes.status, errorText);
-			throw new Error(`Direct cloud upload failed (${putRes.status}): ${errorText || "Upload rejected by cloud storage."}`);
+		try {
+			const putRes = await fetch(presignedRes.uploadUrl, {
+				method: "PUT",
+				body: options.file,
+			});
+			if (!putRes.ok) {
+				const errorText = await putRes.text().catch(() => "");
+				console.error("[Upload] Direct R2 PUT failed with status:", putRes.status, errorText);
+				throw new Error(`Direct cloud upload failed (${putRes.status}): ${errorText || "Upload rejected by cloud storage."}`);
+			}
+			console.info("[Upload] Direct cloud upload succeeded! Public URL:", presignedRes.publicUrl);
+			return {
+				url: presignedRes.publicUrl,
+				contentType: options.file.type || "video/mp4",
+				sizeBytes: options.file.size,
+			};
+		} catch (err) {
+			if (err instanceof Error && err.message.startsWith("Direct cloud upload failed")) {
+				throw err;
+			}
+			throw new Error(
+				`Cloud storage upload failed: ${err instanceof Error ? err.message : "Network/CORS error"}. Please ensure Cloudflare R2 credentials and CORS are configured.`,
+			);
 		}
-		console.info("[Upload] Direct cloud upload succeeded! Public URL:", presignedRes.publicUrl);
-		return {
-			url: presignedRes.publicUrl,
-			contentType: options.file.type || "video/mp4",
-			sizeBytes: options.file.size,
-		};
 	}
 
 	// For files larger than 4MB, don't attempt serverless multipart upload
 	if (options.file.size > 4 * 1024 * 1024) {
-		throw new Error("File exceeds direct upload size limit. Please ensure Cloudflare R2 / S3 storage is configured in Settings -> Integrations.");
+		throw new Error(
+			presignError
+				? `Direct cloud upload failed: ${presignError}. Please verify Cloudflare R2 / S3 storage is configured in Settings -> Integrations.`
+				: "File exceeds direct upload size limit. Please ensure Cloudflare R2 / S3 storage is configured in Settings -> Integrations.",
+		);
 	}
 
 	const form = new FormData();
