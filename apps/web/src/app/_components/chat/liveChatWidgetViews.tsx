@@ -9,8 +9,7 @@ import { CHAT_GUEST_MESSAGE_LIMIT, CHAT_MESSAGE_BODY_MAX, classNames, type ChatM
 import { ChatMessageBubble, ChatMessageDayDivider, ChatTypingIndicator, chatWelcomeMessage, groupChatMessagesByDay } from "@/app/_components/chat/chatMessageUi";
 import { scheduleStateUpdate } from "@/lib/scheduleStateUpdate";
 
-const CHAT_COMPOSER_FORM_CLASS =
-	"flex items-end gap-2 border-t border-[var(--color-ink-100)] bg-[var(--color-surface)] px-3 py-2.5 max-md:gap-2.5 max-md:px-3.5 max-md:py-3";
+const CHAT_COMPOSER_FORM_CLASS = "flex items-end gap-2 border-t border-[var(--color-ink-100)] bg-[var(--color-surface)] px-3 py-2.5 max-md:gap-2.5 max-md:px-3.5 max-md:py-3";
 const CHAT_COMPOSER_TEXTAREA_CLASS =
 	"box-border max-h-[120px] min-h-[var(--chat-composer-control-h)] min-w-0 flex-1 resize-none rounded-[var(--radius-md)] bg-[var(--color-canvas-deep)] px-3 py-2 max-md:px-3.5 text-[length:var(--chat-font-body)] leading-normal text-[var(--color-ink-800)] placeholder:text-[var(--color-ink-400)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent-500)] disabled:opacity-60";
 const CHAT_COMPOSER_SEND_CLASS =
@@ -79,12 +78,7 @@ function ChatComposer({ draft, onDraftChange, onSubmit, sending, placeholder, ar
 				disabled={sending}
 				className={CHAT_COMPOSER_TEXTAREA_CLASS}
 			/>
-			<button
-				type="submit"
-				aria-label="Send message"
-				disabled={sending || draft.trim().length === 0}
-				className={CHAT_COMPOSER_SEND_CLASS}
-			>
+			<button type="submit" aria-label="Send message" disabled={sending || draft.trim().length === 0} className={CHAT_COMPOSER_SEND_CLASS}>
 				{sending ? (
 					<span className="block size-3.5 max-md:size-4 animate-spin rounded-full border-2 border-current border-r-transparent" />
 				) : (
@@ -213,6 +207,7 @@ interface ThreadConversationProps {
 	hasMoreOlder: boolean;
 	isLoadingOlder: boolean;
 	onLoadOlder: () => void;
+	disableCustomerSignIn?: boolean;
 }
 
 const LOAD_OLDER_SCROLL_THRESHOLD_PX = 80;
@@ -232,6 +227,7 @@ export function ThreadConversation({
 	hasMoreOlder,
 	isLoadingOlder,
 	onLoadOlder,
+	disableCustomerSignIn,
 }: ThreadConversationProps) {
 	const messageListRef = useRef<HTMLDivElement>(null);
 	const [draft, setDraft] = useState(initialDraft);
@@ -445,11 +441,16 @@ export function ThreadConversation({
 							guestMessageLimit,
 							welcomeMessageGuest,
 							welcomeMessageCustomer,
+							disableCustomerSignIn,
 						})}
 					</div>
 				)}
 			</div>
-			{error && <div className="border-t border-[var(--color-danger-200)] bg-[var(--color-danger-50)] px-3 py-1.5 text-[length:var(--chat-font-small)] text-[var(--color-danger-700)]">{error}</div>}
+			{error && (
+				<div className="border-t border-[var(--color-danger-200)] bg-[var(--color-danger-50)] px-3 py-1.5 text-[length:var(--chat-font-small)] text-[var(--color-danger-700)]">
+					{error}
+				</div>
+			)}
 			{loginRequired ? (
 				<ChatLoginGate signInHref={signInHref} />
 			) : (
@@ -459,14 +460,7 @@ export function ThreadConversation({
 							{previewMessagesLeft === 1 ? "Last preview message — sign in after this to continue." : `${previewMessagesLeft} preview messages left before sign-in.`}
 						</p>
 					)}
-					<ChatComposer
-						draft={draft}
-						onDraftChange={setDraft}
-						onSubmit={sendDraft}
-						sending={sending}
-						placeholder="Type a message"
-						ariaLabel="Type a message"
-					/>
+					<ChatComposer draft={draft} onDraftChange={setDraft} onSubmit={sendDraft} sending={sending} placeholder="Type a message" ariaLabel="Type a message" />
 				</>
 			)}
 		</>
@@ -482,6 +476,7 @@ interface ComposeConversationProps {
 	signInHref: string;
 	isSignedInCustomer: boolean;
 	guestMessageLimit: number;
+	disableCustomerSignIn?: boolean;
 }
 
 export function ComposeConversation({
@@ -493,6 +488,7 @@ export function ComposeConversation({
 	signInHref,
 	isSignedInCustomer,
 	guestMessageLimit,
+	disableCustomerSignIn,
 }: ComposeConversationProps) {
 	const [sending, setSending] = useState(false);
 	const [error, setError] = useState<string | null>(null);
@@ -523,12 +519,17 @@ export function ComposeConversation({
 						chatWelcomeMessage({
 							audience: isSignedInCustomer ? "customer" : "guest",
 							guestMessageLimit,
+							disableCustomerSignIn,
 						})}
 					{subjectProductName ? <p className="mt-2 font-semibold text-[var(--color-ink-800)]">About: {subjectProductName}</p> : null}
 				</div>
 			</div>
-			{error ? <div className="border-t border-[var(--color-danger-200)] bg-[var(--color-danger-50)] px-3 py-1.5 text-[length:var(--chat-font-small)] text-[var(--color-danger-700)]">{error}</div> : null}
-			{!isSignedInCustomer ? (
+			{error ? (
+				<div className="border-t border-[var(--color-danger-200)] bg-[var(--color-danger-50)] px-3 py-1.5 text-[length:var(--chat-font-small)] text-[var(--color-danger-700)]">
+					{error}
+				</div>
+			) : null}
+			{!isSignedInCustomer && !disableCustomerSignIn ? (
 				<p className="border-t border-[var(--color-ink-100)] bg-[var(--color-canvas-deep)] px-3 py-1.5 text-center text-[length:var(--chat-font-small)] text-[var(--color-ink-500)]">
 					Guest preview —{" "}
 					<Link href={signInHref} className="font-semibold text-[var(--color-accent-700)] underline">
@@ -537,14 +538,7 @@ export function ComposeConversation({
 					after a few messages to continue.
 				</p>
 			) : null}
-			<ChatComposer
-				draft={draft}
-				onDraftChange={onDraftChange}
-				onSubmit={sendDraft}
-				sending={sending}
-				placeholder="Type your first message"
-				ariaLabel="Type your first message"
-			/>
+			<ChatComposer draft={draft} onDraftChange={onDraftChange} onSubmit={sendDraft} sending={sending} placeholder="Type your first message" ariaLabel="Type your first message" />
 		</>
 	);
 }
@@ -562,7 +556,8 @@ function AssistantPausedNotice(_props: { reason?: ChatThread["assistantPauseReas
 		>
 			<AlertTriangle size={14} className="mt-0.5 shrink-0" aria-hidden />
 			<span>
-				<strong className="font-semibold">Your chat needs personal attention.</strong> Automated help is paused for now — you can still send messages here and our team will follow up as soon as we can.
+				<strong className="font-semibold">Your chat needs personal attention.</strong> Automated help is paused for now — you can still send messages here and our team will follow
+				up as soon as we can.
 			</span>
 		</div>
 	);

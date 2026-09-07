@@ -11,7 +11,16 @@ export function countCustomerChatMessages(messages: Pick<ChatMessage, "author">[
 	return messages.filter((message) => message.author === "customer").length;
 }
 
-export function guestChatLoginRequired(input: { customerId?: string; phoneNumber: string; guestMessageLimit: number; messages: Pick<ChatMessage, "author">[] }): boolean {
+export function guestChatLoginRequired(input: {
+	customerId?: string;
+	phoneNumber: string;
+	guestMessageLimit: number;
+	messages: Pick<ChatMessage, "author">[];
+	disableCustomerSignIn?: boolean;
+}): boolean {
+	if (input.disableCustomerSignIn) {
+		return false;
+	}
 	if (input.customerId) {
 		return false;
 	}

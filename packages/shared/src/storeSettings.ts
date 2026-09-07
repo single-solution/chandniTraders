@@ -51,6 +51,13 @@ export interface StoreSettings {
 	heroMediaUrl: string;
 	heroMediaAlt: string;
 
+	/**
+	 * When true, customer sign-in is disabled across the storefront. Customers
+	 * can check out as guests with just their name, phone number, and delivery
+	 * address, and sign-in gates (such as in the chatbot) are lifted.
+	 */
+	disableCustomerSignIn: boolean;
+
 	/** Injected at request time — not stored in Mongo. Hides pay-online when no PK gateway is configured. */
 	cardCheckoutReady?: boolean;
 
@@ -160,6 +167,8 @@ export const STORE_SETTING_DEFAULTS: StoreSettings = {
 	heroMediaUrl: "",
 	heroMediaAlt: "",
 
+	disableCustomerSignIn: true,
+
 	supportPhone: "03074451762",
 	supportLandline: "04237233033",
 	supportEmail: "chandnitraders502@gmail.com",
@@ -221,7 +230,18 @@ export const STORE_SETTING_KEYS = Object.keys(STORE_SETTING_DEFAULTS) as Array<k
  */
 export const STORE_SETTING_GROUPS = {
 	urls: ["publicSiteUrl"] as const,
-	branding: ["siteName", "siteTagline", "brandLogoLight", "brandLogoDark", "brandFaviconLight", "brandFaviconDark", "heroMediaType", "heroMediaUrl", "heroMediaAlt"] as const,
+	branding: [
+		"siteName",
+		"siteTagline",
+		"brandLogoLight",
+		"brandLogoDark",
+		"brandFaviconLight",
+		"brandFaviconDark",
+		"heroMediaType",
+		"heroMediaUrl",
+		"heroMediaAlt",
+		"disableCustomerSignIn",
+	] as const,
 	contact: ["supportPhone", "supportLandline", "supportEmail", "whatsappNumber"] as const,
 	address: ["storeAddressLine1", "storeAddressLine2", "storeHours"] as const,
 	notices: ["globalDeliveryNote", "storeNoticeText", "storeNoticeEnabled"] as const,

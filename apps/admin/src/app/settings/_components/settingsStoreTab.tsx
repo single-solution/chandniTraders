@@ -1,8 +1,9 @@
 "use client";
 
-import { Film, ImagePlus, Smile, Sparkles } from "lucide-react";
+import { Film, ImagePlus, Smile, Sparkles, UserCheck, UserX } from "lucide-react";
 import { STORE_SETTING_GROUPS } from "@store/shared";
 import { FormSection } from "@/components/forms/FormSection";
+import { Switch } from "@/components/forms/Switch";
 import { TextField } from "@/components/forms/TextField";
 import { TextArea } from "@/components/forms/TextArea";
 import { BrandImageUpload } from "@/components/shared/uploads/BrandImageUpload";
@@ -30,6 +31,13 @@ export function StoreDetailsSettings({ draft, saved, setField, onSaved, canUpdat
 			value: hasTagline ? draft.siteTagline : "Not set",
 			tone: hasTagline ? "good" : "warn",
 			icon: Smile,
+		},
+		{
+			label: "Customer sign-in",
+			value: draft.disableCustomerSignIn ? "Disabled (Guest mode)" : "Active (WhatsApp OTP)",
+			hint: draft.disableCustomerSignIn ? "Guest checkout enabled site-wide" : "Login required at checkout",
+			tone: draft.disableCustomerSignIn ? "warn" : "good",
+			icon: draft.disableCustomerSignIn ? UserX : UserCheck,
 		},
 		{
 			label: "Brand assets",
@@ -61,6 +69,19 @@ export function StoreDetailsSettings({ draft, saved, setField, onSaved, canUpdat
 			canUpdate={canUpdate}
 			hero={<SettingsTabHero metrics={heroMetrics} />}
 		>
+			<FormSection
+				title="Customer sign-in & Guest checkout"
+				description="Temporarily disable customer sign-in across the storefront while WhatsApp OTP verification is unavailable or being set up. When disabled, customers check out smoothly as guests with just their name, phone, and address, and all chat assistant message limits are removed."
+			>
+				<Switch
+					label="Disable customer sign-in (Guest mode)"
+					description="When enabled, sign-in is not required anywhere on the website (including checkout and chatbot). Customers can place orders directly without WhatsApp verification."
+					checked={draft.disableCustomerSignIn}
+					onCheckedChange={(value) => setField("disableCustomerSignIn", value)}
+					disabled={!canUpdate}
+				/>
+			</FormSection>
+
 			<FormSection title="Site identity" description="The name and tagline that show up across the storefront, page titles, and the AI assistant greeting.">
 				<FormGrid>
 					<TextField

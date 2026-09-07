@@ -1,14 +1,5 @@
 import { connectDB, getIntegrationSettings, getStoreSettings, handleMongoError, Order as OrderModel } from "@store/db";
-import {
-	badRequest,
-	forbidden,
-	isOnlineCardCheckoutReady,
-	notFound,
-	ok,
-	parseBody,
-	resolvePublicSiteUrl,
-	serverError,
-} from "@store/shared";
+import { badRequest, forbidden, isOnlineCardCheckoutReady, notFound, ok, parseBody, resolvePublicSiteUrl, serverError } from "@store/shared";
 
 import { enforcePublicRateLimit } from "@/lib/api/publicRateLimit";
 import { enforceSameOrigin } from "@/lib/api/sameOrigin";
@@ -27,8 +18,8 @@ export async function POST(request: Request): Promise<Response> {
 		return csrf;
 	}
 
-	const actor = await getVerifiedCustomer();
-	if (!actor) {
+	const [actor, settings] = await Promise.all([getVerifiedCustomer(), getStoreSettings()]);
+	if (!actor && !settings.disableCustomerSignIn) {
 		return forbidden("Sign in to complete online payment.");
 	}
 
@@ -36,7 +27,7 @@ export async function POST(request: Request): Promise<Response> {
 		scope: "storefront-checkout-session",
 		max: 10,
 		windowMs: 60_000,
-		identifier: actor.id,
+		identifier: actor?.id ?? request.headers.get("x-forwarded-for") ?? "guest",
 	});
 	if (limited) {
 		return limited;
@@ -57,7 +48,7 @@ export async function POST(request: Request): Promise<Response> {
 	try {
 		const order = await OrderModel.findOne({
 			orderNumber,
-			customerId: actor.id,
+			...(actor ? { customerId: actor.id } : {}),
 		});
 
 		if (!order) {

@@ -102,12 +102,14 @@ export async function POST(request: Request, { params }: RouteContext) {
 		inquiry = await claimAnonymousThreadIfNeeded(inquiry, session.user.customerId);
 	}
 
+	const storeSettings = await getStoreSettings();
 	if (
 		guestChatLoginRequired({
 			customerId: inquiry.customerId?.toString(),
 			phoneNumber: inquiry.phoneNumber,
 			guestMessageLimit: settings.guestMessageLimit,
 			messages: inquiry.messages,
+			disableCustomerSignIn: storeSettings.disableCustomerSignIn,
 		})
 	) {
 		return Response.json(

@@ -9,6 +9,7 @@
  *   (we never reveal whether a number is registered with us).
  */
 
+import { getStoreSettings } from "@store/db";
 import { badRequest, ok, parseBody, phoneFingerprint, serverError, SHORT_BURST_WINDOW_MS, tooManyRequests } from "@store/shared";
 
 import { enforcePublicRateLimit } from "@/lib/api/publicRateLimit";
@@ -25,6 +26,11 @@ interface IssueOtpBody {
 }
 
 export async function POST(request: Request) {
+	const settings = await getStoreSettings();
+	if (settings.disableCustomerSignIn) {
+		return badRequest("Customer sign-in is temporarily paused while WhatsApp verification is being upgraded. You can browse and check out directly without signing in.");
+	}
+
 	const parsed = await parseBody<IssueOtpBody>(request);
 	if (parsed instanceof Response) {
 		return parsed;

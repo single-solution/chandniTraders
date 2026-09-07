@@ -151,10 +151,7 @@ function numberArg(args: Record<string, unknown>, key: string): number | undefin
 }
 
 function formatVariantLine(variant: Product["variants"][number]): string {
-	const parts = [
-		formatPrice(variant.priceRupees),
-		isVariantInStock(variant) ? `${variant.quantity} in stock` : variant.forceOutOfStock ? "forced sold out" : "out of stock",
-	];
+	const parts = [formatPrice(variant.priceRupees), isVariantInStock(variant) ? `${variant.quantity} in stock` : variant.forceOutOfStock ? "forced sold out" : "out of stock"];
 	const warrantyDays = resolveWarrantyDays(variant);
 	if (warrantyDays > 0) {
 		parts.push(`${formatWarrantyPeriod(warrantyDays)} warranty`);
@@ -271,7 +268,7 @@ export async function executeAssistantTool(call: AssistantToolCall, context: Ass
 
 	if (call.name === "get_my_orders") {
 		if (!context.verifiedCustomerId) {
-			return "The customer is not signed in, so their orders can't be accessed. Invite them to sign in to their account and offer to pull the order up there.";
+			return "The customer is not signed in, so their orders can't be accessed directly. Customer sign-in may be temporarily paused for WhatsApp setup; ask them to share their order number or contact details so a teammate can pull up the order, or offer human support.";
 		}
 		const orders = await buildOrderContext(context.verifiedCustomerId);
 		return orders ?? "No orders are on this signed-in account yet.";
@@ -279,7 +276,7 @@ export async function executeAssistantTool(call: AssistantToolCall, context: Ass
 
 	if (call.name === "get_my_account") {
 		if (!context.verifiedCustomerId) {
-			return "The customer is not signed in, so account details can't be accessed. Invite them to sign in.";
+			return "The customer is not signed in, so account details can't be accessed. If customer sign-in is paused, explain that account verification is temporarily offline and orders can be placed as a guest.";
 		}
 		const profile = await getAccountChatProfile(context.verifiedCustomerId);
 		return profile ? formatAccountProfile(profile) : "No account profile was found.";

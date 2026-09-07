@@ -46,7 +46,8 @@ export function MobileBottomTabBar() {
 	const pathname = usePathname() ?? "/";
 	const catalogHomeHref = useShopHref();
 	const { itemCount } = useCart();
-	const showSignIn = useIsSignedIn() === false;
+	const { disableCustomerSignIn } = useStoreSettings();
+	const showSignIn = useIsSignedIn() === false && !disableCustomerSignIn;
 
 	function resolveTab(tab: Tab): { href: string; label: string } {
 		if (tab.matchBase === "/account" && showSignIn) {
@@ -212,10 +213,7 @@ function TabMessageItem() {
 			)}
 			{showElevatedButton
 				? createPortal(
-						<div
-							className="pointer-events-none fixed inset-x-3 z-[calc(var(--z-modal)+1)] md:hidden"
-							style={{ bottom: tabBarBottom, height: "var(--mobile-tabbar-h)" }}
-						>
+						<div className="pointer-events-none fixed inset-x-3 z-[calc(var(--z-modal)+1)] md:hidden" style={{ bottom: tabBarBottom, height: "var(--mobile-tabbar-h)" }}>
 							<div className="grid h-full grid-cols-5">
 								<div aria-hidden />
 								<div aria-hidden />

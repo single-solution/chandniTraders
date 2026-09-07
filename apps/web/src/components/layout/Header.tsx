@@ -147,10 +147,12 @@ function HeaderNavLink({ href, label, isActive }: HeaderNavLinkProps) {
 
 function HeaderAccountLink({ isActive }: { isActive: boolean }) {
 	const signedIn = useIsSignedIn();
+	const { disableCustomerSignIn } = useStoreSettings();
 	// Until the check resolves (null), keep the neutral "Account" label that
 	// matches the server render — only show "Sign in" once we know there's no
-	// session, so there's no hydration mismatch.
-	const showSignIn = signedIn === false;
+	// session, so there's no hydration mismatch. If sign-in is paused, keep
+	// "Account" to avoid advertising a disabled sign-in flow.
+	const showSignIn = signedIn === false && !disableCustomerSignIn;
 	const href = showSignIn ? "/account/sign-in" : "/account";
 	const label = showSignIn ? "Sign in" : "Account";
 	const prefetchHandlers = usePrefetchOnIntent(href);

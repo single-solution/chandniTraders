@@ -68,6 +68,7 @@ import {
 	LOYALTY_MIN_REDEEM,
 	maxRedeemable,
 	parseBody,
+	phoneFingerprint,
 	pointsEarnedFor,
 	pointsToRupees,
 	serverError,
@@ -130,6 +131,7 @@ interface AddressBody {
 
 interface CustomerBody {
 	name?: unknown;
+	phoneNumber?: unknown;
 }
 
 interface OrderBody {
@@ -162,8 +164,8 @@ export async function POST(request: Request) {
 		return csrf;
 	}
 
-	const actor = await getVerifiedCustomer();
-	if (!actor) {
+	const [actor, settings] = await Promise.all([getVerifiedCustomer(), getStoreSettings()]);
+	if (!actor && !settings.disableCustomerSignIn) {
 		return unauthorized();
 	}
 
@@ -173,9 +175,13 @@ export async function POST(request: Request) {
 	}
 	const body = parsed;
 
+	const customerPhoneInput = typeof body.customer?.phoneNumber === "string" ? body.customer.phoneNumber.trim() : "";
+	const rateLimitIdentifier =
+		actor?.phoneNumber ?? actor?.id ?? (customerPhoneInput ? phoneFingerprint(customerPhoneInput) : null) ?? request.headers.get("x-forwarded-for") ?? "guest";
+
 	const limited = enforcePublicRateLimit(request, {
 		scope: "storefront-order",
-		identifier: actor.phoneNumber ?? actor.id,
+		identifier: rateLimitIdentifier,
 		max: MAX_ORDERS_PER_WINDOW,
 		windowMs: SHORT_BURST_WINDOW_MS,
 	});
@@ -224,7 +230,7 @@ export async function POST(request: Request) {
 	if (idempotencyKey) {
 		const priorOrder = await OrderModel.findOne({
 			idempotencyKey,
-			customerId: actor.id,
+			...(actor ? { customerId: actor.id } : {}),
 		}).lean<{
 			_id: Types.ObjectId;
 			orderNumber: string;
@@ -263,12 +269,12 @@ export async function POST(request: Request) {
 		}
 	}
 
-	const existingCustomer = await Customer.findById(actor.id).lean<CustomerAttributes & { _id: Types.ObjectId }>();
-	if (!existingCustomer) {
+	const existingCustomer = actor ? await Customer.findById(actor.id).lean<CustomerAttributes & { _id: Types.ObjectId }>() : null;
+	if (actor && !existingCustomer) {
 		return unauthorized();
 	}
 
-	const customerNameInput = typeof body.customer?.name === "string" && body.customer.name.trim().length > 0 ? body.customer.name : existingCustomer.name;
+	const customerNameInput = typeof body.customer?.name === "string" && body.customer.name.trim().length > 0 ? body.customer.name.trim() : (existingCustomer?.name ?? "");
 	const nameResult = validateString(customerNameInput, {
 		label: "Name",
 		min: MIN_NAME_CHARS,
@@ -278,7 +284,8 @@ export async function POST(request: Request) {
 		return badRequest(nameResult.error);
 	}
 
-	const phoneResult = validateString(existingCustomer.phoneNumber, {
+	const phoneInput = existingCustomer?.phoneNumber ?? customerPhoneInput;
+	const phoneResult = validateString(phoneInput, {
 		label: "Phone",
 		min: MIN_PHONE_CHARS,
 		max: FIELD_LIMITS.phoneNumber,
@@ -287,7 +294,7 @@ export async function POST(request: Request) {
 		return badRequest(phoneResult.error);
 	}
 
-	const cityResult = resolveCustomerCity(existingCustomer.city);
+	const cityResult = resolveCustomerCity(existingCustomer?.city);
 
 	// Address required for courier deliveries — we never ship without one.
 	let addressInput: ResolvedAddress | undefined;
@@ -383,9 +390,7 @@ export async function POST(request: Request) {
 				attributes: line.attributes,
 			});
 		if (!variant) {
-			return conflict(
-				`${product.name} in your cart is out of date. Remove it from your cart, open the product page again, and add it back before placing your order.`,
-			);
+			return conflict(`${product.name} in your cart is out of date. Remove it from your cart, open the product page again, and add it back before placing your order.`);
 		}
 		if (
 			!isVariantInStock({
@@ -412,7 +417,6 @@ export async function POST(request: Request) {
 
 	// Totals — server-authoritative. Discount % and free-delivery threshold are
 	// resolved from `StoreSettings` so the admin can change them without a deploy.
-	const settings = await getStoreSettings();
 	const checkoutPaymentId = orderPaymentToCheckoutId(payment);
 	if (!checkoutPaymentId || !getPaymentMethods(settings).some((method) => method.id === checkoutPaymentId)) {
 		return badRequest("This payment method is not available right now.");
@@ -434,13 +438,13 @@ export async function POST(request: Request) {
 		quantity: line.quantity,
 		attributes: line.variant.attributes ?? {},
 	}));
-	const lineOfferIds = Object.fromEntries(resolvedItems.filter((line) => line.appliedOfferId).map((line) => [`${line.productDoc._id.toString()}:${line.variant._id.toString()}`, line.appliedOfferId]));
+	const lineOfferIds = Object.fromEntries(
+		resolvedItems.filter((line) => line.appliedOfferId).map((line) => [`${line.productDoc._id.toString()}:${line.variant._id.toString()}`, line.appliedOfferId]),
+	);
 
 	const lockedOfferIds = Array.from(new Set(resolvedItems.map((line) => line.appliedOfferId).filter((offerId): offerId is string => Boolean(offerId))));
 	const lockedOfferDocs =
-		lockedOfferIds.length > 0
-			? await OfferModel.find({ _id: { $in: lockedOfferIds }, isActive: true }).lean<(OfferAttributes & { _id: Types.ObjectId })[]>()
-			: [];
+		lockedOfferIds.length > 0 ? await OfferModel.find({ _id: { $in: lockedOfferIds }, isActive: true }).lean<(OfferAttributes & { _id: Types.ObjectId })[]>() : [];
 	if (lockedOfferIds.length !== lockedOfferDocs.length) {
 		return badRequest("One or more applied offers are invalid.");
 	}
@@ -483,8 +487,7 @@ export async function POST(request: Request) {
 	}
 
 	const subtotalAfterOffersRupees = subtotalRupees - offerDiscountRupees;
-	const paymentSurchargeRupees =
-		payment === "cod" ? computeCodSurchargeRupees(subtotalAfterOffersRupees, settings.codSurchargePercent) : 0;
+	const paymentSurchargeRupees = payment === "cod" ? computeCodSurchargeRupees(subtotalAfterOffersRupees, settings.codSurchargePercent) : 0;
 	const discountRupees = offerDiscountRupees;
 	const shippingRupees = computeCourierShippingRupees({
 		isCourierDelivery: delivery === "courier",
@@ -493,11 +496,11 @@ export async function POST(request: Request) {
 		courierFlatFeeRupees: settings.courierFlatFeeRupees,
 		offerGrantsFreeShipping: offerPricing.freeShipping,
 	});
-	const requestedRedeemPoints = Number(body.loyalty?.redeemPoints ?? 0);
+	const requestedRedeemPoints = existingCustomer ? Number(body.loyalty?.redeemPoints ?? 0) : 0;
 	if (!Number.isFinite(requestedRedeemPoints) || requestedRedeemPoints < 0) {
 		return badRequest("Redeemed points must be a positive number.");
 	}
-	const loyaltyAccount = requestedRedeemPoints > 0 ? await LoyaltyAccount.findOne({ customerId: existingCustomer._id }) : null;
+	const loyaltyAccount = requestedRedeemPoints > 0 && existingCustomer ? await LoyaltyAccount.findOne({ customerId: existingCustomer._id }) : null;
 	if (requestedRedeemPoints > 0 && !loyaltyAccount) {
 		return badRequest("No loyalty balance is available for this customer.");
 	}
@@ -515,7 +518,7 @@ export async function POST(request: Request) {
 	const pointsRedeemedRupees = pointsToRupees(pointsRedeemed);
 	const totalRupees = Math.max(0, subtotalAfterOffersRupees + shippingRupees + paymentSurchargeRupees - pointsRedeemedRupees);
 
-	const nextAddresses = addressInput && "value" in addressInput ? mergeCheckoutAddress(existingCustomer.addresses ?? [], addressInput.value) : (existingCustomer.addresses ?? []);
+	const nextAddresses = addressInput && "value" in addressInput ? mergeCheckoutAddress(existingCustomer?.addresses ?? [], addressInput.value) : (existingCustomer?.addresses ?? []);
 
 	// Reserve stock up front — this is the oversell guard. `reserveStock` rolls
 	// its own partial reservations back, so a failure leaves inventory untouched.
@@ -531,16 +534,42 @@ export async function POST(request: Request) {
 	let offerUsageReserved = false;
 	const reservedOfferIds = offerPricing.appliedOfferIds;
 	try {
-		customerDoc = await Customer.findByIdAndUpdate(
-			existingCustomer._id,
-			{
-				name: nameResult,
-				city: cityResult,
-				isLoyaltyMember: true,
-				...(addressInput && "value" in addressInput ? { addresses: nextAddresses } : {}),
-			},
-			{ new: true, runValidators: true },
-		).lean<{ _id: Types.ObjectId; isLoyaltyMember: boolean }>();
+		if (existingCustomer) {
+			customerDoc = await Customer.findByIdAndUpdate(
+				existingCustomer._id,
+				{
+					name: nameResult,
+					city: cityResult,
+					isLoyaltyMember: true,
+					...(addressInput && "value" in addressInput ? { addresses: nextAddresses } : {}),
+				},
+				{ new: true, runValidators: true },
+			).lean<{ _id: Types.ObjectId; isLoyaltyMember: boolean }>();
+		} else {
+			let foundCustomer = await Customer.findOne({ phoneNumber: phoneResult });
+			if (!foundCustomer) {
+				foundCustomer = await Customer.create({
+					name: nameResult,
+					phoneNumber: phoneResult,
+					city: cityResult,
+					isLoyaltyMember: true,
+					addresses: addressInput && "value" in addressInput ? [addressInput.value] : [],
+				});
+			} else {
+				const mergedAddresses = addressInput && "value" in addressInput ? mergeCheckoutAddress(foundCustomer.addresses ?? [], addressInput.value) : (foundCustomer.addresses ?? []);
+				await Customer.updateOne(
+					{ _id: foundCustomer._id },
+					{
+						$set: {
+							name: nameResult,
+							city: cityResult,
+							addresses: mergedAddresses,
+						},
+					},
+				);
+			}
+			customerDoc = { _id: foundCustomer._id, isLoyaltyMember: true };
+		}
 
 		if (!customerDoc) {
 			logger.error("Customer upsert returned null — cannot continue");
@@ -750,18 +779,21 @@ export async function POST(request: Request) {
 		// A duplicate idempotency key means a parallel submission won the race —
 		// return that order instead of surfacing an error.
 		if (isMongoDuplicateKeyError(error) && idempotencyKey) {
-			const winner = await OrderModel.findOne({
-				idempotencyKey,
-				customerId: customerDoc?._id ?? existingCustomer._id,
-			}).lean<{ _id: Types.ObjectId; orderNumber: string; totals: { totalRupees: number }; pointsEarned: number; pointsRedeemed: number }>();
-			if (winner) {
-				return created({
-					id: winner._id.toString(),
-					orderNumber: winner.orderNumber,
-					totalRupees: winner.totals.totalRupees,
-					pointsEarned: winner.pointsEarned,
-					pointsRedeemed: winner.pointsRedeemed,
-				});
+			const effectiveCustomerId = customerDoc?._id ?? existingCustomer?._id;
+			if (effectiveCustomerId) {
+				const winner = await OrderModel.findOne({
+					idempotencyKey,
+					customerId: effectiveCustomerId,
+				}).lean<{ _id: Types.ObjectId; orderNumber: string; totals: { totalRupees: number }; pointsEarned: number; pointsRedeemed: number }>();
+				if (winner) {
+					return created({
+						id: winner._id.toString(),
+						orderNumber: winner.orderNumber,
+						totalRupees: winner.totals.totalRupees,
+						pointsEarned: winner.pointsEarned,
+						pointsRedeemed: winner.pointsRedeemed,
+					});
+				}
 			}
 		}
 
@@ -912,4 +944,3 @@ function humaniseSlug(slug: string): string {
 		.map((segment) => (segment.length === 0 ? segment : segment[0].toUpperCase() + segment.slice(1)))
 		.join(" ");
 }
-

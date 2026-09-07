@@ -19,10 +19,17 @@ import {
 } from "@store/shared";
 
 /** Formal welcome copy for empty inquiry threads. */
-export function chatWelcomeMessage(input: { audience: "guest" | "customer"; guestMessageLimit?: number; welcomeMessageGuest?: string; welcomeMessageCustomer?: string }): string {
+export function chatWelcomeMessage(input: {
+	audience: "guest" | "customer";
+	guestMessageLimit?: number;
+	welcomeMessageGuest?: string;
+	welcomeMessageCustomer?: string;
+	disableCustomerSignIn?: boolean;
+}): string {
 	return resolveChatWelcomeMessage({
 		audience: input.audience,
 		guestMessageLimit: input.guestMessageLimit,
+		disableCustomerSignIn: input.disableCustomerSignIn,
 		settings: {
 			welcomeMessageGuest: input.welcomeMessageGuest ?? "",
 			welcomeMessageCustomer: input.welcomeMessageCustomer ?? "",
@@ -345,7 +352,12 @@ export function ChatMessageBubble({ message, variant = "widget" }: ChatMessageBu
 				)}
 			>
 				{teamLabel && !isCustomer && (
-					<p className={classNames("mb-1 text-[length:var(--chat-font-caption)] font-semibold uppercase tracking-wide", isAssistant ? "text-[var(--color-ink-700)]" : "text-[var(--color-ink-500)]")}>
+					<p
+						className={classNames(
+							"mb-1 text-[length:var(--chat-font-caption)] font-semibold uppercase tracking-wide",
+							isAssistant ? "text-[var(--color-ink-700)]" : "text-[var(--color-ink-500)]",
+						)}
+					>
 						{teamLabel}
 					</p>
 				)}

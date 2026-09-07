@@ -130,10 +130,12 @@ export interface ContactPanelProps {
 	fullName: string;
 	phoneNumber: string;
 	onFullName: (value: string) => void;
+	onPhoneNumber?: (value: string) => void;
 	isPlacing?: boolean;
+	isGuest?: boolean;
 }
 
-export function ContactPanel({ fullName, phoneNumber, onFullName, isPlacing }: ContactPanelProps) {
+export function ContactPanel({ fullName, phoneNumber, onFullName, onPhoneNumber, isPlacing, isGuest }: ContactPanelProps) {
 	return (
 		<Card className="p-4 md:p-5">
 			<PanelHeader icon={<User size={14} />} eyebrow="01 · Contact" title="Who is this order for?" />
@@ -155,11 +157,14 @@ export function ContactPanel({ fullName, phoneNumber, onFullName, isPlacing }: C
 					<Field
 						label="WhatsApp number"
 						value={phoneNumber}
-						onChange={() => undefined}
+						onChange={onPhoneNumber ?? (() => undefined)}
 						icon={<Phone size={14} />}
 						autoComplete="tel"
 						inputMode="tel"
-						isReadOnly
+						placeholder={isGuest ? "03XX XXXXXXX" : undefined}
+						isReadOnly={!isGuest}
+						isRequired={isGuest}
+						minLength={7}
 						isLoading={isPlacing}
 						disabled={isPlacing}
 					/>
@@ -427,17 +432,7 @@ export interface OrderSummaryPanelProps {
 	infoMessage?: string | null;
 }
 
-export function OrderSummaryPanel({
-	totals,
-	payment,
-	delivery,
-	isPlacing,
-	isValid,
-	pointsEarnedOnThisOrder,
-	pointsRedeemed,
-	errorMessage,
-	infoMessage,
-}: OrderSummaryPanelProps) {
+export function OrderSummaryPanel({ totals, payment, delivery, isPlacing, isValid, pointsEarnedOnThisOrder, pointsRedeemed, errorMessage, infoMessage }: OrderSummaryPanelProps) {
 	const settings = useStoreSettings();
 	const paymentMethods = getPaymentMethods(settings);
 	return (
@@ -453,9 +448,7 @@ export function OrderSummaryPanel({
 			<div className="space-y-2.5 p-4 md:p-5">
 				<SummaryRow label="Subtotal" value={formatPrice(totals.subtotalRupees)} />
 				{(totals.offersDiscountRupees ?? 0) > 0 && <SummaryRow label="Offers discount" value={`− ${formatPrice(totals.offersDiscountRupees!)}`} tone="success" />}
-				{(totals.paymentSurchargeRupees ?? 0) > 0 && (
-					<SummaryRow label="Cash handling" value={`+ ${formatPrice(totals.paymentSurchargeRupees!)}`} />
-				)}
+				{(totals.paymentSurchargeRupees ?? 0) > 0 && <SummaryRow label="Cash handling" value={`+ ${formatPrice(totals.paymentSurchargeRupees!)}`} />}
 				<SummaryRow
 					label={delivery === "pickup" ? "Pickup" : "Delivery"}
 					value={totals.deliveryRupees > 0 ? formatPrice(totals.deliveryRupees) : "Free"}

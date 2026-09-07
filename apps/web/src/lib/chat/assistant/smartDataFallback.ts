@@ -16,7 +16,7 @@ import {
 import { getAccountChatProfile } from "@/lib/core/account";
 import { cheapestPriceSummary, productToCatalogTableRow } from "@/lib/chat/assistant/catalogProductFormat";
 import { buildOrderContext } from "@/lib/chat/assistant/storeContext";
-import { getActiveOffersCached, getPopularProductsCached, searchAssistantCatalogCached } from "@/lib/core/cached";
+import { getActiveOffersCached, getPopularProductsCached, getStoreSettingsCached, searchAssistantCatalogCached } from "@/lib/core/cached";
 import { getProductById } from "@/lib/core/queries";
 
 const CATALOG_RESULT_LIMIT = 8;
@@ -92,11 +92,7 @@ async function searchProductsForMessage(queries: string[], maxBudget?: number): 
 		.slice(0, CATALOG_RESULT_LIMIT);
 }
 
-function buildCatalogListReply(
-	products: Product[],
-	language: CustomerMessageLanguage,
-	kind: "search" | "budget" | "popular",
-): string[] {
+function buildCatalogListReply(products: Product[], language: CustomerMessageLanguage, kind: "search" | "budget" | "popular"): string[] {
 	const isUrdu = isUrduLanguage(language);
 	const rows = products.map(productToCatalogTableRow);
 	const table = formatCatalogProductsMarkdownTable(rows);
@@ -112,18 +108,12 @@ function buildCatalogListReply(
 		intro = isUrdu ? "Abhi yeh models zyada sell ho rahe hain:" : "These models are selling well right now:";
 	}
 
-	const outro = isUrdu
-		? "Kisi ek par detail ya payment quote chahiye ho to model ka naam likh dein."
-		: "Want detail or a payment quote on any of these? Name the model.";
+	const outro = isUrdu ? "Kisi ek par detail ya payment quote chahiye ho to model ka naam likh dein." : "Want detail or a payment quote on any of these? Name the model.";
 
 	return [intro, table, outro];
 }
 
-function buildSingleProductReply(
-	product: Product,
-	language: CustomerMessageLanguage,
-	fromSubject: boolean,
-): string[] {
+function buildSingleProductReply(product: Product, language: CustomerMessageLanguage, fromSubject: boolean): string[] {
 	const isUrdu = isUrduLanguage(language);
 	const table = formatCatalogProductsMarkdownTable([productToCatalogTableRow(product)]);
 	if (!table) {
@@ -145,15 +135,16 @@ function buildSingleProductReply(
 	return [intro, table, outro];
 }
 
-async function buildOrderFallback(
-	verifiedCustomerId: string | undefined,
-	language: CustomerMessageLanguage,
-): Promise<string[] | null> {
+async function buildOrderFallback(verifiedCustomerId: string | undefined, language: CustomerMessageLanguage): Promise<string[] | null> {
 	const isUrdu = isUrduLanguage(language);
 	if (!verifiedCustomerId) {
-		return isUrdu
-			? ["Apne orders dekhne ke liye pehle /account par sign in karein (WhatsApp OTP)."]
-			: ["Sign in at /account (WhatsApp OTP) to see your own orders."];
+		const settings = await getStoreSettingsCached();
+		if (settings.disableCustomerSignIn) {
+			return isUrdu
+				? ["Account sign-in abhi WhatsApp setup ki wajah se paused hai. Order number share karein ya support se contact karein."]
+				: ["Customer sign-in is temporarily paused while WhatsApp verification is being upgraded. Share your order number here or reach out to our team for order updates."];
+		}
+		return isUrdu ? ["Apne orders dekhne ke liye pehle /account par sign in karein (WhatsApp OTP)."] : ["Sign in at /account (WhatsApp OTP) to see your own orders."];
 	}
 
 	const orders = await buildOrderContext(verifiedCustomerId);
@@ -168,15 +159,16 @@ async function buildOrderFallback(
 		: [`Your orders:\n${orders}`, "Need detail on one order? Share the order number or open /account."];
 }
 
-async function buildAccountFallback(
-	verifiedCustomerId: string | undefined,
-	language: CustomerMessageLanguage,
-): Promise<string[] | null> {
+async function buildAccountFallback(verifiedCustomerId: string | undefined, language: CustomerMessageLanguage): Promise<string[] | null> {
 	const isUrdu = isUrduLanguage(language);
 	if (!verifiedCustomerId) {
-		return isUrdu
-			? ["Account ya points ke liye pehle /account par sign in karein."]
-			: ["Sign in at /account to see your profile and loyalty points."];
+		const settings = await getStoreSettingsCached();
+		if (settings.disableCustomerSignIn) {
+			return isUrdu
+				? ["Customer sign-in abhi paused hai. Aap baghair sign-in ke direct shop aur guest checkout kar sakte hain."]
+				: ["Customer sign-in is temporarily paused. You can browse and check out directly as a guest without signing in."];
+		}
+		return isUrdu ? ["Account ya points ke liye pehle /account par sign in karein."] : ["Sign in at /account to see your profile and loyalty points."];
 	}
 
 	const profile = await getAccountChatProfile(verifiedCustomerId);
@@ -188,9 +180,7 @@ async function buildAccountFallback(
 	if (profile.city) {
 		lines.push(`City: ${profile.city}`);
 	}
-	lines.push(
-		profile.loyaltyBalance !== null ? `Loyalty points: ${profile.loyaltyBalance}` : "Loyalty: not enrolled yet",
-	);
+	lines.push(profile.loyaltyBalance !== null ? `Loyalty points: ${profile.loyaltyBalance}` : "Loyalty: not enrolled yet");
 	const defaultAddress = profile.addresses.find((address) => address.isDefault) ?? profile.addresses[0];
 	if (defaultAddress) {
 		const area = [defaultAddress.area, defaultAddress.city].filter(Boolean).join(", ");

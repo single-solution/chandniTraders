@@ -84,10 +84,7 @@ export function Checkout({ customer, paymentCancelled = false, cancelledOrderNum
 	const subtotalRupees = cart.subtotalRupees;
 	const subtotalAfterOffersRupees = pricing.finalTotal;
 
-	const maxPointsForOrder = useMemo(
-		() => maxRedeemable(subtotalAfterOffersRupees, loyaltyBalance),
-		[subtotalAfterOffersRupees, loyaltyBalance],
-	);
+	const maxPointsForOrder = useMemo(() => maxRedeemable(subtotalAfterOffersRupees, loyaltyBalance), [subtotalAfterOffersRupees, loyaltyBalance]);
 
 	const cappedPointsToUse = shouldRedeemLoyalty ? maxPointsForOrder : 0;
 
@@ -95,8 +92,7 @@ export function Checkout({ customer, paymentCancelled = false, cancelledOrderNum
 		const itemCount = cart.itemCount;
 		const subtotalAfterOffersRupees = pricing.finalTotal;
 		const offersDiscountRupees = pricing.totalDiscount;
-		const paymentSurchargeRupees =
-			payment === "cod" ? computeCodSurchargeRupees(subtotalAfterOffersRupees, settings.codSurchargePercent) : 0;
+		const paymentSurchargeRupees = payment === "cod" ? computeCodSurchargeRupees(subtotalAfterOffersRupees, settings.codSurchargePercent) : 0;
 		const deliveryRupees = computeCourierShippingRupees({
 			isCourierDelivery: delivery === "delivery",
 			subtotalAfterOffersRupees,
@@ -137,8 +133,7 @@ export function Checkout({ customer, paymentCancelled = false, cancelledOrderNum
 	const isPricingReady = !isOffersLoading;
 	const hasPaymentMethod = enabledPaymentMethods.length > 0;
 
-	const isValid =
-		!cart.isEmpty && fullName.trim().length > 1 && phoneNumber.trim().length >= 7 && isAddressValid && isPricingReady && hasPaymentMethod;
+	const isValid = !cart.isEmpty && fullName.trim().length > 1 && phoneNumber.trim().length >= 7 && isAddressValid && isPricingReady && hasPaymentMethod;
 
 	useEffect(() => {
 		if (enabledPaymentMethods.length === 0) {
@@ -202,14 +197,18 @@ export function Checkout({ customer, paymentCancelled = false, cancelledOrderNum
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
-					customer: { name: fullName },
+					customer: {
+						name: fullName.trim(),
+						phoneNumber: phoneNumber.trim(),
+					},
 					delivery: delivery === "delivery" ? "courier" : "pickup",
 					payment: CHECKOUT_TO_ORDER_PAYMENT[payment],
 					address:
 						delivery === "delivery"
 							? {
-									recipientName: fullName,
-									street: address.street || undefined,
+									recipientName: fullName.trim(),
+									phoneNumber: phoneNumber.trim(),
+									street: address.street.trim() || undefined,
 								}
 							: undefined,
 					items: freshItems.map((line) => ({
@@ -284,7 +283,7 @@ export function Checkout({ customer, paymentCancelled = false, cancelledOrderNum
 		return <EmptyCartState />;
 	}
 
-	if (!customer) {
+	if (!customer && !settings.disableCustomerSignIn) {
 		return (
 			<div className={`${STOREFRONT_SHELL_CLASS} pb-24 pt-4 md:pb-16 md:pt-10`}>
 				<CheckoutHeader />
@@ -346,19 +345,13 @@ export function Checkout({ customer, paymentCancelled = false, cancelledOrderNum
 			<div className="mt-5 grid gap-6 md:mt-8 md:grid-cols-[1fr_360px] lg:grid-cols-[1fr_400px] lg:gap-8">
 				<div className="reveal-stagger space-y-3 md:space-y-4">
 					<div className="reveal">
-						<ContactPanel fullName={fullName} phoneNumber={phoneNumber} onFullName={setFullName} isPlacing={isPlacing} />
+						<ContactPanel fullName={fullName} phoneNumber={phoneNumber} onFullName={setFullName} onPhoneNumber={setPhoneNumber} isGuest={!customer} isPlacing={isPlacing} />
 					</div>
 					<div className="reveal">
 						<DeliveryPanel delivery={delivery} onChange={setDelivery} address={address} onAddressChange={setAddress} isPlacing={isPlacing} />
 					</div>
 					<div className="reveal">
-						<PaymentPanel
-							payment={payment}
-							onChange={setPayment}
-							isPlacing={isPlacing}
-							totalRupees={totals.totalRupees}
-							paymentSurchargeRupees={totals.paymentSurchargeRupees}
-						/>
+						<PaymentPanel payment={payment} onChange={setPayment} isPlacing={isPlacing} totalRupees={totals.totalRupees} paymentSurchargeRupees={totals.paymentSurchargeRupees} />
 					</div>
 				</div>
 
@@ -384,13 +377,7 @@ export function Checkout({ customer, paymentCancelled = false, cancelledOrderNum
 							pointsEarnedOnThisOrder={pointsEarnedOnThisOrder}
 							pointsRedeemed={cappedPointsToUse}
 							errorMessage={errorMessage}
-							infoMessage={
-								!hasPaymentMethod
-									? "Checkout is paused — no payment methods are enabled. Contact the store."
-									: isOffersLoading
-										? "Updating offers and delivery…"
-										: null
-							}
+							infoMessage={!hasPaymentMethod ? "Checkout is paused — no payment methods are enabled. Contact the store." : isOffersLoading ? "Updating offers and delivery…" : null}
 						/>
 					</div>
 				</aside>

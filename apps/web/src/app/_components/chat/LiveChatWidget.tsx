@@ -87,7 +87,7 @@ interface LiveChatWidgetProps {
 }
 
 export function LiveChatWidget({ onCollapse, initialOpenDetail = null, layout = "popover" }: LiveChatWidgetProps) {
-	const { siteName, whatsappNumber } = useStoreSettings();
+	const { siteName, whatsappNumber, disableCustomerSignIn } = useStoreSettings();
 	const signedInFlag = useIsSignedIn();
 	const prevSignedInRef = useRef<boolean | null>(null);
 	const [bootstrapLoaded, setBootstrapLoaded] = useState(false);
@@ -474,17 +474,20 @@ export function LiveChatWidget({ onCollapse, initialOpenDetail = null, layout = 
 	}, []);
 
 	const loginRequired =
-		activeThread && settings
+		!disableCustomerSignIn && activeThread && settings
 			? guestChatLoginRequired({
 					customerId: activeThread.customerId,
 					phoneNumber: activeThread.phoneNumber,
 					guestMessageLimit: settings.guestMessageLimit,
 					messages: activeThread.messages,
+					disableCustomerSignIn,
 				})
 			: false;
 
 	const previewMessagesLeft =
-		activeThread && isAnonymousChatPhone(activeThread.phoneNumber) && settings ? Math.max(0, settings.guestMessageLimit - countCustomerChatMessages(activeThread.messages)) : null;
+		!disableCustomerSignIn && activeThread && isAnonymousChatPhone(activeThread.phoneNumber) && settings
+			? Math.max(0, settings.guestMessageLimit - countCustomerChatMessages(activeThread.messages))
+			: null;
 
 	const supportLabel = customerChatSupportLabel(settings?.assistantName);
 	const shellClose = layout === "page" ? undefined : onCollapse;
@@ -534,7 +537,9 @@ export function LiveChatWidget({ onCollapse, initialOpenDetail = null, layout = 
 			}
 		>
 			{bootstrapError && (
-				<div className="border-b border-[var(--color-danger-200)] bg-[var(--color-danger-50)] px-4 py-2 text-[length:var(--chat-font-small)] text-[var(--color-danger-700)]">{bootstrapError}</div>
+				<div className="border-b border-[var(--color-danger-200)] bg-[var(--color-danger-50)] px-4 py-2 text-[length:var(--chat-font-small)] text-[var(--color-danger-700)]">
+					{bootstrapError}
+				</div>
 			)}
 			{view === "starting" && pendingFirstMessage && <StartingConversation message={pendingFirstMessage} />}
 			{view === "compose" && (
@@ -547,6 +552,7 @@ export function LiveChatWidget({ onCollapse, initialOpenDetail = null, layout = 
 					signInHref={signInHref}
 					isSignedInCustomer={isSignedInCustomer}
 					guestMessageLimit={settings?.guestMessageLimit ?? 5}
+					disableCustomerSignIn={disableCustomerSignIn}
 				/>
 			)}
 			{view === "thread" && activeThread && (
@@ -565,6 +571,7 @@ export function LiveChatWidget({ onCollapse, initialOpenDetail = null, layout = 
 					hasMoreOlder={activeThread.hasMoreOlder ?? false}
 					isLoadingOlder={isLoadingOlder}
 					onLoadOlder={loadOlderMessages}
+					disableCustomerSignIn={disableCustomerSignIn}
 				/>
 			)}
 			<SupportHintFooter assistantEnabled={settings?.assistantEnabled ?? false} assistantPaused={view === "thread" && (activeThread?.assistantPaused ?? false)} />

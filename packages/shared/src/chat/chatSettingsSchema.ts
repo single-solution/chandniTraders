@@ -242,11 +242,21 @@ export function resolveChatWelcomeMessage(input: {
 	audience: "guest" | "customer";
 	settings?: Pick<ChatSettingsValues, "welcomeMessageGuest" | "welcomeMessageCustomer">;
 	guestMessageLimit?: number;
+	disableCustomerSignIn?: boolean;
 }): string {
 	const limit = input.guestMessageLimit ?? CHAT_GUEST_MESSAGE_LIMIT;
 	const custom = input.audience === "guest" ? input.settings?.welcomeMessageGuest?.trim() : input.settings?.welcomeMessageCustomer?.trim();
 
-	const template = custom || (input.audience === "guest" ? CHAT_WELCOME_GUEST_DEFAULT : CHAT_WELCOME_CUSTOMER_DEFAULT);
+	if (custom) {
+		return custom.replaceAll("{limit}", String(limit));
+	}
 
-	return template.replaceAll("{limit}", String(limit));
+	if (input.audience === "guest") {
+		if (input.disableCustomerSignIn) {
+			return "Hi! Ask about fans, prices, deals, or orders — we will help you find the right pick.";
+		}
+		return CHAT_WELCOME_GUEST_DEFAULT.replaceAll("{limit}", String(limit));
+	}
+
+	return CHAT_WELCOME_CUSTOMER_DEFAULT;
 }
