@@ -3,6 +3,9 @@ import { Checkout } from "@/app/checkout/_components/Checkout";
 import { auth } from "@/lib/auth";
 import { getAccountCustomer } from "@/lib/core/account";
 
+import { getIntegrationSettings, getStoreSettings } from "@store/db";
+import { isOnlineCardCheckoutReady } from "@store/shared";
+
 export const metadata: Metadata = {
 	title: "Checkout",
 	description: "Confirm your contact, address and payment to place your order.",
@@ -10,23 +13,20 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default async function CheckoutPage({
-	searchParams,
-}: {
-	searchParams: Promise<{ cancelled?: string; order?: string }>;
-}) {
+export default async function CheckoutPage({ searchParams }: { searchParams: Promise<{ cancelled?: string; order?: string }> }) {
 	const session = await auth();
 	const params = await searchParams;
 	const paymentCancelled = params.cancelled === "1";
 	const cancelledOrderNumber = typeof params.order === "string" ? params.order.trim() : "";
-	const customer = session?.user?.role === "customer" && session.user.customerId ? await getAccountCustomer(session.user.customerId) : null;
+	const [customer, rawSettings, integration] = await Promise.all([
+		session?.user?.role === "customer" && session.user.customerId ? getAccountCustomer(session.user.customerId) : Promise.resolve(null),
+		getStoreSettings(),
+		getIntegrationSettings(),
+	]);
+	const settings = {
+		...rawSettings,
+		cardCheckoutReady: isOnlineCardCheckoutReady(integration),
+	};
 
-	return (
-		<Checkout
-			key={customer?.id ?? "guest"}
-			customer={customer}
-			paymentCancelled={paymentCancelled}
-			cancelledOrderNumber={cancelledOrderNumber}
-		/>
-	);
+	return <Checkout key={customer?.id ?? "guest"} customer={customer} paymentCancelled={paymentCancelled} cancelledOrderNumber={cancelledOrderNumber} initialSettings={settings} />;
 }

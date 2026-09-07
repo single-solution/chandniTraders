@@ -53,13 +53,18 @@ export const STOREFRONT_CACHE_TAG = "storefront";
 
 /** Seconds the cross-request layer holds onto storefront reads. */
 const STOREFRONT_CACHE_TTL_SECONDS = 60;
+/** Settings TTL kept short (5s) so admin updates (branding, payment toggles, notices) reflect quickly. */
+const STOREFRONT_SETTINGS_CACHE_TTL_SECONDS = 5;
 
 /* ─────────── two-tier dedupe (unstable_cache + React cache) ─────────── */
 
-const loadStoreSettings = unstable_cache(() => getStoreSettingsRaw(), ["storefront-settings"], { revalidate: STOREFRONT_CACHE_TTL_SECONDS, tags: [STOREFRONT_CACHE_TAG] });
+const loadStoreSettings = unstable_cache(() => getStoreSettingsRaw(), ["storefront-settings"], {
+	revalidate: STOREFRONT_SETTINGS_CACHE_TTL_SECONDS,
+	tags: [STOREFRONT_CACHE_TAG],
+});
 
 const loadIntegrationSettings = unstable_cache(() => getIntegrationSettingsRaw(), ["storefront-integration-settings"], {
-	revalidate: STOREFRONT_CACHE_TTL_SECONDS,
+	revalidate: STOREFRONT_SETTINGS_CACHE_TTL_SECONDS,
 	tags: [STOREFRONT_CACHE_TAG],
 });
 
@@ -349,10 +354,7 @@ export async function warmStorefrontReadCaches(): Promise<void> {
 			}),
 		);
 	} catch (error) {
-		const errorDetail =
-			error instanceof Error
-				? { name: error.name, message: error.message }
-				: { message: String(error) };
+		const errorDetail = error instanceof Error ? { name: error.name, message: error.message } : { message: String(error) };
 		logger.warn({ error: errorDetail }, "Storefront cache warm skipped");
 	}
 }

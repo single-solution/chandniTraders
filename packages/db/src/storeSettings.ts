@@ -27,8 +27,8 @@ import {
 import { connectDB } from "./connection";
 import { Setting } from "./models/Setting";
 
-/** In-process cache TTL — eventual consistency is fine for branding/policy. */
-const CACHE_TTL_MS = MS_PER_MINUTE;
+/** In-process cache TTL — 5s keeps queries deduped under load while propagating admin updates promptly. */
+const CACHE_TTL_MS = 5 * 1_000;
 
 interface CacheEntry {
 	value: StoreSettings;

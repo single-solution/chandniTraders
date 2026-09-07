@@ -12,13 +12,14 @@ import {
 	pointsToRupees,
 	getPaymentMethods,
 	CHECKOUT_TO_ORDER_PAYMENT,
+	type StoreSettings,
 } from "@store/shared";
 import { launchOnlineCheckout, type OnlineCheckoutApiPayload } from "@/lib/payments/launchOnlineCheckout";
 import { useCartReconciliationControls } from "@/lib/cart/useCartReconciliation";
 import { getCartSnapshot } from "@/lib/cart/store";
 import { useCartOfferPricing } from "@/lib/pricing/useCartOfferPricing";
 import { CheckoutOfferNotices } from "@/components/shared/CheckoutOfferNotices";
-import { useStoreSettings } from "@/lib/core/storeSettingsContext";
+import { StoreSettingsProvider, useStoreSettings } from "@/lib/core/storeSettingsContext";
 import { useNavigationTransition } from "@/lib/navigation/navigationProgress";
 import type { AccountAddress, AccountCustomer } from "@/lib/core/account";
 import { resolvePublicErrorMessage } from "@/lib/errors/publicErrorMessage";
@@ -47,6 +48,7 @@ interface CheckoutProps {
 	customer: AccountCustomer | null;
 	paymentCancelled?: boolean;
 	cancelledOrderNumber?: string;
+	initialSettings?: StoreSettings & { cardCheckoutReady?: boolean };
 }
 
 function addressToForm(address: AccountAddress | undefined): AddressFormState {
@@ -58,15 +60,16 @@ function addressToForm(address: AccountAddress | undefined): AddressFormState {
 	};
 }
 
-export function Checkout({ customer, paymentCancelled = false, cancelledOrderNumber = "" }: CheckoutProps) {
+export function Checkout({ customer, paymentCancelled = false, cancelledOrderNumber = "", initialSettings }: CheckoutProps) {
 	const router = useRouter();
 	const { startNavigation } = useNavigationTransition();
 	const cart = useCart();
 	const { ensureReconciled, isReconciling } = useCartReconciliationControls();
-	const settings = useStoreSettings();
-	const [payment, setPayment] = useState<PaymentMethodId>("bank-transfer");
-	const { pricing, appliedOffers, isOffersLoading } = useCartOfferPricing(payment);
+	const contextSettings = useStoreSettings();
+	const settings = initialSettings ?? contextSettings;
 	const enabledPaymentMethods = useMemo(() => getPaymentMethods(settings), [settings]);
+	const [payment, setPayment] = useState<PaymentMethodId>(() => enabledPaymentMethods[0]?.id ?? "bank-transfer");
+	const { pricing, appliedOffers, isOffersLoading } = useCartOfferPricing(payment);
 
 	const defaultAddress = customer?.addresses.find((candidate) => candidate.isDefault) ?? customer?.addresses[0];
 	const [fullName, setFullName] = useState(customer?.name ?? "");
@@ -285,103 +288,109 @@ export function Checkout({ customer, paymentCancelled = false, cancelledOrderNum
 
 	if (!customer && !settings.disableCustomerSignIn) {
 		return (
-			<div className={`${STOREFRONT_SHELL_CLASS} pb-24 pt-4 md:pb-16 md:pt-10`}>
-				<CheckoutHeader />
-				<div className="reveal mt-4 md:mt-5">
-					<CheckoutOfferNotices appliedOffers={appliedOffers} />
-				</div>
-				<div className="mt-5 grid gap-6 md:mt-8 md:grid-cols-[minmax(0,1fr)_360px] lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-8">
-					<div className="reveal">
-						<CheckoutSignInPanel />
+			<StoreSettingsProvider value={settings}>
+				<div className={`${STOREFRONT_SHELL_CLASS} pb-24 pt-4 md:pb-16 md:pt-10`}>
+					<CheckoutHeader />
+					<div className="reveal mt-4 md:mt-5">
+						<CheckoutOfferNotices appliedOffers={appliedOffers} />
 					</div>
-					<aside className="space-y-3 md:space-y-4">
+					<div className="mt-5 grid gap-6 md:mt-8 md:grid-cols-[minmax(0,1fr)_360px] lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-8">
 						<div className="reveal">
-							<OrderSummaryPreview totals={totals} delivery={delivery} payment={payment} />
+							<CheckoutSignInPanel />
 						</div>
-					</aside>
+						<aside className="space-y-3 md:space-y-4">
+							<div className="reveal">
+								<OrderSummaryPreview totals={totals} delivery={delivery} payment={payment} />
+							</div>
+						</aside>
+					</div>
 				</div>
-			</div>
+			</StoreSettingsProvider>
 		);
 	}
 
 	return (
-		<form
-			onSubmit={(e) => {
-				e.preventDefault();
-				void handlePlaceOrder();
-			}}
-			className={`${STOREFRONT_SHELL_CLASS} pb-24 pt-4 md:pb-16 md:pt-10`}
-		>
-			<CheckoutHeader />
+		<StoreSettingsProvider value={settings}>
+			<form
+				onSubmit={(e) => {
+					e.preventDefault();
+					void handlePlaceOrder();
+				}}
+				className={`${STOREFRONT_SHELL_CLASS} pb-24 pt-4 md:pb-16 md:pt-10`}
+			>
+				<CheckoutHeader />
 
-			{paymentCancelled ? (
-				<div className="reveal mt-4 rounded-[var(--radius-md)] border border-[var(--color-warn-200)] bg-[var(--color-warn-50)] px-4 py-3 md:mt-5">
-					<div className="flex items-start gap-3">
-						<AlertTriangle size={18} className="mt-0.5 shrink-0 text-[var(--color-warn-700)]" />
-						<div className="min-w-0 text-[13px] leading-snug text-[var(--color-warn-900)]">
-							<p className="font-semibold">Online payment was not completed.</p>
-							<p className="mt-1 text-[var(--color-warn-800)]">
-								{cancelledOrderNumber ? (
-									<>
-										Your order <span className="font-mono font-semibold">{cancelledOrderNumber}</span> is still waiting for payment.{" "}
-										<Link href={`/account/orders/${encodeURIComponent(cancelledOrderNumber)}`} className="font-semibold underline">
-											Complete payment in your account
-										</Link>{" "}
-										or choose bank transfer / cash on delivery for a new order.
-									</>
-								) : (
-									<>You can place a new order below or open your account to finish a pending payment.</>
-								)}
-							</p>
+				{paymentCancelled ? (
+					<div className="reveal mt-4 rounded-[var(--radius-md)] border border-[var(--color-warn-200)] bg-[var(--color-warn-50)] px-4 py-3 md:mt-5">
+						<div className="flex items-start gap-3">
+							<AlertTriangle size={18} className="mt-0.5 shrink-0 text-[var(--color-warn-700)]" />
+							<div className="min-w-0 text-[13px] leading-snug text-[var(--color-warn-900)]">
+								<p className="font-semibold">Online payment was not completed.</p>
+								<p className="mt-1 text-[var(--color-warn-800)]">
+									{cancelledOrderNumber ? (
+										<>
+											Your order <span className="font-mono font-semibold">{cancelledOrderNumber}</span> is still waiting for payment.{" "}
+											<Link href={`/account/orders/${encodeURIComponent(cancelledOrderNumber)}`} className="font-semibold underline">
+												Complete payment in your account
+											</Link>{" "}
+											or choose bank transfer / cash on delivery for a new order.
+										</>
+									) : (
+										<>You can place a new order below or open your account to finish a pending payment.</>
+									)}
+								</p>
+							</div>
 						</div>
 					</div>
-				</div>
-			) : null}
+				) : null}
 
-			<div className="reveal mt-4 md:mt-5">
-				<CheckoutOfferNotices appliedOffers={appliedOffers} />
-			</div>
-
-			<div className="mt-5 grid gap-6 md:mt-8 md:grid-cols-[1fr_360px] lg:grid-cols-[1fr_400px] lg:gap-8">
-				<div className="reveal-stagger space-y-3 md:space-y-4">
-					<div className="reveal">
-						<ContactPanel fullName={fullName} phoneNumber={phoneNumber} onFullName={setFullName} onPhoneNumber={setPhoneNumber} isGuest={!customer} isPlacing={isPlacing} />
-					</div>
-					<div className="reveal">
-						<DeliveryPanel delivery={delivery} onChange={setDelivery} address={address} onAddressChange={setAddress} isPlacing={isPlacing} />
-					</div>
-					<div className="reveal">
-						<PaymentPanel payment={payment} onChange={setPayment} isPlacing={isPlacing} totalRupees={totals.totalRupees} paymentSurchargeRupees={totals.paymentSurchargeRupees} />
-					</div>
+				<div className="reveal mt-4 md:mt-5">
+					<CheckoutOfferNotices appliedOffers={appliedOffers} />
 				</div>
 
-				<aside className="reveal-stagger space-y-3 md:space-y-4">
-					{loyaltyBalance > 0 && (
+				<div className="mt-5 grid gap-6 md:mt-8 md:grid-cols-[1fr_360px] lg:grid-cols-[1fr_400px] lg:gap-8">
+					<div className="reveal-stagger space-y-3 md:space-y-4">
 						<div className="reveal">
-							<LoyaltyPanel
-								balance={loyaltyBalance}
-								maxPointsForOrder={maxPointsForOrder}
-								shouldRedeemLoyalty={shouldRedeemLoyalty}
-								onToggle={setShouldRedeemLoyalty}
-								isAllowedWithOffers={pricing.isLoyaltyPointsAllowed}
+							<ContactPanel fullName={fullName} phoneNumber={phoneNumber} onFullName={setFullName} onPhoneNumber={setPhoneNumber} isGuest={!customer} isPlacing={isPlacing} />
+						</div>
+						<div className="reveal">
+							<DeliveryPanel delivery={delivery} onChange={setDelivery} address={address} onAddressChange={setAddress} isPlacing={isPlacing} />
+						</div>
+						<div className="reveal">
+							<PaymentPanel payment={payment} onChange={setPayment} isPlacing={isPlacing} totalRupees={totals.totalRupees} paymentSurchargeRupees={totals.paymentSurchargeRupees} />
+						</div>
+					</div>
+
+					<aside className="reveal-stagger space-y-3 md:space-y-4">
+						{loyaltyBalance > 0 && (
+							<div className="reveal">
+								<LoyaltyPanel
+									balance={loyaltyBalance}
+									maxPointsForOrder={maxPointsForOrder}
+									shouldRedeemLoyalty={shouldRedeemLoyalty}
+									onToggle={setShouldRedeemLoyalty}
+									isAllowedWithOffers={pricing.isLoyaltyPointsAllowed}
+								/>
+							</div>
+						)}
+						<div className="reveal">
+							<OrderSummaryPanel
+								totals={totals}
+								payment={payment}
+								delivery={delivery}
+								isPlacing={isPlacing || isReconciling}
+								isValid={isValid && !isReconciling}
+								pointsEarnedOnThisOrder={pointsEarnedOnThisOrder}
+								pointsRedeemed={cappedPointsToUse}
+								errorMessage={errorMessage}
+								infoMessage={
+									!hasPaymentMethod ? "Checkout is paused — no payment methods are enabled. Contact the store." : isOffersLoading ? "Updating offers and delivery…" : null
+								}
 							/>
 						</div>
-					)}
-					<div className="reveal">
-						<OrderSummaryPanel
-							totals={totals}
-							payment={payment}
-							delivery={delivery}
-							isPlacing={isPlacing || isReconciling}
-							isValid={isValid && !isReconciling}
-							pointsEarnedOnThisOrder={pointsEarnedOnThisOrder}
-							pointsRedeemed={cappedPointsToUse}
-							errorMessage={errorMessage}
-							infoMessage={!hasPaymentMethod ? "Checkout is paused — no payment methods are enabled. Contact the store." : isOffersLoading ? "Updating offers and delivery…" : null}
-						/>
-					</div>
-				</aside>
-			</div>
-		</form>
+					</aside>
+				</div>
+			</form>
+		</StoreSettingsProvider>
 	);
 }

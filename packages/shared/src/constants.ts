@@ -43,10 +43,6 @@ export interface PaymentMethodSettings {
  * Build checkout payment options from admin settings.
  * COD note can include the live cash surcharge % when configured.
  */
-function hasBankTransferDetails(settings: PaymentMethodSettings): boolean {
-	return Boolean(settings.bankAccountNumber?.trim() || settings.bankIban?.trim());
-}
-
 export function getPaymentMethods(settings: PaymentMethodSettings): readonly PaymentMethodOption[] {
 	const codSurchargePercent = Math.max(0, settings.codSurchargePercent);
 	const all: Array<PaymentMethodOption & { enabled: boolean }> = [
@@ -54,14 +50,12 @@ export function getPaymentMethods(settings: PaymentMethodSettings): readonly Pay
 			id: "bank-transfer",
 			label: "Bank transfer",
 			note: settings.paymentBankTransferNote?.trim() || "Transfer online — send payment screenshot on WhatsApp",
-			enabled: (settings.paymentBankTransferEnabled ?? true) && hasBankTransferDetails(settings),
+			enabled: settings.paymentBankTransferEnabled ?? true,
 		},
 		{
 			id: "cod",
 			label: "Cash on delivery",
-			note:
-				settings.paymentCodNote?.trim() ||
-				(codSurchargePercent > 0 ? `+${codSurchargePercent}% handling on cash orders` : "Pay when you receive your order"),
+			note: settings.paymentCodNote?.trim() || (codSurchargePercent > 0 ? `+${codSurchargePercent}% handling on cash orders` : "Pay when you receive your order"),
 			enabled: settings.paymentCodEnabled ?? true,
 		},
 		{

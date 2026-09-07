@@ -312,25 +312,31 @@ export function PaymentPanel({ payment, onChange, isPlacing, totalRupees, paymen
 	return (
 		<Card className="p-4 md:p-5">
 			<PanelHeader icon={<CreditCard size={14} />} eyebrow="03 · Payment" title="How would you like to pay?" />
-			<div className="reveal-stagger mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
-				{paymentMethods.map((method) => {
-					const Icon = method.id === "cod" ? Banknote : method.id === "bank-transfer" ? Building2 : CreditCard;
-					return (
-						<div key={method.id} className="reveal">
-							<ChoiceTile
-								icon={<Icon size={15} />}
-								title={method.label}
-								subtitle={method.note}
-								tag={method.id === "cod" && codSurchargePercent > 0 ? `+${codSurchargePercent}%` : undefined}
-								tagTone={method.id === "cod" && codSurchargePercent > 0 ? "default" : "success"}
-								isSelected={payment === method.id}
-								onSelect={() => onChange(method.id)}
-								disabled={isPlacing}
-							/>
-						</div>
-					);
-				})}
-			</div>
+			{paymentMethods.length === 0 ? (
+				<div className="mt-4 rounded-[var(--radius-md)] border border-[var(--color-warn-200)] bg-[var(--color-warn-50)] p-4 text-[13px] text-[var(--color-warn-900)]">
+					No payment methods are currently active. Please contact us on WhatsApp to place your order.
+				</div>
+			) : (
+				<div className="reveal-stagger mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
+					{paymentMethods.map((method) => {
+						const Icon = method.id === "cod" ? Banknote : method.id === "bank-transfer" ? Building2 : CreditCard;
+						return (
+							<div key={method.id} className="reveal">
+								<ChoiceTile
+									icon={<Icon size={15} />}
+									title={method.label}
+									subtitle={method.note}
+									tag={method.id === "cod" && codSurchargePercent > 0 ? `+${codSurchargePercent}%` : undefined}
+									tagTone={method.id === "cod" && codSurchargePercent > 0 ? "default" : "success"}
+									isSelected={payment === method.id}
+									onSelect={() => onChange(method.id)}
+									disabled={isPlacing}
+								/>
+							</div>
+						);
+					})}
+				</div>
+			)}
 			{payment === "bank-transfer" ? <BankTransferPaymentGuide totalRupees={totalRupees} /> : null}
 			{payment === "card" ? <OnlinePaymentGuide totalRupees={totalRupees} isPlacing={Boolean(isPlacing)} /> : null}
 			{payment === "cod" ? <CodPaymentGuide totalRupees={totalRupees} surchargeRupees={paymentSurchargeRupees} /> : null}
